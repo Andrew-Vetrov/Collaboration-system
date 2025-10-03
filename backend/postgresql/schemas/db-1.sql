@@ -1,11 +1,11 @@
 
-CREATE TYPE suggestion_status AS ENUM ('new', 'in process', 'accepted', 'declined');
+CREATE TYPE suggestion_status AS ENUM ('draft', 'new', 'in process', 'accepted', 'declined');
 
 CREATE TABLE IF NOT EXISTS users
 (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     mail        VARCHAR(255) NOT NULL UNIQUE,
-    nickname    VARCHAR(255) NOT NULL UNIQUE
+    nickname    VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS projects
@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS projects
     owner_id        UUID NOT NULL REFERENCES users (id),
     name            TEXT NOT NULL,
     description     TEXT,
-    vote_interval   INTERVAL NOT NULL DEFAULT '1 day'
+    vote_interval   INTERVAL NOT NULL DEFAULT '1 week'
+    votes_for_interval    INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS project_rights
@@ -23,18 +24,8 @@ CREATE TABLE IF NOT EXISTS project_rights
     user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     project_id      UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
     is_admin        BOOL NOT NULL DEFAULT false,
-    votes_amount    INTEGER NOT NULL DEFAULT 1,
+    votes_left    INTEGER NOT NULL,
     UNIQUE (user_id, project_id)
-);
-
-CREATE TABLE IF NOT EXISTS drafts
-(
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    project_id      UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
-    last_edit       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    name            TEXT NOT NULL,
-    description     TEXT,
 );
 
 CREATE TABLE IF NOT EXISTS suggestions
@@ -46,7 +37,7 @@ CREATE TABLE IF NOT EXISTS suggestions
     last_edit       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     name            TEXT NOT NULL,
     description     TEXT,
-    status          suggestion_status NOT NULL DEFAULT 'new'
+    status          suggestion_status NOT NULL DEFAULT 'draft'
 );
 
 CREATE TABLE IF NOT EXISTS likes
