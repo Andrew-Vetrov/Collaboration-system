@@ -4,8 +4,8 @@ CREATE TYPE suggestion_status AS ENUM ('new', 'in process', 'accepted', 'decline
 CREATE TABLE IF NOT EXISTS users
 (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    mail        VARCHAR(255) NOT NULL,
-    nickname    VARCHAR(255) NOT NULL
+    mail        VARCHAR(255) NOT NULL UNIQUE,
+    nickname    VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS projects
@@ -60,20 +60,11 @@ CREATE TABLE IF NOT EXISTS likes
 
 CREATE TABLE IF NOT EXISTS comments
 (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id         UUID NOT NULL REFERENCES users (id),
-    suggestion_id   UUID NOT NULL REFERENCES suggestions (id) ON DELETE CASCADE,
-    placed_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    last_edit       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    text            TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS replies
-(
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id         UUID NOT NULL REFERENCES users (id),
-    comment_id      UUID NOT NULL REFERENCES comments (id) ON DELETE CASCADE,
-    placed_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    last_edit       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    text            TEXT NOT NULL
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id             UUID NOT NULL REFERENCES users (id),
+    suggestion_id       UUID NOT NULL REFERENCES suggestions (id) ON DELETE CASCADE,
+    comment_reply_to_id UUID REFERENCES comments (id),
+    placed_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    last_edit           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    text                TEXT NOT NULL
 );
