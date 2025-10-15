@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS comments
 CREATE TABLE IF NOT EXISTS project_invites
 (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     project_id      UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
-    invited_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (user_id, project_id)
+    mail            VARCHAR(255) NOT NULL UNIQUE,
+    invited_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (project_id, mail)
 );
