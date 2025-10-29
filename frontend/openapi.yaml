@@ -1,0 +1,885 @@
+openapi: 3.0.3
+info:
+  title: T-Collab API
+  version: 1.0.0
+
+paths:
+  /projects:
+    post:
+      summary: Creating a project
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+              properties:
+                name:
+                  type: string
+                  description: project name
+                description:
+                  type: string
+                  description: project description
+      responses:
+        '201':
+          description: Project is successfuly created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  project:
+                    $ref: '#/components/schemas/ProjectBasic'
+        '400':
+          description: Wrong request
+        '401':
+          description: Не авторизован
+
+    get:
+      summary: Получить список своих проектов
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список проектов пользователя успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProjectBasic'
+        '401':
+          description: Не авторизован
+
+  /projects/{project_id}/settings:
+    get:
+      summary: Получить настройки проекта
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Настройки проекта успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProjectSettings'
+        '400':
+          description: Wrong request
+        '401':
+          description: Не авторизован
+        '403':
+          description: Нет доступа к проекту
+        '404':
+          description: Проект не найден
+
+    put:
+      summary: Обновить настройки проекта
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - editor_id
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                vote_interval:
+                  type: string
+                votes_for_interval:
+                  type: integer
+      responses:
+        '200':
+          description: Настройки проекта успешно обновлены
+        '400':
+          description: Wrong request
+        '401':
+          description: Не авторизован
+        '403':
+          description: Нет прав для редактирования проекта
+        '404':
+          description: Проект найден
+
+  /projects/{project_id}/users:
+    get:
+      summary: Получить список пользователей проекта
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Список пользователей успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProjectUserList'
+
+        '401':
+          description: Не авторизован
+        '403':
+          description: Нет доступа к проекту
+        '404':
+          description: Проект не найден
+
+  /projects/{project_id}/users/{user_id}:
+    delete:
+      summary: Удалить пользователя из проекта
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Пользователь успешно удален из проекта
+        '400':
+          description: Пользователь нет в проекте или неверные данные
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Проект или пользователь не найден
+
+    put:
+      summary: Изменить права пользователя в проекте
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_admin:
+                  type: boolean
+      responses:
+        '200':
+          description: Права пользователя успешно изменены
+        '400':
+          description: Пользователь нет в проекте или неверные данные
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав для изменения прав
+        '404':
+          description: Проект или пользователь не найден
+
+  /suggestions/{suggestion_id}/likes:
+    post:
+      tags:
+        - Suggestions
+      summary: Добавить реакцию
+      parameters:
+        - $ref: '#/components/parameters/suggestionId'
+      responses:
+        '201':
+          description: Реакция добавлена
+
+    delete:
+      tags:
+        - Suggestions
+      summary: Убрать конкретную реакцию
+      parameters:
+        - $ref: '#/components/parameters/suggestionId'
+      responses:
+        '204':
+          description: Реакция удалена
+        '404':
+          description: Реакция не найдена
+  /project/{project_id}/suggestions:
+    post:
+      tags:
+        - Suggestions
+      summary: Создать предложение или черновик
+      description: |
+        Если status не указан или равен "draft", создаётся черновик.
+        Если status="new" и заполнены все поля, создаётся опубликованное предложение.
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CreateSuggestionRequest'
+                - type: object
+                  properties:
+                    status:
+                      type: string
+                      enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+      responses:
+        '201':
+          description: Предложение или черновик создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suggestion'
+
+    get:
+      tags:
+        - Suggestions
+      summary: Получить список предложений проекта
+      description: |
+        Если указать query параметр status=draft, вернутся только черновики.
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+      responses:
+        '200':
+          description: Список предложений
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Suggestion'
+
+  /suggestions/{suggestion_id}:
+    get:
+      tags:
+        - Suggestions
+      summary: Получить одно предложение
+      description: Нужно для того, чтобы можно было зайти на страницу самого предложения для просмотра контента, связанного с ним
+      parameters:
+        - $ref: '#/components/parameters/suggestionId'
+      responses:
+        '200':
+          description: Предложение найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suggestion'
+    put:
+      tags:
+        - Suggestions
+      summary: Обновить предложение или черновик
+      description: |
+        Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description.
+        При смене status=draft→new черновик публикуется.
+      parameters:
+        - $ref: '#/components/parameters/suggestionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 250
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+      responses:
+        '200':
+          description: Предложение обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Suggestion'
+        '404':
+          description: Предложение не найдено
+    delete:
+      tags:
+        - Suggestions
+      summary: Удалить предложение или черновик
+      description: Удаляет предложение или черновик по его id
+      parameters:
+        - $ref: '#/components/parameters/suggestionId'
+      responses:
+        '204':
+          description: Предложение или черновик успешно удалено
+        '404':
+          description: Предложение не найдено
+
+  /auth:
+    get:
+      summary: Начало авторизации через Google
+      tags:
+        - Authorize
+      description: Перенаправляет пользователя на страницу авторизации Google OAuth2.
+      responses:
+        '401':
+          description: Редирект на Google OAuth2.
+          headers:
+            Location:
+              description: URL авторизации Google с параметрами (client_id, redirect_uri, scope, response_type)
+              schema:
+                type: string
+
+  /auth/callback:
+    get:
+      summary: Callback после авторизации
+      tags:
+        - Authorize
+      description: >
+        Google перенаправляет сюда пользователя после авторизации.
+        Сервер получает code, обменивает его на access_token,
+        запрашивает профиль пользователя (email, name) и сохраняет сессию.
+        Затем редиректит обратно на /projects.
+      parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+          required: true
+          description: Код авторизации, выданный Google.
+      responses:
+        '401':
+          description: Редирект на главную страницу после успешного входа.
+          headers:
+            Location:
+              schema:
+                type: string
+                example: /projects
+        '400':
+          description: Ошибка авторизации.
+
+  /suggestions/{suggestion_id}/comments:
+    get:
+      summary: Получить список комментариев к предложению
+      tags:
+        - Comments
+      parameters:
+        - name: suggestion_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '404':
+          description: Проект или предложение не найдены
+
+    post:
+      summary: Оставить комментарий к предложению
+      tags:
+        - Comments
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: suggestion_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  example: "Хорошая идея, можно улучшить!"
+              required: [text]
+      responses:
+        '201':
+          description: Комментарий создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Предложение не найдено
+  /{comment_id}/reply:
+    post:
+      summary: Ответить на комментарий
+      tags:
+        - Comments
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  example: "Полностью согласен!"
+              required: [text]
+      responses:
+        '201':
+          description: Ответ создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '401':
+          description: Пользователь не авторизован
+        '404':
+          description: Комментарий или предложение не найдены
+  /projects/{project_id}/invites:
+    post:
+      summary: Пригласить пользователя в проект
+      tags:
+        - Invites
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user_email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        '201':
+          description: Приглашение отправлено
+        '400':
+          description: Пользователь уже в проекте, или приглашение уже было
+            отправлено, или неверные данные
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав для приглашения пользователя
+        '404':
+          description: Проект или пользователь не найден
+    get:
+      summary: Получить все приглашения в этом проекте
+      tags:
+        - Invites
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Приглашения получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        invite_id:
+                          type: string
+                          format: uuid
+                        project_id:
+                          type: string
+                          format: uuid
+                        mail:
+                          type: string
+                          format: email
+                        invited_at:
+                          type: string
+                          format: date-time
+        '400':
+          description: Неверные данные
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав для просмотра приглашений
+        '404':
+          description: Проект не найден
+  /invites:
+    get:
+      summary: Получить список приглашений пользователя (себя)
+      tags:
+        - Invites
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Приглашения получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        invite_id:
+                          type: string
+                          format: uuid
+                        project_id:
+                          type: string
+                          format: uuid
+                        mail:
+                          type: string
+                          format: email
+                        invited_at:
+                          type: string
+                          format: date-time
+        '401':
+          description: Не авторизован
+  /invites/{invite_id}:
+    delete:
+      summary: Принять или отклонить приглашение
+      tags:
+        - Invites
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: invite_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accept
+          in: query
+          required: true
+          description: Прниять или отклонить запрос
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful
+        '400':
+          description: Неверные данные
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав для изменения приглашения
+        '404':
+          description: Приглашение не найдено
+
+
+
+components:
+  parameters:
+    projectId:
+      name: project_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    suggestionId:
+      name: suggestion_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    googleOAuth:
+      type: oauth2
+      description: Авторизация через Google OAuth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          tokenUrl: https://oauth2.googleapis.com/token
+          scopes:
+            email: Доступ к email пользователя
+            profile: Доступ к имени пользователя
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: session_id
+
+  schemas:
+    ProjectBasic:
+      type: object
+      properties:
+        project_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+
+    ProjectSettings:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        vote_interval:
+          type: string
+        votes_for_interval:
+          type: integer
+        owner_id:
+          type: string
+          format: uuid
+
+    ProjectUser:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        nickname:
+          type: string
+        is_admin:
+          type: boolean
+
+    ProjectUserList:
+      type: object
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          description: UUID проекта
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectUser'
+
+    Suggestion:
+      type: object
+      properties:
+        suggestion_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        placed_at:
+          type: string
+          format: date-time
+        last_edit:
+          type: string
+          format: date-time
+        likes_amount:
+          type: integer
+        name:
+          type: string
+          maxLength: 250
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+      required: [id, user_id, project_id, name, status]
+
+    CreateSuggestionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 250
+        description:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+      required: [title, description, user_id]
+
+    Like:
+      type: object
+      properties:
+        like_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        suggestion_id:
+          type: string
+          format: uuid
+        placed_at:
+          type: string
+          format: date-time
+      required: [user_id, suggestion_id]
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        suggestion_id:
+          type: string
+          format: uuid
+        comment_reply_to_id:
+          type: string
+          format: uuid
+          nullable: true
+        placed_at:
+          type: string
+          format: date-time
+        last_edit:
+          type: string
+          format: date-time
+        text:
+          type: string
+          example: "Отличная идея!"
+      required:
+        - id
+        - user_id
+        - suggestion_id
+        - placed_at
+        - last_edit
+        - text
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
