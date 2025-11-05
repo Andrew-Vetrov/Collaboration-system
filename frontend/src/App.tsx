@@ -21,16 +21,22 @@ function AuthSuccess(): JSX.Element {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
+    const token = localStorage.getItem('jwt');
+    if (!token) {
+      const params = new URLSearchParams(window.location.search);
+      const tokenFromUrl = params.get('token');
 
-    if (token) {
-      localStorage.setItem('jwt', token);
-      navigate('/projects');
+      if (tokenFromUrl) {
+        localStorage.setItem('jwt', tokenFromUrl);
+        navigate('/projects', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
     } else {
-      navigate('/');
+      navigate('/projects', { replace: true });
     }
   }, [navigate]);
+
 
   return <h2>Авторизация успешна! Перенаправляем...</h2>;
 }
