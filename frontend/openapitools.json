@@ -2,14 +2,6 @@
   "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
   "spaces": 2,
   "generator-cli": {
-    "version": "7.16.0"
-  },
-  "generatorName": "javascript",
-  "inputSpec": "openapi.yaml",
-  "outputDir": "./src/api",
-  "additionalProperties": {
-    "supportsES6": true,
-    "usePromises": true,
-    "modelPropertyNaming": "camelCase"
+    "version": "7.17.0"
   }
 }

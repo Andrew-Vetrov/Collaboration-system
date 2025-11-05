@@ -1,0 +1,24 @@
+# CreateSuggestionRequest
+
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**title** | **string** |  | [default to undefined]
+**description** | **string** |  | [default to undefined]
+**user_id** | **string** |  | [default to undefined]
+
+## Example
+
+```typescript
+import { CreateSuggestionRequest } from './api';
+
+const instance: CreateSuggestionRequest = {
+    title,
+    description,
+    user_id,
+};
+```
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
