@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { useEffect, useState } from 'react';
 import { projectsApi } from './apiClient';
 import type { ProjectBasic } from './apiClient';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+
 
 
 function Home(): JSX.Element {
@@ -41,26 +43,25 @@ function AuthSuccess(): JSX.Element {
   return <h2>Авторизация успешна! Перенаправляем...</h2>;
 }
 
-function Projects(): JSX.Element {
-
-  const [projects, setProjects] = useState<ProjectBasic[]>([]);
-
-  const handleLoadProjects = async ():Promise<void> => {
-    try {
+function useProjects() {
+  return useQuery<ProjectBasic[]>({
+    queryKey: ['projects'],
+    queryFn: async () => {
       const response = await projectsApi.projectsGet();
-      console.log(response.data.projects);
-      setProjects(response.data.projects ?? []);
-      // const projects: ProjectBasic[] = response.data.projects;
+      return response.data.projects ?? [];
+    },
+  });
+}
 
-    } catch (error) {
-      console.log(error);
-    }
-  } 
+export function Projects(): JSX.Element {
+  const { data: projects = [], isLoading, error } = useProjects();
+
+  if (isLoading) return <p>Загрузка проектов...</p>;
+  if (error) return <p>Ошибка загрузки проектов</p>;
 
   return (
     <div>
       <h1>Мои проекты</h1>
-      <button onClick={handleLoadProjects}>Обновить список</button>
       <ul>
         {projects.map((project) => (
           <li key={project.project_id}>
@@ -73,14 +74,19 @@ function Projects(): JSX.Element {
   );
 }
 
+
 export default function App(): JSX.Element {
+  const queryClient = new QueryClient();
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth/success" element={<AuthSuccess />} />
-        <Route path="/projects" element={<Projects />} />
-      </Routes>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth/success" element={<AuthSuccess />} />
+          <Route path="/projects" element={<Projects />} />
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   );
 }
