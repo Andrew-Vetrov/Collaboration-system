@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { projectsApi } from './apiClient';
 import type { ProjectBasic } from './apiClient';
@@ -7,6 +7,15 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 
 
 function Home(): JSX.Element {
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if(token) {
+      navigate("/projects", {replace: true})
+    }
+  },[navigate])
+
   const handleAuthClick = (): void => {
     window.location.href = 'http://localhost:8000/auth';
   };
@@ -53,7 +62,7 @@ function useProjects() {
   });
 }
 
-export function Projects(): JSX.Element {
+function Projects(): JSX.Element {
   const { data: projects = [], isLoading, error } = useProjects();
 
   if (isLoading) return <p>Загрузка проектов...</p>;
@@ -75,6 +84,16 @@ export function Projects(): JSX.Element {
 }
 
 
+function ProtectedRoute() {
+  const token = localStorage.getItem("jwt");
+
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+  return <Outlet/>
+}
+
+
 export default function App(): JSX.Element {
   const queryClient = new QueryClient();
 
@@ -84,7 +103,9 @@ export default function App(): JSX.Element {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth/success" element={<AuthSuccess />} />
-          <Route path="/projects" element={<Projects />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/projects" element={<Projects />} />
+          </Route>
         </Routes>
       </Router>
     </QueryClientProvider>
