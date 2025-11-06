@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:15.2-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: colaboration_system_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresql/schemas:/docker-entrypoint-initdb.d
+      - ./.pgdata:/var/lib/postgresql/data

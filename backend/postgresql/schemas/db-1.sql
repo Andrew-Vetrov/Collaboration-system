@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TYPE suggestion_status AS ENUM ('draft', 'new', 'in process', 'accepted', 'declined');
 
@@ -14,7 +15,7 @@ CREATE TABLE IF NOT EXISTS projects
     owner_id        UUID NOT NULL REFERENCES users (id),
     name            TEXT NOT NULL,
     description     TEXT,
-    vote_interval   INTERVAL NOT NULL DEFAULT '1 week'
+    vote_interval   INTERVAL NOT NULL DEFAULT '1 week',
     votes_for_interval    INTEGER NOT NULL DEFAULT 1
 );
 
