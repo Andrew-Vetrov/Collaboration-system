@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class CreateProjectRequest {
-    @NotBlank(message = "Project name is required")
+    @NotBlank
     private String name;
 
-    @NotBlank(message = "Project description is required")
+    @NotBlank
     private String description;
 }

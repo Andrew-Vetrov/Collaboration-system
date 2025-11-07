@@ -12,10 +12,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/projects/**").permitAll() // Разрешаем доступ к projects без аутентификации
+                        .requestMatchers("/projects/{userId}").permitAll() // Разрешаем доступ к projects без аутентификации
                         .requestMatchers("/auth/**").permitAll()     // Разрешаем доступ к auth endpoints
                         .requestMatchers("/").permitAll()            // Разрешаем доступ к корневому эндпоинту
-                        .anyRequest().permitAll()                // Все остальные требуют аутентификации
+                        .anyRequest().permitAll()                // Все остальные пропускаются (404)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/auth/success", true)

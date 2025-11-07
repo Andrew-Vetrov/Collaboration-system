@@ -37,12 +37,4 @@ public class Project {
     @Column(name = "votes_for_interval")
     @Builder.Default
     private Integer votesForInterval = 1;
-
-    public Project(UUID ownerId, String name, String description) {
-        this.ownerId = ownerId;
-        this.name = name;
-        this.description = description;
-        this.voteInterval = Duration.ofDays(7);
-        this.votesForInterval = 1;
-    }
 }
