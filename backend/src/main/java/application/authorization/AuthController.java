@@ -1,4 +1,4 @@
-package authorization;
+package application.authorization;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
