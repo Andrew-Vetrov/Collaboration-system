@@ -1,5 +1,5 @@
-import { Configuration, ProjectsApi, SuggestionsApi, CommentsApi} from './api';
-import type { ProjectBasic } from './api';
+import { Configuration, ProjectsApi, SuggestionsApi, CommentsApi} from './generated';
+// import type { ProjectBasic } from './generated';
 
 const config = new Configuration({
   basePath: import.meta.env.VITE_API_URL || 'http://localhost:8000',
@@ -8,4 +8,4 @@ const config = new Configuration({
 export const projectsApi = new ProjectsApi(config);
 export const suggestionsApi = new SuggestionsApi(config);
 export const commentsApi = new CommentsApi(config);
-export type {ProjectBasic};
+// export type {ProjectBasic};
