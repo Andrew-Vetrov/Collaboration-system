@@ -1,0 +1,1 @@
+export type { ProjectBasic } from '@/shared/api/generated';
