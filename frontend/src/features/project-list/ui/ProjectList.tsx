@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import useProjects from '../model/hooks/useProjects'
 
 export const ProjectList = (): JSX.Element => {
@@ -10,12 +11,14 @@ export const ProjectList = (): JSX.Element => {
     <div>
         <h1>Мои проекты</h1>
         <ul>
-        {projects.map((project) => (
-            <li key={project.project_id}>
-            <h3>{project.name}</h3>
-            <p>{project.description}</p>
-            </li>
-        ))}
+            {projects.map((project) => (
+                <Link
+                    key={project.project_id}
+                    to={`/project/${project.project_id}`}
+                >
+                    <h3>{project.name}</h3>
+                </Link>
+            ))}
         </ul>
     </div>
     );
