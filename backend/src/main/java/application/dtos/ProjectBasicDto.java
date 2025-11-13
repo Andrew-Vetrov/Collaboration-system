@@ -1,10 +1,10 @@
-package application.projects;
+package application.dtos;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
 
 import java.util.UUID;
 
-@Data
+@AllArgsConstructor
 public class ProjectBasicDto {
     private final UUID projectId;
     private final String name;

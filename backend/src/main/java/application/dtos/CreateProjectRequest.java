@@ -1,13 +1,12 @@
-package application.projects;
+package application.dtos;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class CreateProjectRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
     private String description;
 }

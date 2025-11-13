@@ -1,19 +1,19 @@
 package application.database.services;
 
-import application.projects.CreateProjectRequest;
-import application.projects.ProjectBasicDto;
+import application.database.repositories.UserRepository;
+import application.exceptions.NoUserException;
+import application.dtos.CreateProjectRequest;
+import application.dtos.ProjectBasicDto;
 import application.database.entities.Project;
 import application.database.entities.ProjectRights;
 import application.database.repositories.ProjectRepository;
 import application.database.repositories.ProjectRightsRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +21,14 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectRightsRepository projectRightsRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public Project createProject(CreateProjectRequest request, UUID ownerId) {
+    public Project createProject(CreateProjectRequest request, UUID ownerId) throws NoUserException {
+        //Проверяем существование такого пользователя
+        if(userRepository.findById(ownerId).isEmpty()) {
+            throw new NoUserException("User not found");
+        }
 
         // Создаем проект
         Project project = Project.builder()
@@ -37,7 +42,7 @@ public class ProjectService {
         // Создаем права доступа для владельца
         ProjectRights ownerRights = ProjectRights.builder()
                 .userId(ownerId)
-//                .projectId(savedProject.getId())
+                .project(project)
                 .isAdmin(true)
                 .votesLeft(savedProject.getVotesForInterval())
                 .build();
@@ -47,10 +52,14 @@ public class ProjectService {
         return savedProject;
     }
 
-    public List<Project> getUserProjects(UUID userId) {
+    public List<Project> getUserProjects(UUID userId) throws NoUserException {
+        //Проверяем существование такого пользователя
+        if(userRepository.findById(userId).isEmpty()) {
+            throw new NoUserException("User not found");
+        }
         List<ProjectRights> projectRights = projectRightsRepository.findAllByUserId(userId);
         return projectRights.stream()
-                .map((projectRight) -> projectRight.getProject())
+                .map(ProjectRights::getProject)
                 .toList();
     }
 
