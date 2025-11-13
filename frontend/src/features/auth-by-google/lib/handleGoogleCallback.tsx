@@ -12,6 +12,6 @@ export const handleGoogleCallback = (
     
     navigate('/', { replace: true });
   } else {
-    navigate('/', { replace: true });
+    navigate('/auth', { replace: true });
   }
 };
