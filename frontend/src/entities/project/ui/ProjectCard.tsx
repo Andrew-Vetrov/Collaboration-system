@@ -1,4 +1,4 @@
-import { ProjectBasic } from '../model/types';
+import type { ProjectBasic } from '../model/types';
 
 interface ProjectCardProps {
   project: ProjectBasic;

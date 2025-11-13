@@ -1,16 +1,16 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { HomePage } from '@/pages/home/HomePage';
+import { LoginPage } from '@/pages/login/LoginPage';
 import { ProjectsPage } from '@/pages/project/ProjectPage';
 import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';
 
 const router = createBrowserRouter([
-  { path: '/', element: <HomePage /> },
+  { path: '/auth', element: <LoginPage /> },
   { path: '/auth/success', element: <AuthSuccess /> },
   {
     element: <ProtectedRoute />,
-    children: [{ path: '/projects', element: <ProjectsPage /> }],
+    children: [{ path: '/', element: <ProjectsPage /> }],
   },
   {
     path: '*', element: <NotFoundPage />

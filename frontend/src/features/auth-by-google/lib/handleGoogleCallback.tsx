@@ -1,4 +1,4 @@
-import { NavigateFunction } from 'react-router-dom';
+import type { NavigateFunction } from 'react-router-dom';
 
 export const handleGoogleCallback = (
   search: string,
@@ -9,7 +9,7 @@ export const handleGoogleCallback = (
 
   if (token) {
     localStorage.setItem('jwt', token);
-    navigate('/projects', { replace: true });
+    navigate('/', { replace: true });
   } else {
     navigate('/', { replace: true });
   }
