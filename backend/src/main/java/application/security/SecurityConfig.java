@@ -15,7 +15,7 @@ public class SecurityConfig {
                         .requestMatchers("/projects/{userId}").permitAll() // Разрешаем доступ к projects без аутентификации
                         .requestMatchers("/auth/**").permitAll()     // Разрешаем доступ к auth endpoints
                         .requestMatchers("/").permitAll()            // Разрешаем доступ к корневому эндпоинту
-                        .anyRequest().permitAll()                // Все остальные пропускаются (404)
+                        .anyRequest().permitAll()   // Все остальные пропускаются (404 из-за отсутствия подходящего хендлера)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/auth/success", true)

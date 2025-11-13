@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class ProjectService {
         // Создаем права доступа для владельца
         ProjectRights ownerRights = ProjectRights.builder()
                 .userId(ownerId)
-                .projectId(savedProject.getId())
+//                .projectId(savedProject.getId())
                 .isAdmin(true)
                 .votesLeft(savedProject.getVotesForInterval())
                 .build();
@@ -47,7 +48,10 @@ public class ProjectService {
     }
 
     public List<Project> getUserProjects(UUID userId) {
-        return projectRepository.findByUserIdWithRights(userId);
+        List<ProjectRights> projectRights = projectRightsRepository.findAllByUserId(userId);
+        return projectRights.stream()
+                .map((projectRight) -> projectRight.getProject())
+                .toList();
     }
 
     public ProjectBasicDto convertToBasicDto(Project project) {
@@ -57,4 +61,6 @@ public class ProjectService {
                 project.getDescription()
         );
     }
+
+
 }

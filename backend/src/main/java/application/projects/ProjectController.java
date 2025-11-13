@@ -5,11 +5,13 @@ import application.database.services.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,15 +23,9 @@ public class ProjectController {
     public ProjectBasicDto createProject(
             @Valid @RequestBody CreateProjectRequest request,
             @PathVariable String userId) {
-
-        try {
-            UUID userUuid = UUID.fromString(userId);
-            Project project = projectService.createProject(request, userUuid);
-
-            return projectService.convertToBasicDto(project);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        UUID userUuid = UUID.fromString(userId);
+        Project project = projectService.createProject(request, userUuid);
+        return projectService.convertToBasicDto(project);
     }
 
     @GetMapping("/projects/{userId}")
@@ -39,13 +35,16 @@ public class ProjectController {
         try {
             UUID userUuid = UUID.fromString(userId);
             List<Project> projects = projectService.getUserProjects(userUuid);
-            List<ProjectBasicDto> projectDtos = projects.stream()
-                    .map(projectService::convertToBasicDto)
-                    .collect(Collectors.toList());
 
-            return projectDtos;
+            return projects.stream()
+                    .map(projectService::convertToBasicDto)
+                    .toList();
         } catch (IllegalArgumentException e) {
             return null;
         }
     }
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ResponseEntity<String> excH(MethodArgumentNotValidException ex) {
+//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+//    }
 }

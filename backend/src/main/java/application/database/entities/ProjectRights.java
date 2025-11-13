@@ -7,7 +7,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "project_rights")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,8 +20,9 @@ public class ProjectRights {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    @Column(name = "project_id", nullable = false)
-    private UUID projectId;
+    @ManyToOne
+    @JoinColumn(name="project_id")
+    private Project project;
 
     @Column(name = "is_admin", nullable = false)
     @Builder.Default
