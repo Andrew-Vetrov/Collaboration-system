@@ -99,7 +99,7 @@ const { status, data } = await apiInstance.suggestionsSuggestionIdCommentsGet(
 
 ### Authorization
 
-No authorization required
+[BearerAuth](../README.md#BearerAuth)
 
 ### HTTP request headers
 
@@ -154,7 +154,7 @@ const { status, data } = await apiInstance.suggestionsSuggestionIdCommentsPost(
 
 ### Authorization
 
-[sessionAuth](../README.md#sessionAuth)
+[BearerAuth](../README.md#BearerAuth)
 
 ### HTTP request headers
 

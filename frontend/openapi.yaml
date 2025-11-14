@@ -246,6 +246,8 @@ paths:
     post:
       tags:
         - Suggestions
+      security:
+        - BearerAuth: []
       summary: Добавить реакцию
       parameters:
         - $ref: '#/components/parameters/suggestionId'
@@ -256,6 +258,8 @@ paths:
     delete:
       tags:
         - Suggestions
+      security:
+        - BearerAuth: []
       summary: Убрать конкретную реакцию
       parameters:
         - $ref: '#/components/parameters/suggestionId'
@@ -268,6 +272,8 @@ paths:
     post:
       tags:
         - Suggestions
+      security:
+        - BearerAuth: []
       summary: Создать предложение или черновик
       description: |
         Если status не указан или равен "draft", создаётся черновик.
@@ -297,6 +303,8 @@ paths:
     get:
       tags:
         - Suggestions
+      security:
+        - BearerAuth: []
       summary: Получить список предложений проекта
       description: |
         Если указать query параметр status=draft, вернутся только черновики.
@@ -325,6 +333,8 @@ paths:
     get:
       tags:
         - Suggestions
+      security:
+        - BearerAuth: []
       summary: Получить одно предложение
       description: Нужно для того, чтобы можно было зайти на страницу самого предложения для просмотра контента, связанного с ним
       parameters:
@@ -339,6 +349,8 @@ paths:
     put:
       tags:
         - Suggestions
+      security:
+        - BearerAuth: []
       summary: Обновить предложение или черновик
       description: |
         Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description.
@@ -372,6 +384,8 @@ paths:
     delete:
       tags:
         - Suggestions
+      security:
+        - BearerAuth: []
       summary: Удалить предложение или черновик
       description: Удаляет предложение или черновик по его id
       parameters:
@@ -430,6 +444,8 @@ paths:
       summary: Получить список комментариев к предложению
       tags:
         - Comments
+      security:
+        - BearerAuth: []
       parameters:
         - name: suggestion_id
           in: path
@@ -454,7 +470,7 @@ paths:
       tags:
         - Comments
       security:
-        - sessionAuth: []
+        - BearerAuth: []
       parameters:
         - name: suggestion_id
           in: path
