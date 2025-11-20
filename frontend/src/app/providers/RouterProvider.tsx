@@ -4,7 +4,7 @@ import { ProjectsPage } from '@/pages/projectsPage/ProjectsPage';
 import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';
-import { ProjectPage } from '@/pages/projectPage/ProjectPage';
+import { ProjectPage } from '@/pages/project-page/ProjectPage';
 import { AuthRoute } from '@/shared/route';
 
 const router = createBrowserRouter([
