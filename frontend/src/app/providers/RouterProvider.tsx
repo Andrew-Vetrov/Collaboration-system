@@ -13,17 +13,18 @@ const router = createBrowserRouter([
     children: [
       { path: '/auth', element: <LoginPage /> },
       { path: '/auth/success', element: <AuthSuccess /> },
-    ]
+    ],
   },
   {
     element: <ProtectedRoute />,
     children: [
       { path: '/', element: <ProjectsPage /> },
-      { path: '/project/:id', element: <ProjectPage />}
+      { path: '/project/:id', element: <ProjectPage /> },
     ],
   },
   {
-    path: '*', element: <NotFoundPage />
+    path: '*',
+    element: <NotFoundPage />,
   },
 ]);
 

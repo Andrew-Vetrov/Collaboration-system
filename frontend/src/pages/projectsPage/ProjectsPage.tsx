@@ -1,5 +1,5 @@
-import { ProjectList } from "@/entities/project";;
+import { ProjectList } from '@/entities/project';
 
 export const ProjectsPage = (): JSX.Element => {
-    return <ProjectList />;
-}
+  return <ProjectList />;
+};

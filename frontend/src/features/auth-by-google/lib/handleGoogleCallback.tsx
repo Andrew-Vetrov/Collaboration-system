@@ -9,7 +9,7 @@ export const handleGoogleCallback = (
 
   if (token) {
     localStorage.setItem('jwt', token);
-    
+
     navigate('/', { replace: true });
   } else {
     navigate('/auth', { replace: true });

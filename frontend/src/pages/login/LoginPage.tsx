@@ -1,5 +1,4 @@
 export const LoginPage = () => {
-
   const handleAuthClick = () => {
     window.location.href = 'http://localhost:8000/auth';
   };

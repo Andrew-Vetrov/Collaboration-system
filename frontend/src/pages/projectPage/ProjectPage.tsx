@@ -1,11 +1,11 @@
-import { ProjectInfo } from "@/entities/project";
-import { useParams, Navigate } from "react-router-dom"
+import { ProjectInfo } from '@/entities/project';
+import { useParams, Navigate } from 'react-router-dom';
 
-export const ProjectPage = () : JSX.Element => {
-    const {id} = useParams<{id: string}>();
-    if (!id) {
-        return <Navigate to="/not-found" replace />; // или <NotFoundPage />
-    }
+export const ProjectPage = (): JSX.Element => {
+  const { id } = useParams<{ id: string }>();
+  if (!id) {
+    return <Navigate to="/not-found" replace />; // или <NotFoundPage />
+  }
 
-    return <ProjectInfo id={id} />;
-}
+  return <ProjectInfo id={id} />;
+};
