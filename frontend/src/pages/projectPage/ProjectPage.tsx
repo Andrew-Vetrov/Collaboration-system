@@ -1,4 +1,4 @@
-import { ProjectInfo } from "@/features/project-info";
+import { ProjectInfo } from "@/entities/project";
 import { useParams, Navigate } from "react-router-dom"
 
 export const ProjectPage = () : JSX.Element => {

@@ -2,7 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 import type { ProjectBasic} from  '@/entities/project';
 import { projectsApi } from '@/shared/api';
 
-export default function  useProjects() {
+export function  useProjects() {
     return useQuery<ProjectBasic[]>({
         queryKey: ['projects'],
         queryFn: async() => {

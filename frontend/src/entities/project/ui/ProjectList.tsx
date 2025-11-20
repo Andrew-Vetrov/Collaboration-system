@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import useProjects from '../model/hooks/useProjects'
+import {useProjects} from '../api/useProjects'
 
 export const ProjectList = (): JSX.Element => {
     const {data: projects = [], isLoading, error} = useProjects()
