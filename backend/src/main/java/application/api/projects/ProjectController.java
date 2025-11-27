@@ -3,12 +3,16 @@ package application.api.projects;
 import application.database.entities.Project;
 import application.database.services.ProjectService;
 import application.dtos.CreateProjectRequest;
+import application.dtos.ErrorResponse;
 import application.dtos.ProjectBasicDto;
 import application.exceptions.NoUserException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,15 +52,17 @@ public class ProjectController {
 
     @ExceptionHandler(NoUserException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String noUserHandler(NoUserException e) {
+    public ErrorResponse noUserHandler(NoUserException e, HttpServletRequest request) {
         log.warn(e.getMessage());
-        return e.getMessage();
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                "User not found", request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String illegalArgumentHandler(IllegalArgumentException e) {
+    public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
         log.warn(e.getMessage());
-        return e.getMessage();
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                "Wrong request parameter", request.getRequestURI());
     }
 }
