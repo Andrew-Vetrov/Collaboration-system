@@ -6,11 +6,18 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-      <h1 className="text-3xl font-semibold">Авторизация</h1>
-      <ButtonSocial onClick={handleAuthClick} variant="destructive">
-        Войти
-      </ButtonSocial>
+    <div className="flex items-center justify-center min-h-screen gap-4">
+      <div className="flex flex-col w-full max-w-sm justify-center border p-8 rounded-md bg-[oklch(0.2816_0.006_258.35)] shadow-md">
+        <h1 className="text-3xl font-semibold text-center">Авторизация</h1>
+        <p className="m-4 text-center">
+          Для продолжения необходимо авторизоваться
+        </p>
+        <ButtonSocial
+          onClick={handleAuthClick}
+          variant="outline"
+          className="rounded-md"
+        />
+      </div>
     </div>
   );
 };
