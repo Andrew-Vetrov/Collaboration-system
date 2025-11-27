@@ -5,7 +5,7 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "baseUrl": "./frontend",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
