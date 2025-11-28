@@ -37,17 +37,12 @@ public class ProjectController {
     @GetMapping("/projects/{userId}")
     public List<ProjectBasicDto> getUserProjects(
             @PathVariable String userId) {
+        UUID userUuid = UUID.fromString(userId);
+        List<Project> projects = projectService.getUserProjects(userUuid);
 
-        try {
-            UUID userUuid = UUID.fromString(userId);
-            List<Project> projects = projectService.getUserProjects(userUuid);
-
-            return projects.stream()
-                    .map(projectService::convertToBasicDto)
-                    .toList();
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return projects.stream()
+                .map(projectService::convertToBasicDto)
+                .toList();
     }
 
     @ExceptionHandler(NoUserException.class)
