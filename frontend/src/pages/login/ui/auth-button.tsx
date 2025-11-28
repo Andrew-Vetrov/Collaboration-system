@@ -1,5 +1,5 @@
-import { Button } from '@/shared/ui/button/button';
-import type { ButtonProps } from '@/shared/ui/button/button';
+import { Button } from '@/shared/ui/buttons/button';
+import type { ButtonProps } from '@/shared/ui/buttons/button';
 
 const ButtonSocial = (props: ButtonProps) => {
   return (
