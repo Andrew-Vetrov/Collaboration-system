@@ -67,7 +67,7 @@ export const CreateProjectDialog = (
               />
             </div>
           </div>
-          <DialogFooter className="flex flex-row justify-center">
+          <DialogFooter className="flex flex-row justify-center mt-4">
             <DialogClose asChild>
               <Button variant="outline">Отменить</Button>
             </DialogClose>

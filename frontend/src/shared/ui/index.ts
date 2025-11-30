@@ -3,4 +3,7 @@ export * from './dialog';
 export * from './input';
 export * from './label';
 export * from './textarea';
+export * from './avatar';
+export * from './badge';
 export * from './card';
+export * from './dropdown-menu';

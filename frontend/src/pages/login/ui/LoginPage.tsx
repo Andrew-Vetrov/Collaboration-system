@@ -1,4 +1,4 @@
-import ButtonSocial from './auth-button';
+import ButtonSocial from './AuthButton';
 import {
   Card,
   CardContent,
