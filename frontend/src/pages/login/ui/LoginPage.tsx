@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from './card';
+} from '@/shared/ui/';
 
 export const LoginPage = () => {
   const handleAuthClick = () => {
