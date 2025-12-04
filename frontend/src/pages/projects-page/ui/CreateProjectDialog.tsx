@@ -9,10 +9,16 @@ import {
 } from '@/shared/ui';
 import { Input, Label, Textarea, Button } from '@/shared/ui';
 import { useProjectCreate } from '../api/useProjectCreate';
+import { useForm } from 'react-hook-form';
 
 interface CreateProjectDialogProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface IFormInput {
+  name: string;
+  description: string;
 }
 
 export const CreateProjectDialog = (
@@ -20,16 +26,15 @@ export const CreateProjectDialog = (
 ): JSX.Element => {
   const { mutate, isPending, isError, error } = useProjectCreate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('sadf');
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const name = formData.get('name')?.toString().trim() ?? '';
-    const description = formData.get('description')?.toString().trim() ?? '';
-    if (!name) {
-      alert('Имя проекта обязательно');
-      return;
-    }
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<IFormInput>();
+
+  const onSubmit = (data: IFormInput) => {
+    const name = data.name;
+    const description = data.description;
     mutate(
       { name, description },
       {
@@ -46,7 +51,7 @@ export const CreateProjectDialog = (
   return (
     <Dialog open={props.isOpen} onOpenChange={props.setIsOpen}>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Создать новый проект</DialogTitle>
             <DialogDescription className="mb-2">
@@ -56,15 +61,27 @@ export const CreateProjectDialog = (
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="name-1">Имя проекта</Label>
-              <Input id="name-1" name="name" />
+              <Input
+                {...register('name', {
+                  required: 'Необходимо написать имя проекта',
+                  maxLength: 30,
+                })}
+                id="name-1"
+                name="name"
+              />
+              <p className="text-red-600">{errors.name?.message}</p>
             </div>
             <div className="grid gap-3">
               <Label htmlFor="description-1">Описание проекта</Label>
               <Textarea
+                {...register('description', {
+                  required: 'Необходимо написать описание для проекта',
+                })}
                 id="description-1"
                 name="description"
                 className="max-h-40 overflow-auto"
               />
+              <p className="text-red-600">{errors.description?.message}</p>
             </div>
           </div>
           <DialogFooter className="flex flex-row justify-center mt-4">

@@ -11,6 +11,7 @@
     "openapigen": "npx openapi-generator-cli generate -i openapi.yaml -g typescript-axios -o src/shared/api/generated"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -25,9 +26,11 @@
     "lucide-react": "^0.555.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.68.0",
     "react-router-dom": "^7.9.5",
     "tailwind-merge": "^3.4.0",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.17",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

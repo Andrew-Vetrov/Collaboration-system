@@ -1,7 +1,7 @@
 import { Button } from '@/shared/ui/';
 import type { ButtonProps } from '@/shared/ui/';
 
-const ButtonSocial = (props: ButtonProps) => {
+export const ButtonSocial = (props: ButtonProps) => {
   return (
     <div className="flex w-full flex-col justify-center gap-4">
       <Button {...props} className="px-6 mx-auto">
@@ -15,5 +15,3 @@ const ButtonSocial = (props: ButtonProps) => {
     </div>
   );
 };
-
-export default ButtonSocial;

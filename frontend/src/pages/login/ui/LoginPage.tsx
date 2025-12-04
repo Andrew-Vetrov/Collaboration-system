@@ -1,4 +1,4 @@
-import ButtonSocial from './AuthButton';
+import { ButtonSocial } from '@/features/auth-by-google/';
 import {
   Card,
   CardContent,
