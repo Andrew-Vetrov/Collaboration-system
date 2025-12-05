@@ -4,8 +4,9 @@ import { ProjectsPage } from '@/pages/projects-page';
 import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';
-import { ProjectPage } from '@/pages/project-page/ProjectPage';
+import { ProjectPage } from '@/pages/project-page/';
 import { AuthRoute } from '@/shared/route';
+import { SuggestionPage } from '@/pages/suggestion-page';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <ProjectsPage /> },
       { path: '/project/:id', element: <ProjectPage /> },
+      { path: '/suggestion/:id', element: <SuggestionPage /> },
     ],
   },
   {
