@@ -1,11 +1,11 @@
-import ButtonSocial from './auth-button';
+import { ButtonSocial } from '@/features/auth-by-google/';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './card';
+} from '@/shared/ui/';
 
 export const LoginPage = () => {
   const handleAuthClick = () => {

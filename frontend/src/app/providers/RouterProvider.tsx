@@ -1,6 +1,6 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { LoginPage } from '@/pages/login/';
-import { ProjectsPage } from '@/pages/projects-page/ProjectsPage';
+import { ProjectsPage } from '@/pages/projects-page';
 import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';

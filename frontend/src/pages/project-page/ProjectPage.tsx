@@ -1,4 +1,5 @@
 import { ProjectInfo } from '@/entities/project';
+import { Header } from '@/widgets/header';
 import { useParams, Navigate } from 'react-router-dom';
 
 export const ProjectPage = (): JSX.Element => {
@@ -7,5 +8,10 @@ export const ProjectPage = (): JSX.Element => {
     return <Navigate to="/not-found" replace />;
   }
 
-  return <ProjectInfo id={id} />;
+  return (
+    <>
+      <Header />
+      <ProjectInfo id={id} />
+    </>
+  );
 };
