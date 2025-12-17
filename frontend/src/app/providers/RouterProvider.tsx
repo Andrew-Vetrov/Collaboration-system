@@ -1,11 +1,14 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { lazy } from 'react';
 import { LoginPage } from '@/pages/login/';
-import { ProjectsPage } from '@/pages/projects-page';
 import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';
-import { ProjectPage } from '@/pages/project-page/ProjectPage';
 import { AuthRoute } from '@/shared/route';
+
+const ProjectsPage = lazy(() => import('@/pages/projects-page'));
+const ProjectPage = lazy(() => import('@/pages/project-page'));
+const SuggestionPage = lazy(() => import('@/pages/suggestion-page'));
 
 const router = createBrowserRouter([
   {
@@ -20,6 +23,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <ProjectsPage /> },
       { path: '/project/:id', element: <ProjectPage /> },
+      { path: '/suggestion/:id', element: <SuggestionPage /> },
     ],
   },
   {

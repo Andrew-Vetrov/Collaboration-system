@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useProjects } from '../api/useProjects';
 import { Card, CardDescription, CardTitle } from '@/shared/ui';
+import type { FC } from 'react';
 
-export const ProjectList = (): JSX.Element => {
+export const ProjectList: FC = () => {
   const { data: projects = [], isLoading, error } = useProjects();
 
   if (isLoading) return <p>Загрузка проектов...</p>;

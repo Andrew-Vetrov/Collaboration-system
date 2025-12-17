@@ -10,6 +10,7 @@ import {
 import { Input, Label, Textarea, Button } from '@/shared/ui';
 import { useProjectCreate } from '../api/useProjectCreate';
 import { useForm } from 'react-hook-form';
+import type { JSX } from 'react';
 
 interface CreateProjectDialogProps {
   isOpen: boolean;
