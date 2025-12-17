@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useSuggestion } from '@/entities/suggestion';
 
-export const SuggestionPage = () => {
+const SuggestionPage = () => {
   const { id } = useParams<{ id: string }>();
 
   const { data: suggestion, isLoading, isError } = useSuggestion(id);
@@ -28,3 +28,5 @@ export const SuggestionPage = () => {
     </div>
   );
 };
+
+export default SuggestionPage;

@@ -1,4 +1,4 @@
-export const STATUS_LABELS: Record<string, string> = {
+export const STATUS_LABELS = {
   draft: 'Черновик',
   new: 'Новый',
   discussion: 'Обсуждение',
@@ -6,4 +6,4 @@ export const STATUS_LABELS: Record<string, string> = {
   in_progress: 'В процессе',
   accepted: 'Принято',
   rejected: 'Отклонено',
-};
+} as const;

@@ -5,7 +5,7 @@ import React, { type JSX } from 'react';
 import { Button } from '@/shared/ui';
 import { Header } from '@/widgets/header';
 
-export const ProjectsPage = (): JSX.Element => {
+const ProjectsPage = (): JSX.Element => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
@@ -30,3 +30,5 @@ export const ProjectsPage = (): JSX.Element => {
     </>
   );
 };
+
+export default ProjectsPage;

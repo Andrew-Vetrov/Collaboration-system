@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { useSuggections } from '../api/useSuggestions';
+import { useSuggestions } from '../api/useSuggestions';
 import { Card, CardDescription, CardTitle } from '@/shared/ui';
 import { STATUS_LABELS } from '../lib/status';
 import { Heart } from 'lucide-react';
@@ -14,7 +14,7 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
     data: suggestions = [],
     isLoading,
     error,
-  } = useSuggections(props.projectId);
+  } = useSuggestions(props.projectId);
 
   if (isLoading) {
     return <div>Загрузка предложений...</div>;
