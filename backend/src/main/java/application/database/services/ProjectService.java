@@ -27,7 +27,7 @@ public class ProjectService {
     public Project createProject(CreateProjectRequest request, UUID ownerId) throws NoUserException {
         //Проверяем существование такого пользователя
         if(userRepository.findById(ownerId).isEmpty()) {
-            throw new NoUserException("User not found");
+            throw new NoUserException("User not found: " + ownerId);
         }
 
         // Создаем проект
@@ -55,7 +55,7 @@ public class ProjectService {
     public List<Project> getUserProjects(UUID userId) throws NoUserException {
         //Проверяем существование такого пользователя
         if(userRepository.findById(userId).isEmpty()) {
-            throw new NoUserException("User not found");
+            throw new NoUserException("User not found: " + userId);
         }
         List<ProjectRights> projectRights = projectRightsRepository.findAllByUserId(userId);
         return projectRights.stream()

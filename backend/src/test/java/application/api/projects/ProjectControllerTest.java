@@ -11,25 +11,39 @@ public class ProjectControllerTest {
     private WebTestClient webClient;
     @Test
     void apiGetProjects_BadUser() throws Exception {
-        webClient.get().uri("/projects/123")
+        webClient.get().uri("/projects")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiSm9obiBEb2UiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjM5MDIyfQ.VvqE9VXHDpg3ZLHyemjkqlHHqFvPOUWi6O_kPFQ9bcU")
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
                 .jsonPath("$.status").isEqualTo("400")
-                .jsonPath("$.error").isEqualTo("Wrong request parameter")
+                .jsonPath("$.error").isEqualTo("Invalid UUID in JWT subject: 123")
                 .jsonPath("$.timestamp").exists()
-                .jsonPath("$.path").isEqualTo("/projects/123");
+                .jsonPath("$.path").isEqualTo("/projects");
     }
 
     @Test
     void apiGetProjects_NoSuchUser(@Autowired WebTestClient webClient) throws Exception {
-        webClient.get().uri("/projects/267b4f92-09d5-4273-8209-ad337c0")
+        webClient.get().uri("/projects")
+                .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNjdiNGY5Mi0wOWQ1LTQyNzMtODIwOS1hZDMzN2MwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.f9EVD9L2-g-7LJzJ6HFsC958LmMpxYHlkb82YndmG0Y")
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
                 .jsonPath("$.status").isEqualTo("400")
-                .jsonPath("$.error").isEqualTo("User not found")
+                .jsonPath("$.error").isEqualTo("User not found: 267b4f92-09d5-4273-8209-00000ad337c0")
                 .jsonPath("$.timestamp").exists()
-                .jsonPath("$.path").isEqualTo("/projects/267b4f92-09d5-4273-8209-ad337c0");
+                .jsonPath("$.path").isEqualTo("/projects");
+    }
+
+    @Test
+    void apiGetProjects_NoToken(@Autowired WebTestClient webClient) throws Exception {
+        webClient.get().uri("/projects")
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo("400")
+                .jsonPath("$.error").isEqualTo("Unsupported principal type: class java.lang.String")
+                .jsonPath("$.timestamp").exists()
+                .jsonPath("$.path").isEqualTo("/projects");
     }
 }

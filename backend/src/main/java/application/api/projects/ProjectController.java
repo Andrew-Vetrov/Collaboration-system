@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,19 +28,17 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    @PostMapping("/projects/{userId}")
+    @PostMapping("/projects")
     public ProjectBasicDto createProject(
-            @Valid @RequestBody CreateProjectRequest request,
-            @PathVariable String userId) {
-        UUID userUuid = UUID.fromString(userId);
+            @Valid @RequestBody CreateProjectRequest request) {
+        UUID userUuid = getCurrentUserId();
         Project project = projectService.createProject(request, userUuid);
         return projectService.convertToBasicDto(project);
     }
 
-    @GetMapping("/projects/{userId}")
-    public List<ProjectBasicDto> getUserProjects(
-            @PathVariable String userId) {
-        UUID userUuid = UUID.fromString(userId);
+    @GetMapping("/projects")
+    public List<ProjectBasicDto> getUserProjects() {
+        UUID userUuid = getCurrentUserId();
         List<Project> projects = projectService.getUserProjects(userUuid);
 
         return projects.stream()
@@ -45,12 +46,34 @@ public class ProjectController {
                 .toList();
     }
 
+    private UUID getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new NoUserException("User not authenticated");
+        }
+        // Если в principal положили UUID
+        Object principal = auth.getPrincipal();
+
+        // Случай oauth2ResourceServer с JWT
+        if (principal instanceof Jwt jwt) {
+            String userIdStr = jwt.getSubject(); // или jwt.getClaim("sub")
+            try {
+                return UUID.fromString(userIdStr);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid UUID in JWT subject: " + userIdStr);
+            }
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported principal type: " + principal.getClass());
+        }
+    }
+
     @ExceptionHandler(NoUserException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse noUserHandler(NoUserException e, HttpServletRequest request) {
         log.warn(e.getMessage());
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                "User not found", request.getRequestURI());
+                e.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -58,6 +81,6 @@ public class ProjectController {
     public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
         log.warn(e.getMessage());
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                "Wrong request parameter", request.getRequestURI());
+                e.getMessage(), request.getRequestURI());
     }
 }
