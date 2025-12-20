@@ -39,10 +39,10 @@ public class ProjectControllerTest {
     void apiGetProjects_NoToken(@Autowired WebTestClient webClient) throws Exception {
         webClient.get().uri("/projects")
                 .exchange()
-                .expectStatus().isBadRequest()
+                .expectStatus().isUnauthorized()
                 .expectBody()
-                .jsonPath("$.status").isEqualTo("400")
-                .jsonPath("$.error").isEqualTo("Unsupported principal type: class java.lang.String")
+                .jsonPath("$.status").isEqualTo("401")
+                .jsonPath("$.error").isEqualTo("User not authenticated")
                 .jsonPath("$.timestamp").exists()
                 .jsonPath("$.path").isEqualTo("/projects");
     }

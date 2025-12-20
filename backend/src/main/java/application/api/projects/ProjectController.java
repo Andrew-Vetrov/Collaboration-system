@@ -6,6 +6,7 @@ import application.dtos.CreateProjectRequest;
 import application.dtos.ErrorResponse;
 import application.dtos.ProjectBasicDto;
 import application.exceptions.NoUserException;
+import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -30,14 +32,14 @@ public class ProjectController {
 
     @PostMapping("/projects")
     public ProjectBasicDto createProject(
-            @Valid @RequestBody CreateProjectRequest request) {
+            @Valid @RequestBody CreateProjectRequest request) throws AuthException {
         UUID userUuid = getCurrentUserId();
         Project project = projectService.createProject(request, userUuid);
         return projectService.convertToBasicDto(project);
     }
 
     @GetMapping("/projects")
-    public List<ProjectBasicDto> getUserProjects() {
+    public List<ProjectBasicDto> getUserProjects() throws AuthException {
         UUID userUuid = getCurrentUserId();
         List<Project> projects = projectService.getUserProjects(userUuid);
 
@@ -46,17 +48,16 @@ public class ProjectController {
                 .toList();
     }
 
-    private UUID getCurrentUserId() {
+    private UUID getCurrentUserId() throws AuthException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new NoUserException("User not authenticated");
+        if (auth == null || !auth.isAuthenticated()|| "anonymousUser".equals(auth.getPrincipal())) {
+            throw new AuthException("User not authenticated");
         }
-        // Если в principal положили UUID
+        
         Object principal = auth.getPrincipal();
 
-        // Случай oauth2ResourceServer с JWT
         if (principal instanceof Jwt jwt) {
-            String userIdStr = jwt.getSubject(); // или jwt.getClaim("sub")
+            String userIdStr = jwt.getSubject();
             try {
                 return UUID.fromString(userIdStr);
             } catch (IllegalArgumentException e) {
@@ -83,4 +84,13 @@ public class ProjectController {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                 e.getMessage(), request.getRequestURI());
     }
+
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(), request.getRequestURI());
+    }
+
 }

@@ -13,10 +13,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${jwt.secret}") // Или используйте RSA keys для большей безопасности
+    @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration-ms:3600000}") // 1 час по умолчанию
+    @Value("${jwt.expiration-ms:3600000}")
     private long expirationMs;
 
     public String generateToken(UUID userId) {
