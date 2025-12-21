@@ -8,7 +8,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 public class ProjectBasicDto {
-    private final UUID projectId;
+    private final UUID project_id;
     private final String name;
     private final String description;
 }
