@@ -42,7 +42,7 @@ public class ProjectController {
     public List<ProjectBasicDto> getUserProjects() throws AuthException {
         UUID userUuid = getCurrentUserId();
         List<Project> projects = projectService.getUserProjects(userUuid);
-
+        log.info("Found " + projects.size() + " projects for " + userUuid);
         return projects.stream()
                 .map(projectService::convertToBasicDto)
                 .toList();
@@ -59,7 +59,9 @@ public class ProjectController {
         if (principal instanceof Jwt jwt) {
             String userIdStr = jwt.getSubject();
             try {
-                return UUID.fromString(userIdStr);
+                UUID ret = UUID.fromString(userIdStr);
+                log.info("Found user with id " + ret);
+                return ret;
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid UUID in JWT subject: " + userIdStr);
             }
