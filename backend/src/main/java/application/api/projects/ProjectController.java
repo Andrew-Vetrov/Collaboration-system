@@ -2,9 +2,7 @@ package application.api.projects;
 
 import application.database.entities.Project;
 import application.database.services.ProjectService;
-import application.dtos.CreateProjectRequest;
-import application.dtos.ErrorResponse;
-import application.dtos.ProjectBasicDto;
+import application.dtos.*;
 import application.exceptions.NoUserException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,21 +29,22 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping("/projects")
-    public ProjectBasicDto createProject(
+    public PostProjectResponse createProject(
             @Valid @RequestBody CreateProjectRequest request) throws AuthException {
         UUID userUuid = getCurrentUserId();
         Project project = projectService.createProject(request, userUuid);
-        return projectService.convertToBasicDto(project);
+        return new PostProjectResponse(projectService.convertToBasicDto(project));
     }
 
     @GetMapping("/projects")
-    public List<ProjectBasicDto> getUserProjects() throws AuthException {
+    public GetProjectResponse getUserProjects() throws AuthException {
         UUID userUuid = getCurrentUserId();
         List<Project> projects = projectService.getUserProjects(userUuid);
         log.info("Found " + projects.size() + " projects for " + userUuid);
-        return projects.stream()
+        List<ProjectBasicDto> dtos = projects.stream()
                 .map(projectService::convertToBasicDto)
                 .toList();
+        return new GetProjectResponse(dtos);
     }
 
     private UUID getCurrentUserId() throws AuthException {
