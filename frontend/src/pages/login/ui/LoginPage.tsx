@@ -9,7 +9,7 @@ import {
 
 export const LoginPage = () => {
   const handleAuthClick = () => {
-    window.location.href = 'http://localhost:8000/auth';
+    window.location.href = 'http://localhost:8080/auth';
   };
 
   return (
