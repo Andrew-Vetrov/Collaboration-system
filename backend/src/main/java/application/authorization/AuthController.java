@@ -47,6 +47,7 @@ public class AuthController {
 
         String myJwt = jwtService.generateToken(userUuid);
 
+        log.info("JWT generated with UUID:" + userUuid);
         return "redirect:" + frontendUrl + "/auth/success?token=" + encode(myJwt);
     }
 

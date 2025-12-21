@@ -11,9 +11,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class SecurityConfig {
+
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -21,32 +23,37 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Важно: НЕ устанавливаем STATELESS глобально!
+                // Spring сам создаст сессию только на время oauth2Login, а потом её можно игнорировать
+                // .sessionManagement(...) — убираем полностью!
 
                 .authorizeHttpRequests(auth -> auth
+                        // Все пути OAuth2 login flow — открыты
                         .requestMatchers(
                                 "/auth", "/auth/**",
-                                "/login/**",
-                                "/oauth2/**",
-                                "/error", "/"
+                                "/login/**", "/oauth2/**",
+                                "/error", "/", "/favicon.ico"
                         ).permitAll()
 
                         // Ваши REST API требуют JWT
                         .requestMatchers("/projects", "/projects/**").authenticated()
 
-                        // Всё остальное — на ваше усмотрение
+                        // Всё остальное — по желанию
                         .anyRequest().authenticated()
                 )
 
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/auth")  // опционально, если хотите кастомную страницу
+                        .loginPage("/auth")
                         .defaultSuccessUrl("/auth/success", true)
                 )
 
+
                 .oauth2ResourceServer(resourceServer ->
-                        resourceServer.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(myConverter())
-                        )
+                        resourceServer
+                                .jwt(jwt ->
+                                        jwt.jwtAuthenticationConverter(myConverter())
+                                )
                 );
 
         return http.build();
@@ -58,9 +65,10 @@ public class SecurityConfig {
         converter.setPrincipalClaimName("sub");
         return converter;
     }
+
     @Bean
     public JwtDecoder jwtDecoder() {
-        byte[] keyBytes = jwtSecret.getBytes();
+        byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         SecretKeySpec key = new SecretKeySpec(keyBytes, "HmacSHA256");
         return NimbusJwtDecoder.withSecretKey(key).build();
     }

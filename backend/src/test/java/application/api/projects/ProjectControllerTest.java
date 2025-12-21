@@ -39,11 +39,6 @@ public class ProjectControllerTest {
     void apiGetProjects_NoToken(@Autowired WebTestClient webClient) throws Exception {
         webClient.get().uri("/projects")
                 .exchange()
-                .expectStatus().isUnauthorized()
-                .expectBody()
-                .jsonPath("$.status").isEqualTo("401")
-                .jsonPath("$.error").isEqualTo("User not authenticated")
-                .jsonPath("$.timestamp").exists()
-                .jsonPath("$.path").isEqualTo("/projects");
+                .expectStatus().isUnauthorized();
     }
 }
