@@ -21,7 +21,7 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
   }
 
   if (error) {
-    return <div>Ошибка загрузки проектов</div>;
+    return <div>Ошибка загрузки предложений</div>;
   }
   return (
     <div className="flex flex-col items-center w-screen">

@@ -3,31 +3,31 @@ import { Plus } from 'lucide-react';
 import { CreateProjectDialog } from './CreateProjectDialog';
 import React, { type JSX } from 'react';
 import { Button } from '@/shared/ui';
-import { Header } from '@/widgets/header';
 
 const ProjectsPage = (): JSX.Element => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <>
-      <Header />
-      <main className="relative min-h-screen px-4 py-6 flex justify-center items-start">
-        <div className="absolute left-4 top-6">
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-10"
-            onClick={() => setIsOpen(true)}
-          >
-            <Plus className="size-10 rounded-md " />
-          </Button>
+    <main className="relative min-h-screen flex flex-col">
+      <div className="flex-1 flex items-start justify-center py-4">
+        <div className="w-full max-w-5xl flex items-start justify-between gap-8 px-4">
+          <div className="shrink-0">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-10"
+              onClick={() => setIsOpen(true)}
+            >
+              <Plus className="size-10 rounded-md " />
+            </Button>
+          </div>
+
+          <ProjectList />
+          <div className="shrink-0 w-12" />
         </div>
-
-        <ProjectList />
-
-        <CreateProjectDialog isOpen={isOpen} setIsOpen={setIsOpen} />
-      </main>
-    </>
+      </div>
+      <CreateProjectDialog isOpen={isOpen} setIsOpen={setIsOpen} />
+    </main>
   );
 };
 
