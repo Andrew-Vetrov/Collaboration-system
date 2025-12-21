@@ -4,6 +4,7 @@ import application.database.services.UserService;
 import application.security.JwtService;
 import application.database.entities.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     @Value("${app.frontend.url}")
@@ -33,6 +35,10 @@ public class AuthController {
 
     @GetMapping("/auth/success")
     public String authSuccess(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null || principal.getAttribute("email") == null) {
+            log.error("OAuth2 principal is null or missing email");
+        }
+
         String email = principal.getAttribute("email");
 
         //Взаимодействуем с бд

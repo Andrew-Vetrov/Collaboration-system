@@ -24,17 +24,28 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/", "/projects").permitAll() // /projects теперь без userId
+                        .requestMatchers(
+                                "/auth", "/auth/**",
+                                "/login/**",
+                                "/oauth2/**",
+                                "/error", "/"
+                        ).permitAll()
+
+                        // Ваши REST API требуют JWT
+                        .requestMatchers("/projects", "/projects/**").authenticated()
+
+                        // Всё остальное — на ваше усмотрение
                         .anyRequest().authenticated()
                 )
 
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/auth")  // опционально, если хотите кастомную страницу
                         .defaultSuccessUrl("/auth/success", true)
                 )
 
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(myConverter()) // Для извлечения UUID из sub
+                .oauth2ResourceServer(resourceServer ->
+                        resourceServer.jwt(jwt ->
+                                jwt.jwtAuthenticationConverter(myConverter())
                         )
                 );
 
