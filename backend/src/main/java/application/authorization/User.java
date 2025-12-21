@@ -1,4 +1,4 @@
-package authorization;
+package application.authorization;
 
 import lombok.Getter;
 import lombok.Setter;

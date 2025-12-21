@@ -6,7 +6,7 @@ import {
 } from './generated';
 
 const config = new Configuration({
-  basePath: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  basePath: import.meta.env.VITE_API_URL || 'http://localhost:8080',
   accessToken: () => localStorage.getItem('jwt') ?? '',
 });
 

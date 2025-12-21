@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:15.2-alpine
+    image: postgres:17.6
     container_name: postgres_db
     environment:
       POSTGRES_DB: colaboration_system_db

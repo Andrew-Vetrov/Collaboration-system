@@ -1,5 +1,10 @@
-package authorization;
+package application.authorization;
 
+import application.database.services.UserService;
+import application.security.JwtService;
+import application.database.entities.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -9,17 +14,19 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.UUID;
+
 @Controller
+@RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
+    private final JwtService jwtService;
+    private final UserService userService;
     private final OAuth2AuthorizedClientService authorizedClientService;
-
-    public AuthController(OAuth2AuthorizedClientService authorizedClientService) {
-        this.authorizedClientService = authorizedClientService;
-    }
 
     @GetMapping("/auth")
     public String auth() {
@@ -27,29 +34,21 @@ public class AuthController {
     }
 
     @GetMapping("/auth/success")
-    public String authSuccess(OAuth2AuthenticationToken authentication,
-                              @AuthenticationPrincipal OAuth2User principal) {
-
-        String accessToken = getAccessToken(authentication);
-
-        return "redirect:" + frontendUrl + "/auth/success?token=" + encode(accessToken);
-    }
-
-    private String getAccessToken(OAuth2AuthenticationToken authentication) {
-        if (authentication == null) {
-            return null;
+    public String authSuccess(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null || principal.getAttribute("email") == null) {
+            log.error("OAuth2 principal is null or missing email");
         }
 
-        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
-                authentication.getAuthorizedClientRegistrationId(),
-                authentication.getName()
-        );
+        String email = principal.getAttribute("email");
 
-        if (client != null && client.getAccessToken() != null) {
-            return client.getAccessToken().getTokenValue();
-        }
+        //Взаимодействуем с бд
+        User user = userService.findOrCreateByEmail(email);
+        UUID userUuid = user.getId();
 
-        return null;
+        String myJwt = jwtService.generateToken(userUuid);
+
+        log.info("JWT generated with UUID:" + userUuid);
+        return "redirect:" + frontendUrl + "/auth/success?token=" + encode(myJwt);
     }
 
     private String encode(String value) {
