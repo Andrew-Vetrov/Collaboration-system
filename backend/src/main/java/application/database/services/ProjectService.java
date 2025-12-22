@@ -2,7 +2,7 @@ package application.database.services;
 
 import application.database.repositories.UserRepository;
 import application.exceptions.NoUserException;
-import application.dtos.CreateProjectRequest;
+import application.dtos.requests.CreateProjectRequest;
 import application.dtos.ProjectBasicDto;
 import application.database.entities.Project;
 import application.database.entities.ProjectRights;

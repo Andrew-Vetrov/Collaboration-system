@@ -1,6 +1,7 @@
-package application.dtos;
+package application.dtos.responses;
 
 
+import application.dtos.ProjectBasicDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
