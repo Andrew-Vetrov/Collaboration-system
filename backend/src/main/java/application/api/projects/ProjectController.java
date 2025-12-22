@@ -4,11 +4,13 @@ import application.database.entities.Project;
 import application.database.services.ProjectService;
 import application.dtos.*;
 import application.exceptions.NoUserException;
+import application.security.JwtService;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -26,48 +28,26 @@ import java.util.UUID;
 @Slf4j
 public class ProjectController {
 
+    private final JwtService jwtService;
     private final ProjectService projectService;
 
     @PostMapping("/projects")
     public PostProjectResponse createProject(
             @Valid @RequestBody CreateProjectRequest request) throws AuthException {
-        UUID userUuid = getCurrentUserId();
+        UUID userUuid = jwtService.getCurrentUserId();
         Project project = projectService.createProject(request, userUuid);
         return new PostProjectResponse(projectService.convertToBasicDto(project));
     }
 
     @GetMapping("/projects")
     public GetProjectResponse getUserProjects() throws AuthException {
-        UUID userUuid = getCurrentUserId();
+        UUID userUuid = jwtService.getCurrentUserId();
         List<Project> projects = projectService.getUserProjects(userUuid);
         log.info("Found " + projects.size() + " projects for " + userUuid);
         List<ProjectBasicDto> dtos = projects.stream()
                 .map(projectService::convertToBasicDto)
                 .toList();
         return new GetProjectResponse(dtos);
-    }
-
-    private UUID getCurrentUserId() throws AuthException {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()|| "anonymousUser".equals(auth.getPrincipal())) {
-            throw new AuthException("User not authenticated");
-        }
-        
-        Object principal = auth.getPrincipal();
-
-        if (principal instanceof Jwt jwt) {
-            String userIdStr = jwt.getSubject();
-            try {
-                UUID ret = UUID.fromString(userIdStr);
-                log.info("Found user with id " + ret);
-                return ret;
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid UUID in JWT subject: " + userIdStr);
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Unsupported principal type: " + principal.getClass());
-        }
     }
 
     @ExceptionHandler(NoUserException.class)
