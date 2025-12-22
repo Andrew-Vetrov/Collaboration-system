@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE suggestion_status AS ENUM ('draft', 'new', 'in process', 'accepted', 'declined');
+CREATE TYPE suggestion_status AS ENUM ('draft', 'new', 'discussion', 'planned', 'in_progress', 'accepted', 'rejected');
 
 CREATE TABLE IF NOT EXISTS users
 (

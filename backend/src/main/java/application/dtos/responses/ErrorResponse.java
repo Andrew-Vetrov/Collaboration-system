@@ -1,4 +1,4 @@
-package application.dtos;
+package application.dtos.responses;
 
 import lombok.Getter;
 

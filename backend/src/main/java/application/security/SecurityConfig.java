@@ -23,11 +23,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-
-                // Важно: НЕ устанавливаем STATELESS глобально!
-                // Spring сам создаст сессию только на время oauth2Login, а потом её можно игнорировать
-                // .sessionManagement(...) — убираем полностью!
-
                 .authorizeHttpRequests(auth -> auth
                         // Все пути OAuth2 login flow — открыты
                         .requestMatchers(
@@ -35,11 +30,7 @@ public class SecurityConfig {
                                 "/login/**", "/oauth2/**",
                                 "/error", "/", "/favicon.ico"
                         ).permitAll()
-
-                        // Ваши REST API требуют JWT
                         .requestMatchers("/projects", "/projects/**").authenticated()
-
-                        // Всё остальное — по желанию
                         .anyRequest().authenticated()
                 )
 
