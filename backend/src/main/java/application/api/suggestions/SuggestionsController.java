@@ -4,6 +4,7 @@ import application.database.entities.Project;
 import application.database.entities.Suggestion;
 import application.database.services.ProjectService;
 import application.database.services.SuggestionService;
+import application.dtos.SuggestionDetailDto;
 import application.dtos.SuggestionDto;
 import application.dtos.responses.ErrorResponse;
 import application.dtos.responses.GetProjectSuggestionsResponse;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,6 +58,14 @@ public class SuggestionsController {
         return new GetProjectSuggestionsResponse(dtos);
     }
 
+    @GetMapping("/suggestions/{suggestionId}")
+    public SuggestionDetailDto getSuggestion(
+            @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
+
+        UUID userUuid = jwtService.getCurrentUserId();
+
+        return suggestionService.getSuggestionDetail(suggestionId, userUuid);
+    }
 
 
     @ExceptionHandler(NoUserException.class)
@@ -79,6 +89,14 @@ public class SuggestionsController {
     public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
         log.warn(e.getMessage());
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
+                e.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse accessDeniedHandler(AccessDeniedException e, HttpServletRequest request) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(HttpStatus.FORBIDDEN.value(),
                 e.getMessage(), request.getRequestURI());
     }
 
