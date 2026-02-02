@@ -43,11 +43,10 @@
 
 :root {
   --radius: 0.6rem;
-  --background: oklch(0.3242 0.006 258.35);
-  --background_button: oklch(0.28 0.006 258.35);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0.2816 0.006 258.35);
-  --card-foreground: oklch(1 0 0);
+  --background: white;
+  --foreground: black;
+  --card: #f0f0f0;
+  --card-foreground: black;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
