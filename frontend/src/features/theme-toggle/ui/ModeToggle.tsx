@@ -1,13 +1,13 @@
 import { Button } from '@/shared/ui';
 import { Moon, Sun } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 export function ModeToggle() {
   const [theme, setTheme] = useState<string>(
     () => localStorage.getItem('theme') || 'light'
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
