@@ -9,6 +9,7 @@ docs/Comment.md
 docs/CommentIdReplyPostRequest.md
 docs/CommentsApi.md
 docs/CreateSuggestionRequest.md
+docs/CurrentUser.md
 docs/InvitesApi.md
 docs/Like.md
 docs/ProjectBasic.md

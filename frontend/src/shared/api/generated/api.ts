@@ -40,6 +40,12 @@ export interface CreateSuggestionRequest {
     'description': string;
     'user_id': string;
 }
+export interface CurrentUser {
+    'user_id'?: string;
+    'email'?: string;
+    'nickname'?: string;
+    'avatar_url'?: string;
+}
 export interface Like {
     'like_id'?: string;
     'user_id': string;
@@ -252,6 +258,40 @@ export const AuthorizeApiAxiosParamCreator = function (configuration?: Configura
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Текущий пользователь
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authMeGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/auth/me`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -286,6 +326,18 @@ export const AuthorizeApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['AuthorizeApi.authGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @summary Текущий пользователь
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async authMeGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CurrentUser>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.authMeGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthorizeApi.authMeGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -314,6 +366,15 @@ export const AuthorizeApiFactory = function (configuration?: Configuration, base
         authGet(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.authGet(options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Текущий пользователь
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        authMeGet(options?: RawAxiosRequestConfig): AxiosPromise<CurrentUser> {
+            return localVarFp.authMeGet(options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -340,6 +401,16 @@ export class AuthorizeApi extends BaseAPI {
      */
     public authGet(options?: RawAxiosRequestConfig) {
         return AuthorizeApiFp(this.configuration).authGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Текущий пользователь
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public authMeGet(options?: RawAxiosRequestConfig) {
+        return AuthorizeApiFp(this.configuration).authMeGet(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

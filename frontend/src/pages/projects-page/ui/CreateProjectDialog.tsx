@@ -89,12 +89,7 @@ export const CreateProjectDialog = (
             <DialogClose asChild>
               <Button variant="outline">Отменить</Button>
             </DialogClose>
-            <Button
-              variant="outline"
-              type="submit"
-              className="bg-black"
-              disabled={isPending}
-            >
+            <Button variant="outline" type="submit" disabled={isPending}>
               {isPending ? 'Создание...' : 'Создать проект'}
             </Button>
           </DialogFooter>

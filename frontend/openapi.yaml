@@ -411,6 +411,21 @@ paths:
               schema:
                 type: string
 
+  /auth/me:
+    get:
+      summary: Текущий пользователь
+      tags:
+        - Authorize
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Данные текущего аутентифицированного пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUser'
+
   /auth/callback:
     get:
       summary: Callback после авторизации
@@ -749,6 +764,20 @@ components:
           type: string
           format: uuid
 
+    CurrentUser:
+      type: object
+      properties: 
+        user_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        nickname:
+          type: string
+        avatar_url:
+          type: string
+
     ProjectUser:
       type: object
       properties:
@@ -774,6 +803,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProjectUser'
+
 
     Suggestion:
       type: object

@@ -6,6 +6,7 @@ All URIs are relative to *http://localhost*
 |------------- | ------------- | -------------|
 |[**authCallbackGet**](#authcallbackget) | **GET** /auth/callback | Callback после авторизации|
 |[**authGet**](#authget) | **GET** /auth | Начало авторизации через Google|
+|[**authMeGet**](#authmeget) | **GET** /auth/me | Текущий пользователь|
 
 # **authCallbackGet**
 > authCallbackGet()
@@ -100,6 +101,49 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 |**401** | Редирект на Google OAuth2. |  * Location - URL авторизации Google с параметрами (client_id, redirect_uri, scope, response_type) <br>  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **authMeGet**
+> CurrentUser authMeGet()
+
+
+### Example
+
+```typescript
+import {
+    AuthorizeApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AuthorizeApi(configuration);
+
+const { status, data } = await apiInstance.authMeGet();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**CurrentUser**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Данные текущего аутентифицированного пользователя |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

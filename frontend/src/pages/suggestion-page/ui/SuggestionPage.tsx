@@ -41,7 +41,7 @@ const SuggestionPage = () => {
                 </p>
               </CardContent>
             </Card>
-            <div className="mt-8 w-full mx-auto max-w-xl flex place-items-center gap-4">
+            <div className="mt-8 w-full mx-auto flex place-items-center gap-4">
               <Textarea
                 className="resize-none max-h-40 overflow-auto"
                 placeholder="Оставьте комментарий..."
