@@ -1,16 +1,11 @@
 import type { JSX } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, LogOut } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/shared/ui';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/shared/ui';
+
 import { handleLogout } from '@/features/auth-by-google/';
 import { ModeToggle } from '@/features/theme-toggle';
+import { MainUserMenu } from '@/entities/main-user';
 
 export const Header = (): JSX.Element => {
   const navigate = useNavigate();
@@ -38,23 +33,7 @@ export const Header = (): JSX.Element => {
 
       <ModeToggle />
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-black text-white font-medium hover:bg-zinc-800 transition-colors">
-                T
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => handleLogout(navigate)}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Выйти</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <MainUserMenu handleLogout={() => handleLogout(navigate)} />
     </header>
   );
 };
