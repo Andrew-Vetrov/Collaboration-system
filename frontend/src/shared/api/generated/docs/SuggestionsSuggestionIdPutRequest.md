@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**title** | **string** |  | [optional] [default to undefined]
+**name** | **string** |  | [optional] [default to undefined]
 **description** | **string** |  | [optional] [default to undefined]
 **status** | **string** |  | [optional] [default to undefined]
 
@@ -15,7 +15,7 @@ Name | Type | Description | Notes
 import { SuggestionsSuggestionIdPutRequest } from './api';
 
 const instance: SuggestionsSuggestionIdPutRequest = {
-    title,
+    name,
     description,
     status,
 };

@@ -291,7 +291,7 @@ paths:
                   properties:
                     status:
                       type: string
-                      enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+                      enum: [draft, discussion, accepted, rejected]
       responses:
         '201':
           description: Предложение или черновик создано
@@ -315,7 +315,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+            enum: [draft, discussion, accepted, rejected]
       responses:
         '200':
           description: Список предложений
@@ -353,7 +353,7 @@ paths:
         - BearerAuth: []
       summary: Обновить предложение или черновик
       description: |
-        Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description.
+        Частично обновляет поля предложения. Для черновиков можно менять status=draft или name/description.
         При смене status=draft→new черновик публикуется.
       parameters:
         - $ref: '#/components/parameters/suggestionId'
@@ -364,14 +364,14 @@ paths:
             schema:
               type: object
               properties:
-                title:
+                name:
                   type: string
                   maxLength: 250
                 description:
                   type: string
                 status:
                   type: string
-                  enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+                  enum: [draft, discussion, accepted, rejected]
       responses:
         '200':
           description: Предложение обновлено
@@ -832,13 +832,13 @@ components:
           type: string
         status:
           type: string
-          enum: [draft, new, discussion, planned, in_progress, accepted, rejected]
+          enum: [draft, discussion, accepted, rejected]
       required: [id, user_id, project_id, name, status]
 
     CreateSuggestionRequest:
       type: object
       properties:
-        title:
+        name:
           type: string
           maxLength: 250
         description:
@@ -846,7 +846,7 @@ components:
         user_id:
           type: string
           format: uuid
-      required: [title, description, user_id]
+      required: [name, description, user_id]
 
     Like:
       type: object

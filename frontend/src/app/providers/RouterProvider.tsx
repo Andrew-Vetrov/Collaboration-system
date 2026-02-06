@@ -5,6 +5,7 @@ import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';
 import { AuthRoute } from '@/shared/route';
+import { CreateSuggestionPage } from '@/pages/create-suggestion-page';
 
 const ProjectsPage = lazy(() => import('@/pages/projects-page'));
 const ProjectPage = lazy(() => import('@/pages/project-page'));
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       { path: '/', element: <ProjectsPage /> },
       { path: '/project/:id', element: <ProjectPage /> },
       { path: '/suggestion/:id', element: <SuggestionPage /> },
+      {
+        path: '/project/:id/create-suggestion',
+        element: <CreateSuggestionPage />,
+      },
     ],
   },
   {

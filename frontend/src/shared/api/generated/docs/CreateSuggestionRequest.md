@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**title** | **string** |  | [default to undefined]
+**name** | **string** |  | [default to undefined]
 **description** | **string** |  | [default to undefined]
 **user_id** | **string** |  | [default to undefined]
 
@@ -15,7 +15,7 @@ Name | Type | Description | Notes
 import { CreateSuggestionRequest } from './api';
 
 const instance: CreateSuggestionRequest = {
-    title,
+    name,
     description,
     user_id,
 };

@@ -29,7 +29,7 @@ const configuration = new Configuration();
 const apiInstance = new SuggestionsApi(configuration);
 
 let projectId: string; // (default to undefined)
-let status: 'draft' | 'new' | 'discussion' | 'planned' | 'in_progress' | 'accepted' | 'rejected'; // (optional) (default to undefined)
+let status: 'draft' | 'discussion' | 'accepted' | 'rejected'; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.projectProjectIdSuggestionsGet(
     projectId,
@@ -42,7 +42,7 @@ const { status, data } = await apiInstance.projectProjectIdSuggestionsGet(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **projectId** | [**string**] |  | defaults to undefined|
-| **status** | [**&#39;draft&#39; | &#39;new&#39; | &#39;discussion&#39; | &#39;planned&#39; | &#39;in_progress&#39; | &#39;accepted&#39; | &#39;rejected&#39;**]**Array<&#39;draft&#39; &#124; &#39;new&#39; &#124; &#39;discussion&#39; &#124; &#39;planned&#39; &#124; &#39;in_progress&#39; &#124; &#39;accepted&#39; &#124; &#39;rejected&#39;>** |  | (optional) defaults to undefined|
+| **status** | [**&#39;draft&#39; | &#39;discussion&#39; | &#39;accepted&#39; | &#39;rejected&#39;**]**Array<&#39;draft&#39; &#124; &#39;discussion&#39; &#124; &#39;accepted&#39; &#124; &#39;rejected&#39;>** |  | (optional) defaults to undefined|
 
 
 ### Return type
@@ -328,7 +328,7 @@ void (empty response body)
 # **suggestionsSuggestionIdPut**
 > Suggestion suggestionsSuggestionIdPut(suggestionsSuggestionIdPutRequest)
 
-Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description. При смене status=draft→new черновик публикуется. 
+Частично обновляет поля предложения. Для черновиков можно менять status=draft или name/description. При смене status=draft→new черновик публикуется. 
 
 ### Example
 
