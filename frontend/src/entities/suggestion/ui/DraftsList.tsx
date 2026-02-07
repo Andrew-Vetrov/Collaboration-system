@@ -22,17 +22,18 @@ export function DraftsList({ clickSuggestion }: DraftsListProps) {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       {suggestions
         .filter(s => s.status === 'draft')
         .map(suggestion => (
           <div
             key={suggestion.suggestion_id}
             onClick={() => clickSuggestion(suggestion)}
+            className="cursor-pointer hover:bg-accent hover:text-accent-foreground border p-3 transition outline rounded-xl text-left w-full "
           >
             {suggestion.name}
           </div>
         ))}
-    </>
+    </div>
   );
 }
