@@ -12,7 +12,6 @@ export function useSuggestionCreate(project_id: string) {
     mutationFn: async (
       data: ProjectProjectIdSuggestionsPostRequest
     ): Promise<Suggestion> => {
-      console.log('create suggestion');
       const response = await suggestionsApi.projectProjectIdSuggestionsPost(
         project_id,
         data

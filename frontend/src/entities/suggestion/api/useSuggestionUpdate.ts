@@ -11,7 +11,6 @@ export function useSuggestionUpdate(project_id: string, suggestionId: string) {
     mutationFn: async (
       data: SuggestionsSuggestionIdPutRequest
     ): Promise<Suggestion> => {
-      console.log('handleSuggestionUpdate');
       const response = await suggestionsApi.suggestionsSuggestionIdPut(
         suggestionId,
         data

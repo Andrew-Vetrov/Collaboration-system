@@ -7,7 +7,6 @@ export function useSuggestionDelete(project_id: string, suggestionId: string) {
 
   return useMutation({
     mutationFn: async () => {
-      console.log('handleSuggestionDelete');
       await suggestionsApi.suggestionsSuggestionIdDelete(suggestionId);
     },
     onSuccess: () => {
