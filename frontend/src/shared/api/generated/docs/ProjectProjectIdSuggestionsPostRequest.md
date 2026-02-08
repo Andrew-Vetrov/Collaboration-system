@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**title** | **string** |  | [default to undefined]
+**name** | **string** |  | [default to undefined]
 **description** | **string** |  | [default to undefined]
 **user_id** | **string** |  | [default to undefined]
 **status** | **string** |  | [optional] [default to undefined]
@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 import { ProjectProjectIdSuggestionsPostRequest } from './api';
 
 const instance: ProjectProjectIdSuggestionsPostRequest = {
-    title,
+    name,
     description,
     user_id,
     status,

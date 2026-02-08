@@ -36,7 +36,7 @@ export interface CommentIdReplyPostRequest {
     'text': string;
 }
 export interface CreateSuggestionRequest {
-    'title': string;
+    'name': string;
     'description': string;
     'user_id': string;
 }
@@ -61,7 +61,7 @@ export interface ProjectProjectIdSuggestionsGet200Response {
     'data'?: Array<Suggestion>;
 }
 export interface ProjectProjectIdSuggestionsPostRequest {
-    'title': string;
+    'name': string;
     'description': string;
     'user_id': string;
     'status'?: ProjectProjectIdSuggestionsPostRequestStatusEnum;
@@ -69,10 +69,7 @@ export interface ProjectProjectIdSuggestionsPostRequest {
 
 export const ProjectProjectIdSuggestionsPostRequestStatusEnum = {
     Draft: 'draft',
-    New: 'new',
     Discussion: 'discussion',
-    Planned: 'planned',
-    InProgress: 'in_progress',
     Accepted: 'accepted',
     Rejected: 'rejected'
 } as const;
@@ -154,10 +151,7 @@ export interface Suggestion {
 
 export const SuggestionStatusEnum = {
     Draft: 'draft',
-    New: 'new',
     Discussion: 'discussion',
-    Planned: 'planned',
-    InProgress: 'in_progress',
     Accepted: 'accepted',
     Rejected: 'rejected'
 } as const;
@@ -168,17 +162,14 @@ export interface SuggestionsSuggestionIdCommentsPostRequest {
     'text': string;
 }
 export interface SuggestionsSuggestionIdPutRequest {
-    'title'?: string;
+    'name'?: string;
     'description'?: string;
     'status'?: SuggestionsSuggestionIdPutRequestStatusEnum;
 }
 
 export const SuggestionsSuggestionIdPutRequestStatusEnum = {
     Draft: 'draft',
-    New: 'new',
     Discussion: 'discussion',
-    Planned: 'planned',
-    InProgress: 'in_progress',
     Accepted: 'accepted',
     Rejected: 'rejected'
 } as const;
@@ -1824,7 +1815,7 @@ export const SuggestionsApiAxiosParamCreator = function (configuration?: Configu
             };
         },
         /**
-         * Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description. При смене status=draft→new черновик публикуется. 
+         * Частично обновляет поля предложения. Для черновиков можно менять status=draft или name/description. При смене status=draft→new черновик публикуется. 
          * @summary Обновить предложение или черновик
          * @param {string} suggestionId 
          * @param {SuggestionsSuggestionIdPutRequest} suggestionsSuggestionIdPutRequest 
@@ -1957,7 +1948,7 @@ export const SuggestionsApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description. При смене status=draft→new черновик публикуется. 
+         * Частично обновляет поля предложения. Для черновиков можно менять status=draft или name/description. При смене status=draft→new черновик публикуется. 
          * @summary Обновить предложение или черновик
          * @param {string} suggestionId 
          * @param {SuggestionsSuggestionIdPutRequest} suggestionsSuggestionIdPutRequest 
@@ -2042,7 +2033,7 @@ export const SuggestionsApiFactory = function (configuration?: Configuration, ba
             return localVarFp.suggestionsSuggestionIdLikesPost(suggestionId, options).then((request) => request(axios, basePath));
         },
         /**
-         * Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description. При смене status=draft→new черновик публикуется. 
+         * Частично обновляет поля предложения. Для черновиков можно менять status=draft или name/description. При смене status=draft→new черновик публикуется. 
          * @summary Обновить предложение или черновик
          * @param {string} suggestionId 
          * @param {SuggestionsSuggestionIdPutRequest} suggestionsSuggestionIdPutRequest 
@@ -2128,7 +2119,7 @@ export class SuggestionsApi extends BaseAPI {
     }
 
     /**
-     * Частично обновляет поля предложения. Для черновиков можно менять status=draft или title/description. При смене status=draft→new черновик публикуется. 
+     * Частично обновляет поля предложения. Для черновиков можно менять status=draft или name/description. При смене status=draft→new черновик публикуется. 
      * @summary Обновить предложение или черновик
      * @param {string} suggestionId 
      * @param {SuggestionsSuggestionIdPutRequest} suggestionsSuggestionIdPutRequest 
@@ -2142,10 +2133,7 @@ export class SuggestionsApi extends BaseAPI {
 
 export const ProjectProjectIdSuggestionsGetStatusEnum = {
     Draft: 'draft',
-    New: 'new',
     Discussion: 'discussion',
-    Planned: 'planned',
-    InProgress: 'in_progress',
     Accepted: 'accepted',
     Rejected: 'rejected'
 } as const;
