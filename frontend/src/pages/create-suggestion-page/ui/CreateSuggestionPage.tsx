@@ -1,4 +1,4 @@
-import { SuggestionEditingFields } from '@/entities/suggestion/ui/SuggesstionEditingFields';
+import { SuggestionEditingFields } from '@/features/suggestion-editing-fields/ui/SuggesstionEditingFields';
 import { useSuggestionDelete } from '@/features/suggestion-delete/api/useSuggestionDelete';
 import { Button } from '@/shared/ui';
 import { useParams, Navigate } from 'react-router-dom';

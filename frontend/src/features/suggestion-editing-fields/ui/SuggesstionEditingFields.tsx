@@ -6,7 +6,11 @@ import type {
   UseFormHandleSubmit,
   UseFormRegister,
 } from 'react-hook-form';
-import type { IFormInput } from '../model/types';
+
+export interface IFormInput {
+  name: string;
+  description: string;
+}
 
 export interface SuggestionEditingFieldsProps {
   register: UseFormRegister<IFormInput>;
