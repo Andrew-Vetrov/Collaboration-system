@@ -1,11 +1,11 @@
 import { SuggestionEditingFields } from '@/entities/suggestion/ui/SuggesstionEditingFields';
-import { useSuggestionUpdate } from '@/entities/suggestion/api/useSuggestionUpdate';
-import { useSuggestionDelete } from '@/entities/suggestion/api/useSuggestionDelete';
+import { useSuggestionDelete } from '@/features/suggestion-delete/api/useSuggestionDelete';
 import { Button } from '@/shared/ui';
 import { useParams, Navigate } from 'react-router-dom';
-import { useCreateSuggestionFeature } from '@/entities/suggestion/model/useCreateSuggestionFeature';
+import { useCreateSuggestionFeature } from '@/features/suggestion-create/model/useCreateSuggestionFeature';
 import { DraftsList } from '@/entities/suggestion/ui/DraftsList';
-import { useEditSuggestionFeature } from '@/entities/suggestion/model/useEditSuggestionFeature';
+import { useEditSuggestionFeature } from '@/pages/create-suggestion-page/model/useEditSuggestionFeature';
+import { useSuggestionUpdate } from '@/features/suggestion-update/api/useSuggestionUpdate';
 
 export function CreateSuggestionPage() {
   const { id } = useParams<{ id: string }>();

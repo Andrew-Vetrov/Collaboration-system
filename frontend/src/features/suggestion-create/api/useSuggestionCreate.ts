@@ -1,18 +1,19 @@
 import { suggestionsApi } from '@/shared/api';
-import type { SuggestionsSuggestionIdPutRequest } from '@/shared/api/generated';
-import type { Suggestion } from '../model/types';
+import type {
+  ProjectProjectIdSuggestionsPostRequest,
+  Suggestion,
+} from '@/shared/api/generated';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getSuggestionsQueryKey } from '../lib/getSuggestionsQueryKey';
+import { getSuggestionsQueryKey } from '@/entities/suggestion/lib/getSuggestionsQueryKey';
 
-export function useSuggestionUpdate(project_id: string, suggestionId: string) {
+export function useSuggestionCreate(project_id: string) {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async (
-      data: SuggestionsSuggestionIdPutRequest
+      data: ProjectProjectIdSuggestionsPostRequest
     ): Promise<Suggestion> => {
-      const response = await suggestionsApi.suggestionsSuggestionIdPut(
-        suggestionId,
+      const response = await suggestionsApi.projectProjectIdSuggestionsPost(
+        project_id,
         data
       );
       return response.data;

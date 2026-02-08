@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSuggestionCreate } from '@/entities/suggestion/api/useSuggestionCreate';
+import { useSuggestionCreate } from '@/features/suggestion-create/api/useSuggestionCreate';
 import type { Suggestion } from '@/entities/suggestion';
 import { useAuthMe } from '@/entities/main-user/api/useAuthMe';
 

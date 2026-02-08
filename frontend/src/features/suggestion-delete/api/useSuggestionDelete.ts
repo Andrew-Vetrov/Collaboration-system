@@ -1,6 +1,6 @@
 import { suggestionsApi } from '@/shared/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { getSuggestionsQueryKey } from '../lib/getSuggestionsQueryKey';
+import { getSuggestionsQueryKey } from '@/entities/suggestion/lib/getSuggestionsQueryKey';
 
 export function useSuggestionDelete(project_id: string, suggestionId: string) {
   const queryClient = useQueryClient();
