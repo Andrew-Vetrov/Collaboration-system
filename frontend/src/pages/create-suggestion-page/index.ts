@@ -1,1 +1,1 @@
-export { CreateSuggestionPage } from './ui/CreateSuggestionPage';
+export { default } from './ui/CreateSuggestionPage';

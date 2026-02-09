@@ -5,11 +5,15 @@ import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';
 import { AuthRoute } from '@/shared/route';
-import { CreateSuggestionPage } from '@/pages/create-suggestion-page';
+import { AppLayout } from '../layouts/app-layout/AppLayout';
+import { ProjectLayout } from '../layouts/project-layout/ProjectLayout';
 
 const ProjectsPage = lazy(() => import('@/pages/projects-page'));
 const ProjectPage = lazy(() => import('@/pages/project-page'));
 const SuggestionPage = lazy(() => import('@/pages/suggestion-page'));
+const CreateSuggestionPage = lazy(
+  () => import('@/pages/create-suggestion-page')
+);
 
 const router = createBrowserRouter([
   {
@@ -22,12 +26,29 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
-      { path: '/', element: <ProjectsPage /> },
-      { path: '/project/:id', element: <ProjectPage /> },
-      { path: '/suggestion/:id', element: <SuggestionPage /> },
       {
-        path: '/project/:id/create-suggestion',
-        element: <CreateSuggestionPage />,
+        element: <AppLayout />,
+        children: [
+          { path: '/', element: <ProjectsPage /> },
+
+          {
+            path: '/project/:projectId',
+            element: <ProjectLayout />,
+            children: [
+              { index: true, element: <ProjectPage /> },
+
+              {
+                path: 'suggestions/:suggestionId',
+                element: <SuggestionPage />,
+              },
+
+              {
+                path: 'create-suggestion',
+                element: <CreateSuggestionPage />,
+              },
+            ],
+          },
+        ],
       },
     ],
   },

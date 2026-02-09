@@ -1,19 +1,32 @@
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { useSuggestion } from '@/entities/suggestion';
 import { Button, Card, CardContent, Textarea } from '@/shared/ui';
 import { STATUS_LABELS } from '@/entities/suggestion/lib/status';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
 const SuggestionPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { projectId, suggestionId } = useParams<{
+    projectId: string;
+    suggestionId: string;
+  }>();
 
-  const { data: suggestion, isLoading, isError } = useSuggestion(id);
+  if (!projectId || !suggestionId) {
+    return <Navigate to="/not-found" replace />;
+  }
+
+  const { data: suggestion, isLoading, isError } = useSuggestion(suggestionId);
 
   if (isLoading) {
     return <div className="p-8 text-center">Загрузка...</div>;
   }
 
-  if (isError || suggestion === undefined || suggestion === null) {
+  if (
+    isError ||
+    suggestion === undefined ||
+    suggestion === null ||
+    (!isLoading &&
+      (suggestion.project_id !== projectId || suggestion.status === 'draft'))
+  ) {
     return (
       <div className="p-8 text-center">
         <h1 className="text-2xl font-bold mb-2">Предложение не найдено</h1>

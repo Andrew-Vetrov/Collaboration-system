@@ -1,3 +1,4 @@
+import { routes } from '@/shared/route';
 import type { NavigateFunction } from 'react-router-dom';
 
 export const handleGoogleCallback = (
@@ -10,8 +11,8 @@ export const handleGoogleCallback = (
   if (token) {
     localStorage.setItem('jwt', token);
 
-    navigate('/', { replace: true });
+    navigate(routes.projectsRoute(), { replace: true });
   } else {
-    navigate('/auth', { replace: true });
+    navigate(routes.authRoute(), { replace: true });
   }
 };

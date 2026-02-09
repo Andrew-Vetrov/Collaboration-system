@@ -1,3 +1,4 @@
+import { routes } from '@/shared/route';
 import type { NavigateFunction } from 'react-router-dom';
 
 export const handleLogout = (navigate: NavigateFunction): void => {
@@ -5,5 +6,5 @@ export const handleLogout = (navigate: NavigateFunction): void => {
     return;
   }
   localStorage.removeItem('jwt');
-  navigate('/auth', { replace: true });
+  navigate(routes.authRoute(), { replace: true });
 };

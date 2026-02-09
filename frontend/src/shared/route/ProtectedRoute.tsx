@@ -1,4 +1,3 @@
-import { Header } from '@/widgets/header';
 import { Navigate, Outlet } from 'react-router-dom';
 
 export const ProtectedRoute = () => {
@@ -9,7 +8,6 @@ export const ProtectedRoute = () => {
 
   return (
     <>
-      <Header />
       <Outlet />
     </>
   );

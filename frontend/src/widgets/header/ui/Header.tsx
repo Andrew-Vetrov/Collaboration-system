@@ -6,12 +6,13 @@ import { Button } from '@/shared/ui';
 import { handleLogout } from '@/features/auth-by-google/';
 import { ModeToggle } from '@/features/theme-toggle';
 import { MainUserMenu } from '@/entities/main-user';
+import { routes } from '@/shared/route';
 
 export const Header = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const hideBackOn = ['/'];
+  const hideBackOn = [routes.projectsRoute()];
 
   const showBackButton = !hideBackOn.includes(location.pathname);
 
@@ -19,7 +20,7 @@ export const Header = (): JSX.Element => {
     if (location.key !== 'default') {
       navigate(-1);
     } else {
-      navigate('/', { replace: true });
+      navigate(routes.projectsRoute(), { replace: true });
     }
   };
 

@@ -4,6 +4,7 @@ import { Card, CardDescription, CardTitle } from '@/shared/ui';
 import { STATUS_LABELS } from '../lib/status';
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { routes } from '@/shared/route';
 
 interface SuggestionsListProps {
   projectId: string;
@@ -36,7 +37,10 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
             >
               <Link
                 className="flex justify-between"
-                to={'/suggestion/' + suggestion.suggestion_id}
+                to={routes.suggestionRoute(
+                  props.projectId,
+                  suggestion.suggestion_id || ''
+                )}
               >
                 <div className="flex-1 items-start min-w-0 gap-6 mb-4">
                   <CardTitle className="text-lg font-semibold line-clamp-2 mb-2">
