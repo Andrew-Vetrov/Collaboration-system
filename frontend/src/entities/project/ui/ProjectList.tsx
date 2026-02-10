@@ -17,7 +17,7 @@ export const ProjectList: FC = () => {
         {projects.map(project => (
           <Link
             key={project.project_id}
-            to={routes.projectRoute(project.project_id || '')}
+            to={routes.projectRoute(project.project_id)}
             className="block"
           >
             <Card className="hover:shadow-md transition-shadow text-center w-full h-full">

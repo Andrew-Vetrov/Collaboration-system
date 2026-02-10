@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**project_id** | **string** |  | [optional] [default to undefined]
-**name** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
+**project_id** | **string** |  | [default to undefined]
+**name** | **string** |  | [default to undefined]
+**description** | **string** |  | [default to undefined]
 
 ## Example
 

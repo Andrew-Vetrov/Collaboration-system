@@ -23,12 +23,15 @@ const SuggestionPage = () => {
   const { data: currentUser } = useAuthMe();
   const { data: suggestion, isLoading, isError } = useSuggestion(suggestionId);
 
+  if (isLoading) {
+    return <div className="p-8 text-center">Загрузка...</div>;
+  }
+
   if (
     isError ||
-    suggestion === undefined ||
-    suggestion === null ||
-    (!isLoading &&
-      (suggestion.project_id !== projectId || suggestion.status === 'draft'))
+    !suggestion ||
+    suggestion.project_id !== projectId ||
+    suggestion.status === 'draft'
   ) {
     return (
       <div className="p-8 text-center">
@@ -43,9 +46,6 @@ const SuggestionPage = () => {
   const canEdit =
     permissions?.is_admin ||
     (currentUser && suggestion.user_id === currentUser.user_id);
-  if (isLoading) {
-    return <div className="p-8 text-center">Загрузка...</div>;
-  }
 
   return (
     <main className="relative min-h-screen flex flex-col">

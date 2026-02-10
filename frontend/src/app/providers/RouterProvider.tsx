@@ -4,7 +4,7 @@ import { LoginPage } from '@/pages/login/';
 import { AuthSuccess } from '@/features/auth-by-google';
 import { ProtectedRoute } from '@/shared/route/ProtectedRoute';
 import { NotFoundPage } from '@/pages/not-found-page/NotFoundPage';
-import { AuthRoute } from '@/shared/route';
+import { AuthRoute, routesPaths } from '@/shared/route';
 import { AppLayout } from '../layouts/app-layout/AppLayout';
 import { ProjectLayout } from '../layouts/project-layout/ProjectLayout';
 
@@ -19,8 +19,8 @@ const router = createBrowserRouter([
   {
     element: <AuthRoute />,
     children: [
-      { path: '/auth', element: <LoginPage /> },
-      { path: '/auth/success', element: <AuthSuccess /> },
+      { path: routesPaths.authPagePath, element: <LoginPage /> },
+      { path: routesPaths.authSuccessPagePath, element: <AuthSuccess /> },
     ],
   },
   {
@@ -29,21 +29,21 @@ const router = createBrowserRouter([
       {
         element: <AppLayout />,
         children: [
-          { path: '/', element: <ProjectsPage /> },
+          { path: routesPaths.projectsPagePath, element: <ProjectsPage /> },
 
           {
-            path: '/projects/:projectId',
+            path: routesPaths.projectPagePath,
             element: <ProjectLayout />,
             children: [
               { index: true, element: <ProjectPage /> },
 
               {
-                path: 'suggestions/:suggestionId',
+                path: routesPaths.suggestionPagePath,
                 element: <SuggestionPage />,
               },
 
               {
-                path: 'create-suggestion',
+                path: routesPaths.createSuggestionPagePath,
                 element: <CreateSuggestionPage />,
               },
             ],

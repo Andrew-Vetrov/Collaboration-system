@@ -53,9 +53,9 @@ export interface Like {
     'placed_at'?: string;
 }
 export interface ProjectBasic {
-    'project_id'?: string;
-    'name'?: string;
-    'description'?: string;
+    'project_id': string;
+    'name': string;
+    'description': string;
 }
 export interface ProjectPermissions {
     'is_admin': boolean;

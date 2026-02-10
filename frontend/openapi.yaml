@@ -773,6 +773,7 @@ components:
           type: string
         description:
           type: string
+      required: [project_id, name, description]
 
     ProjectSettings:
       type: object

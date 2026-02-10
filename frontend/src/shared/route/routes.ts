@@ -7,3 +7,12 @@ export const routes = {
   createSuggestionRoute: (projectId: string) =>
     `/projects/${projectId}/create-suggestion`,
 };
+
+export const routesPaths = {
+  authPagePath: '/auth',
+  authSuccessPagePath: '/auth/success',
+  projectsPagePath: '/',
+  projectPagePath: '/projects/:projectId',
+  suggestionPagePath: 'suggestions/:suggestionId',
+  createSuggestionPagePath: 'create-suggestion',
+};
