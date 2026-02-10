@@ -3,6 +3,10 @@ import { useSuggestion } from '@/entities/suggestion';
 import { Button, Card, CardContent, Textarea } from '@/shared/ui';
 import { STATUS_LABELS } from '@/entities/suggestion/lib/status';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
+import { useState } from 'react';
+import { EditSuggestionDialog } from './EditSuggestionDialog';
+import { useProjectPermissions } from '@/entities/project/api/useProjectPermissions';
+import { useAuthMe } from '@/entities/main-user/api/useAuthMe';
 
 const SuggestionPage = () => {
   const { projectId, suggestionId } = useParams<{
@@ -10,15 +14,14 @@ const SuggestionPage = () => {
     suggestionId: string;
   }>();
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   if (!projectId || !suggestionId) {
     return <Navigate to="/not-found" replace />;
   }
 
+  const { data: permissions } = useProjectPermissions(projectId);
+  const { data: currentUser } = useAuthMe();
   const { data: suggestion, isLoading, isError } = useSuggestion(suggestionId);
-
-  if (isLoading) {
-    return <div className="p-8 text-center">Загрузка...</div>;
-  }
 
   if (
     isError ||
@@ -37,12 +40,23 @@ const SuggestionPage = () => {
     );
   }
 
+  const canEdit =
+    permissions?.is_admin ||
+    (currentUser && suggestion.user_id === currentUser.user_id);
+  if (isLoading) {
+    return <div className="p-8 text-center">Загрузка...</div>;
+  }
+
   return (
     <main className="relative min-h-screen flex flex-col">
       <div className="flex-1 flex items-start justify-center py-4">
         <div className="w-full max-w-5xl flex items-start justify-between gap-8 px-4">
-          <div className="shrink-0">
-            <Button variant="outline">Редактировать</Button>
+          <div className="shrink-0 w-32 min-w-[8rem] flex items-start">
+            {canEdit && (
+              <Button variant="outline" onClick={() => setIsOpen(true)}>
+                Редактировать
+              </Button>
+            )}
           </div>
 
           <div className="flex-1 flex flex-col items-center text-center">
@@ -80,6 +94,18 @@ const SuggestionPage = () => {
           </div>
         </div>
       </div>
+      {canEdit && (
+        <EditSuggestionDialog
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          projectId={projectId}
+          suggestionId={suggestionId}
+          isAdmin={permissions?.is_admin || false}
+          name={suggestion.name}
+          description={suggestion.description}
+          status={suggestion.status}
+        />
+      )}
     </main>
   );
 };

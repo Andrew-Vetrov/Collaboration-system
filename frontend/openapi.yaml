@@ -62,7 +62,35 @@ paths:
                       $ref: '#/components/schemas/ProjectBasic'
         '401':
           description: Не авторизован
-
+          
+  /projects/{projectId}/permissions/me:
+    get:
+      summary: Получить права связанные с проектом и сопутствующие данные
+      tags:
+        - Projects
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: Project identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectPermissions'
+        '401':
+          description: Не авторизован
+        '403':
+          description: У пользователя нет доступа к проеку
+        '404':
+          description: Проект не найден
+        
   /projects/{project_id}/settings:
     get:
       summary: Получить настройки проекта
@@ -833,7 +861,7 @@ components:
         status:
           type: string
           enum: [draft, discussion, accepted, rejected]
-      required: [id, user_id, project_id, name, status]
+      required: [id, user_id, project_id, name, status, description]
 
     CreateSuggestionRequest:
       type: object
@@ -897,6 +925,16 @@ components:
         - last_edit
         - text
 
+    ProjectPermissions:
+      type: object
+      properties:
+        is_admin: 
+          type: boolean
+        likes_remain:
+          type: integer
+      required:
+        - is_admin
+        - likes_remain
 
 
 

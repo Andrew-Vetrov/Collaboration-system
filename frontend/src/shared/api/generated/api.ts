@@ -57,6 +57,10 @@ export interface ProjectBasic {
     'name'?: string;
     'description'?: string;
 }
+export interface ProjectPermissions {
+    'is_admin': boolean;
+    'likes_remain': number;
+}
 export interface ProjectProjectIdSuggestionsGet200Response {
     'data'?: Array<Suggestion>;
 }
@@ -145,7 +149,7 @@ export interface Suggestion {
     'last_edit'?: string;
     'likes_amount'?: number;
     'name': string;
-    'description'?: string;
+    'description': string;
     'status': SuggestionStatusEnum;
 }
 
@@ -1087,6 +1091,44 @@ export const ProjectsApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
+         * @summary Получить права связанные с проектом и сопутствующие данные
+         * @param {string} projectId Project identifier
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdPermissionsMeGet: async (projectId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdPermissionsMeGet', 'projectId', projectId)
+            const localVarPath = `/projects/{projectId}/permissions/me`
+                .replace(`{${"projectId"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Получить настройки проекта
          * @param {string} projectId 
          * @param {*} [options] Override http request option.
@@ -1331,6 +1373,19 @@ export const ProjectsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Получить права связанные с проектом и сопутствующие данные
+         * @param {string} projectId Project identifier
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdPermissionsMeGet(projectId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectPermissions>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdPermissionsMeGet(projectId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ProjectsApi.projectsProjectIdPermissionsMeGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Получить настройки проекта
          * @param {string} projectId 
          * @param {*} [options] Override http request option.
@@ -1428,6 +1483,16 @@ export const ProjectsApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
+         * @summary Получить права связанные с проектом и сопутствующие данные
+         * @param {string} projectId Project identifier
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdPermissionsMeGet(projectId: string, options?: RawAxiosRequestConfig): AxiosPromise<ProjectPermissions> {
+            return localVarFp.projectsProjectIdPermissionsMeGet(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Получить настройки проекта
          * @param {string} projectId 
          * @param {*} [options] Override http request option.
@@ -1506,6 +1571,17 @@ export class ProjectsApi extends BaseAPI {
      */
     public projectsPost(projectsPostRequest: ProjectsPostRequest, options?: RawAxiosRequestConfig) {
         return ProjectsApiFp(this.configuration).projectsPost(projectsPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Получить права связанные с проектом и сопутствующие данные
+     * @param {string} projectId Project identifier
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdPermissionsMeGet(projectId: string, options?: RawAxiosRequestConfig) {
+        return ProjectsApiFp(this.configuration).projectsProjectIdPermissionsMeGet(projectId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -56,7 +56,7 @@ export function SuggestionEditingFields({
         )}
       </div>
 
-      <div className="flex flex-col">
+      <div className="grid">
         <Label htmlFor="description-id" className="mb-1 font-semibold">
           Описание предложения
         </Label>
@@ -67,7 +67,7 @@ export function SuggestionEditingFields({
             onBlur: handleBlur,
           })}
           id="description-id"
-          className={`border rounded-lg px-3 py-2 min-h-[120px] resize-none ${
+          className={`border rounded-lg px-3 py-2 min-h-[120px] resize-none max-h-40 overflow-auto${
             errors.description ? 'border-red-500' : 'border'
           }`}
         />

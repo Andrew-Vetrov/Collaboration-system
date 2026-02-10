@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **last_edit** | **string** |  | [optional] [default to undefined]
 **likes_amount** | **number** |  | [optional] [default to undefined]
 **name** | **string** |  | [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
+**description** | **string** |  | [default to undefined]
 **status** | **string** |  | [default to undefined]
 
 ## Example
