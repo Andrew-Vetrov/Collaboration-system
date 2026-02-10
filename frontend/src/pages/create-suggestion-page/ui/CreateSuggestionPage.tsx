@@ -7,8 +7,8 @@ import { DraftsList } from '@/entities/suggestion/ui/DraftsList';
 import { useEditSuggestionFeature } from '@/pages/create-suggestion-page/model/useEditSuggestionFeature';
 import { useSuggestionUpdate } from '@/features/suggestion-update/api/useSuggestionUpdate';
 
-export function CreateSuggestionPage() {
-  const { id } = useParams<{ id: string }>();
+export default function CreateSuggestionPage() {
+  const { projectId: id } = useParams<{ projectId: string }>();
   if (!id) {
     return <Navigate to="/not-found" replace />;
   }

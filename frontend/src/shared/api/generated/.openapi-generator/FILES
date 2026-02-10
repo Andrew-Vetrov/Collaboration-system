@@ -13,6 +13,7 @@ docs/CurrentUser.md
 docs/InvitesApi.md
 docs/Like.md
 docs/ProjectBasic.md
+docs/ProjectPermissions.md
 docs/ProjectProjectIdSuggestionsGet200Response.md
 docs/ProjectProjectIdSuggestionsPostRequest.md
 docs/ProjectSettings.md

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useProjects } from '../api/useProjects';
 import { Card, CardDescription, CardTitle } from '@/shared/ui';
 import type { FC } from 'react';
+import { routes } from '@/shared/route';
 
 export const ProjectList: FC = () => {
   const { data: projects = [], isLoading, error } = useProjects();
@@ -16,7 +17,7 @@ export const ProjectList: FC = () => {
         {projects.map(project => (
           <Link
             key={project.project_id}
-            to={`/project/${project.project_id}`}
+            to={routes.projectRoute(project.project_id)}
             className="block"
           >
             <Card className="hover:shadow-md transition-shadow text-center w-full h-full">

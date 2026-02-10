@@ -7,7 +7,7 @@ type DraftsListProps = {
 };
 
 export function DraftsList({ clickSuggestion }: DraftsListProps) {
-  const { id } = useParams<{ id: string }>();
+  const { projectId: id } = useParams<{ projectId: string }>();
   if (!id) {
     return <Navigate to="/not-found" replace />;
   }

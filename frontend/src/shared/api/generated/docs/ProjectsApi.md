@@ -6,6 +6,7 @@ All URIs are relative to *http://localhost*
 |------------- | ------------- | -------------|
 |[**projectsGet**](#projectsget) | **GET** /projects | Получить список своих проектов|
 |[**projectsPost**](#projectspost) | **POST** /projects | Creating a project|
+|[**projectsProjectIdPermissionsMeGet**](#projectsprojectidpermissionsmeget) | **GET** /projects/{projectId}/permissions/me | Получить права связанные с проектом и сопутствующие данные|
 |[**projectsProjectIdSettingsGet**](#projectsprojectidsettingsget) | **GET** /projects/{project_id}/settings | Получить настройки проекта|
 |[**projectsProjectIdSettingsPut**](#projectsprojectidsettingsput) | **PUT** /projects/{project_id}/settings | Обновить настройки проекта|
 |[**projectsProjectIdUsersGet**](#projectsprojectidusersget) | **GET** /projects/{project_id}/users | Получить список пользователей проекта|
@@ -106,6 +107,59 @@ const { status, data } = await apiInstance.projectsPost(
 |**201** | Project is successfuly created |  -  |
 |**400** | Wrong request |  -  |
 |**401** | Не авторизован |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **projectsProjectIdPermissionsMeGet**
+> ProjectPermissions projectsProjectIdPermissionsMeGet()
+
+
+### Example
+
+```typescript
+import {
+    ProjectsApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new ProjectsApi(configuration);
+
+let projectId: string; //Project identifier (default to undefined)
+
+const { status, data } = await apiInstance.projectsProjectIdPermissionsMeGet(
+    projectId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **projectId** | [**string**] | Project identifier | defaults to undefined|
+
+
+### Return type
+
+**ProjectPermissions**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Успешно |  -  |
+|**401** | Не авторизован |  -  |
+|**403** | У пользователя нет доступа к проеку |  -  |
+|**404** | Проект не найден |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

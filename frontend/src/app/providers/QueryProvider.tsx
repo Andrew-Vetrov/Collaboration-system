@@ -1,3 +1,4 @@
+import { routes } from '@/shared/route';
 import {
   MutationCache,
   QueryCache,
@@ -9,7 +10,7 @@ import { AxiosError } from 'axios';
 const handleUnauthorized = () => {
   localStorage.removeItem('jwt');
   queryClient.clear();
-  window.location.href = '/auth';
+  window.location.href = routes.authRoute();
 };
 
 const queryClient = new QueryClient({
