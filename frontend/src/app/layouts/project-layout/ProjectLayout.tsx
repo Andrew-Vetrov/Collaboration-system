@@ -1,4 +1,4 @@
-import { useSuggestion } from '@/entities/suggestion';
+import { useSuggestions } from '@/entities/suggestion/api/useSuggestions';
 import { Outlet, useParams, Navigate } from 'react-router-dom';
 
 export const ProjectLayout = () => {
@@ -8,7 +8,7 @@ export const ProjectLayout = () => {
     return <Navigate to="/not-found" replace />;
   }
 
-  const { data: project, isLoading, isError } = useSuggestion(projectId);
+  const { data: project, isLoading, isError } = useSuggestions(projectId);
 
   if (isLoading) {
     return <div>Загрузка проекта...</div>;
