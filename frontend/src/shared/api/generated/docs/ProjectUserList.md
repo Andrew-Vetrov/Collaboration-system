@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**project_id** | **string** | UUID проекта | [optional] [default to undefined]
-**users** | [**Array&lt;ProjectUser&gt;**](ProjectUser.md) |  | [optional] [default to undefined]
+**project_id** | **string** | UUID проекта | [default to undefined]
+**users** | [**Array&lt;ProjectUser&gt;**](ProjectUser.md) |  | [default to undefined]
 
 ## Example
 

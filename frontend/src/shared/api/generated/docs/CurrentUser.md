@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**user_id** | **string** |  | [optional] [default to undefined]
-**email** | **string** |  | [optional] [default to undefined]
-**nickname** | **string** |  | [optional] [default to undefined]
-**avatar_url** | **string** |  | [optional] [default to undefined]
+**user_id** | **string** |  | [default to undefined]
+**email** | **string** |  | [default to undefined]
+**nickname** | **string** |  | [default to undefined]
+**avatar_url** | **string** |  | [default to undefined]
 
 ## Example
 

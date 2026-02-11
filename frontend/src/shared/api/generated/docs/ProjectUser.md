@@ -5,10 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**user_id** | **string** |  | [optional] [default to undefined]
-**email** | **string** |  | [optional] [default to undefined]
-**nickname** | **string** |  | [optional] [default to undefined]
-**is_admin** | **boolean** |  | [optional] [default to undefined]
+**user_id** | **string** |  | [default to undefined]
+**email** | **string** |  | [default to undefined]
+**nickname** | **string** |  | [default to undefined]
+**is_admin** | **boolean** |  | [default to undefined]
+**avatar_url** | **string** |  | [default to undefined]
 
 ## Example
 
@@ -20,6 +21,7 @@ const instance: ProjectUser = {
     email,
     nickname,
     is_admin,
+    avatar_url,
 };
 ```
 

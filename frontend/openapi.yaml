@@ -806,6 +806,7 @@ components:
           type: string
         avatar_url:
           type: string
+      required: [user_id, email, nickname, avatar_url]
 
     ProjectUser:
       type: object
@@ -820,6 +821,9 @@ components:
           type: string
         is_admin:
           type: boolean
+        avatar_url:
+          type: string
+      required: [user_id, email, nickname, is_admin, avatar_url]
 
     ProjectUserList:
       type: object
@@ -832,6 +836,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProjectUser'
+      required: [project_id, users]
 
 
     Suggestion:
@@ -862,7 +867,7 @@ components:
         status:
           type: string
           enum: [draft, discussion, accepted, rejected]
-      required: [id, user_id, project_id, name, status, description]
+      required: [suggestion_id, user_id, project_id, name, status, description]
 
     CreateSuggestionRequest:
       type: object
@@ -896,7 +901,7 @@ components:
     Comment:
       type: object
       properties:
-        id:
+        comment_id:
           type: string
           format: uuid
         user_id:
@@ -919,7 +924,7 @@ components:
           type: string
           example: "Отличная идея!"
       required:
-        - id
+        - comment_id
         - user_id
         - suggestion_id
         - placed_at

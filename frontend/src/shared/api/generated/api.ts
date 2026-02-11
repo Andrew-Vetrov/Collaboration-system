@@ -24,7 +24,7 @@ import type { RequestArgs } from './base';
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
 export interface Comment {
-    'id': string;
+    'comment_id': string;
     'user_id': string;
     'suggestion_id': string;
     'comment_reply_to_id'?: string | null;
@@ -41,10 +41,10 @@ export interface CreateSuggestionRequest {
     'user_id': string;
 }
 export interface CurrentUser {
-    'user_id'?: string;
-    'email'?: string;
-    'nickname'?: string;
-    'avatar_url'?: string;
+    'user_id': string;
+    'email': string;
+    'nickname': string;
+    'avatar_url': string;
 }
 export interface Like {
     'like_id'?: string;
@@ -89,17 +89,18 @@ export interface ProjectSettings {
     'owner_id'?: string;
 }
 export interface ProjectUser {
-    'user_id'?: string;
-    'email'?: string;
-    'nickname'?: string;
-    'is_admin'?: boolean;
+    'user_id': string;
+    'email': string;
+    'nickname': string;
+    'is_admin': boolean;
+    'avatar_url': string;
 }
 export interface ProjectUserList {
     /**
      * UUID проекта
      */
-    'project_id'?: string;
-    'users'?: Array<ProjectUser>;
+    'project_id': string;
+    'users': Array<ProjectUser>;
 }
 export interface ProjectsGet200Response {
     'projects'?: Array<ProjectBasic>;
@@ -142,7 +143,7 @@ export interface ProjectsProjectIdUsersUserIdPutRequest {
     'is_admin'?: boolean;
 }
 export interface Suggestion {
-    'suggestion_id'?: string;
+    'suggestion_id': string;
     'user_id': string;
     'project_id': string;
     'placed_at'?: string;

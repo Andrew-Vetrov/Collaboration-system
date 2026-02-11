@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **string** |  | [default to undefined]
+**comment_id** | **string** |  | [default to undefined]
 **user_id** | **string** |  | [default to undefined]
 **suggestion_id** | **string** |  | [default to undefined]
 **comment_reply_to_id** | **string** |  | [optional] [default to undefined]
@@ -19,7 +19,7 @@ Name | Type | Description | Notes
 import { Comment } from './api';
 
 const instance: Comment = {
-    id,
+    comment_id,
     user_id,
     suggestion_id,
     comment_reply_to_id,
