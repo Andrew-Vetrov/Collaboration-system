@@ -1,6 +1,4 @@
-import { useCommentCreate } from '@/entities/comment/api/useCommentCreate';
 import { useCommentReply } from '@/entities/comment/api/useCommentReply';
-import type { ReplyState } from '@/entities/comment/model/types';
 import { Button, Textarea } from '@/shared/ui';
 import type { Dispatch, SetStateAction } from 'react';
 import { useForm, type RegisterOptions } from 'react-hook-form';
@@ -9,8 +7,8 @@ interface CommentReplyFormProps {
   suggestionId: string;
   commentId: string;
   formOptions?: RegisterOptions<IFormInput, 'text'> | undefined;
-  isReplyOpen: ReplyState;
-  setReplyOpen: Dispatch<SetStateAction<ReplyState>>;
+  replyCommentId: string | null;
+  setReplyCommentId: Dispatch<SetStateAction<string | null>>;
 }
 
 interface IFormInput {
@@ -21,8 +19,8 @@ export function CommentReplyForm({
   suggestionId,
   commentId,
   formOptions,
-  isReplyOpen,
-  setReplyOpen,
+  replyCommentId,
+  setReplyCommentId,
 }: CommentReplyFormProps) {
   const {
     register,
@@ -39,10 +37,10 @@ export function CommentReplyForm({
     <form
       onSubmit={handleSubmit(data =>
         mutate(data, {
-          onSuccess: () => setReplyOpen({ isOpen: false, commentId: null }),
+          onSuccess: () => setReplyCommentId(null),
         })
       )}
-      className="flex w-full flex-col gap-3"
+      className="flex w-full flex-col gap-3 mt-3"
     >
       <div className="grid w-full gap-2">
         <Textarea
@@ -60,7 +58,7 @@ export function CommentReplyForm({
           type="button"
           variant="ghost"
           disabled={isPending}
-          onClick={() => setReplyOpen({ isOpen: false, commentId: null })}
+          onClick={() => setReplyCommentId(null)}
         >
           Отмена
         </Button>

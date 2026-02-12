@@ -579,6 +579,31 @@ paths:
           description: Пользователь не авторизован
         '404':
           description: Комментарий или предложение не найдены
+          
+  /comments/{comment_id}:
+    delete:
+      summary: Удалить комментарий
+      tags:
+        - Comments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Комментарий успешно удалён
+        '401':
+          description: Пользователь не авторизован
+        '403':
+          description: Недостаточно прав для удаления комментария
+        '404':
+          description: Комментарий не найден
+
   /projects/{project_id}/invites:
     post:
       summary: Пригласить пользователя в проект

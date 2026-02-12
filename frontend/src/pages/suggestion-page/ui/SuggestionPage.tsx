@@ -11,9 +11,9 @@ import { useProjectUsers } from '@/entities/project/api/useProjectUsers';
 import { useComments } from '@/entities/comment/api/useComments';
 import { CommentsList } from '@/entities/comment/ui/CommentsList';
 import { CommentForm } from '@/pages/suggestion-page/ui/CommentForm';
-import type { ReplyState } from '@/entities/comment/model/types';
 import { CommentReplyForm } from './CommentReplyForm';
-import { formOption, maxCommentLength } from '../lib/utilData';
+import { formOption, maxReplyDepth } from '../lib/utilData';
+import { useCommentDelete } from '@/entities/comment/api/useCommentDelete';
 
 const SuggestionPage = () => {
   const { projectId, suggestionId } = useParams<{
@@ -32,11 +32,9 @@ const SuggestionPage = () => {
 
   const { data: userList } = useProjectUsers(projectId);
   const { data: comments } = useComments(suggestionId);
+  const { mutate: deleteCommentMutation } = useCommentDelete(suggestionId);
 
-  const [isReplyOpen, setReplyOpen] = useState<ReplyState>({
-    isOpen: false,
-    commentId: null,
-  });
+  const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
 
   if (isLoading) {
     return <div className="p-8 text-center">Загрузка...</div>;
@@ -92,16 +90,18 @@ const SuggestionPage = () => {
               <CommentsList
                 userList={userList}
                 comments={comments}
-                maxDepth={maxCommentLength}
-                isReplyOpen={isReplyOpen}
-                setReplyOpen={setReplyOpen}
+                maxReplyDepth={maxReplyDepth}
+                replyCommentId={replyCommentId}
+                setReplyCommentId={setReplyCommentId}
+                isAdmin={permissions?.is_admin || false}
+                onDeleteComment={deleteCommentMutation}
                 renderReply={commentId => (
                   <CommentReplyForm
                     suggestionId={suggestionId}
                     commentId={commentId}
                     formOptions={formOption}
-                    isReplyOpen={isReplyOpen}
-                    setReplyOpen={setReplyOpen}
+                    replyCommentId={replyCommentId}
+                    setReplyCommentId={setReplyCommentId}
                   />
                 )}
               />

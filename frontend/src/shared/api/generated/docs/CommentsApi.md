@@ -5,6 +5,7 @@ All URIs are relative to *http://localhost*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**commentIdReplyPost**](#commentidreplypost) | **POST** /{comment_id}/reply | Ответить на комментарий|
+|[**commentsCommentIdDelete**](#commentscommentiddelete) | **DELETE** /comments/{comment_id} | Удалить комментарий|
 |[**suggestionsSuggestionIdCommentsGet**](#suggestionssuggestionidcommentsget) | **GET** /suggestions/{suggestion_id}/comments | Получить список комментариев к предложению|
 |[**suggestionsSuggestionIdCommentsPost**](#suggestionssuggestionidcommentspost) | **POST** /suggestions/{suggestion_id}/comments | Оставить комментарий к предложению|
 
@@ -61,6 +62,59 @@ const { status, data } = await apiInstance.commentIdReplyPost(
 |**201** | Ответ создан |  -  |
 |**401** | Пользователь не авторизован |  -  |
 |**404** | Комментарий или предложение не найдены |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **commentsCommentIdDelete**
+> commentsCommentIdDelete()
+
+
+### Example
+
+```typescript
+import {
+    CommentsApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new CommentsApi(configuration);
+
+let commentId: string; // (default to undefined)
+
+const { status, data } = await apiInstance.commentsCommentIdDelete(
+    commentId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **commentId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**204** | Комментарий успешно удалён |  -  |
+|**401** | Пользователь не авторизован |  -  |
+|**403** | Недостаточно прав для удаления комментария |  -  |
+|**404** | Комментарий не найден |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

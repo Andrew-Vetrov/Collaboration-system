@@ -3,49 +3,61 @@ import type {
   ProjectUser,
   ProjectUserList,
 } from '@/shared/api/generated';
-import { Avatar, AvatarFallback, AvatarImage, Button } from '@/shared/ui';
-import type { ReplyState } from '../model/types';
-import type { Dispatch, JSX, SetStateAction } from 'react';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/shared/ui';
+import { useMemo, type Dispatch, type JSX, type SetStateAction } from 'react';
+import { EllipsisVertical } from 'lucide-react';
+import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 
 interface CommentsListProps {
   userList: ProjectUserList | undefined;
   comments: Comment[] | undefined;
-  maxDepth: number;
-  isReplyOpen: ReplyState;
-  setReplyOpen: Dispatch<SetStateAction<ReplyState>>;
+  maxReplyDepth: number;
+  replyCommentId: string | null;
+  setReplyCommentId: Dispatch<SetStateAction<string | null>>;
   renderReply: (commentId: string) => JSX.Element;
+  isAdmin: boolean;
+  onDeleteComment: (commentId: string) => void;
 }
 
 export function CommentsList({
   userList,
   comments,
-  maxDepth = 3,
-  isReplyOpen,
-  setReplyOpen,
+  maxReplyDepth = 3,
+  replyCommentId,
+  setReplyCommentId,
   renderReply,
+  isAdmin,
+  onDeleteComment,
 }: CommentsListProps) {
   if (!userList || !comments) {
     return null;
   }
   const users = userList.users;
   const userMap = new Map<string, ProjectUser>(users.map(e => [e.user_id, e]));
-  const replyParentCommentsTree = new Map<string | null, Comment[]>();
-  for (const comment of comments) {
-    if (comment.comment_reply_to_id) {
-      const parent = comment.comment_reply_to_id;
 
-      if (!replyParentCommentsTree.has(parent)) {
-        replyParentCommentsTree.set(parent, []);
-      }
-
-      replyParentCommentsTree.get(parent)!.push(comment);
-    } else {
-      if (!replyParentCommentsTree.has(null)) {
-        replyParentCommentsTree.set(null, []);
-      }
-      replyParentCommentsTree.get(null)!.push(comment);
+  const replyParentCommentsTree = useMemo(() => {
+    const tree = new Map<string | null, Comment[]>();
+    for (const comment of comments) {
+      const parentId = comment.comment_reply_to_id ?? null;
+      if (!tree.has(parentId)) tree.set(parentId, []);
+      tree.get(parentId)!.push(comment);
     }
-  }
+    tree.forEach(arr => {
+      arr.sort(
+        (a, b) =>
+          new Date(a.placed_at).getTime() - new Date(b.placed_at).getTime()
+      );
+    });
+    return tree;
+  }, [comments]);
 
   const RecursiveCommentHelper = ({
     parentId = null,
@@ -55,20 +67,12 @@ export function CommentsList({
     depth?: number;
   }) => {
     const currentCommentsArray = replyParentCommentsTree.get(parentId) ?? [];
-    if (currentCommentsArray.length == 0) {
-      return null;
-    }
+    if (currentCommentsArray.length === 0) return null;
 
-    currentCommentsArray.sort(
-      (a, b) =>
-        new Date(a.placed_at).getTime() - new Date(b.placed_at).getTime()
-    );
+    const isBelowMaxReplyDepth = depth < maxReplyDepth;
 
-    const isBelowMaxDepth = depth < maxDepth;
-
-    const childExist = (comment: Comment) => {
-      return replyParentCommentsTree.has(comment.comment_id);
-    };
+    const hasChildren = (comment: Comment) =>
+      replyParentCommentsTree.has(comment.comment_id);
 
     return (
       <div className="flex flex-col gap-4">
@@ -80,32 +84,53 @@ export function CommentsList({
                   <AvatarImage src={userMap.get(comment.user_id)?.avatar_url} />
                   <AvatarFallback className="bg-black text-white font-medium hover:bg-zinc-800 transition-colors" />
                 </Avatar>
-                <div className="flex flex-col items-start gap-1 w-full">
+                <div className="flex flex-col items-start gap-1 w-full relative">
                   <div className="font-bold max-w-[30vw] truncate">
                     {userMap.get(comment.user_id)?.nickname}
                   </div>
-                  <div className="">{comment.text} </div>
-                  {(!isReplyOpen.isOpen ||
-                    isReplyOpen.commentId != comment.comment_id) && (
+                  <div className="flex justify-between item-start w-full">
+                    <div className="flex-1 text-start">{comment.text} </div>
+                    {isAdmin && (
+                      <div className="absolute top-0 right-0">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="shrink-0">
+                            <EllipsisVertical />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            side="bottom"
+                            align="end"
+                            className="text-center"
+                          >
+                            <DropdownMenuItem>
+                              <Button
+                                variant="ghost"
+                                className="text-red-500"
+                                onClick={() => {
+                                  onDeleteComment(comment.comment_id);
+                                }}
+                              >
+                                Удалить
+                              </Button>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    )}
+                  </div>
+                  {replyCommentId !== comment.comment_id && (
                     <Button
                       variant="ghost"
                       className="h-6"
-                      onClick={() =>
-                        setReplyOpen({
-                          isOpen: true,
-                          commentId: comment.comment_id,
-                        })
-                      }
+                      onClick={() => setReplyCommentId(comment.comment_id)}
                     >
                       Ответить
                     </Button>
                   )}
-                  {isReplyOpen.isOpen &&
-                    isReplyOpen.commentId === comment.comment_id &&
+                  {replyCommentId === comment.comment_id &&
                     renderReply(comment.comment_id)}
                 </div>
               </div>
-              {isBelowMaxDepth && childExist(comment) ? (
+              {isBelowMaxReplyDepth && hasChildren(comment) ? (
                 <div className="ml-3 border-l-2 pl-3">
                   {
                     <RecursiveCommentHelper

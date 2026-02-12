@@ -9,3 +9,5 @@ export const formOption = {
       'Длина комментария не может превышать ' + maxCommentLength + ' символов',
   },
 };
+
+export const maxReplyDepth = 3;
