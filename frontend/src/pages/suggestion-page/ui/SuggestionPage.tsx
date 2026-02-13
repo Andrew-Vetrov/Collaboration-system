@@ -3,7 +3,7 @@ import { useSuggestion } from '@/entities/suggestion';
 import { Button, Card, CardContent } from '@/shared/ui';
 import { STATUS_LABELS } from '@/entities/suggestion/lib/status';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { EditSuggestionDialog } from './EditSuggestionDialog';
 import { useProjectPermissions } from '@/entities/project/api/useProjectPermissions';
 import { useAuthMe } from '@/entities/main-user/api/useAuthMe';

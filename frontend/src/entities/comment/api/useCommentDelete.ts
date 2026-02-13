@@ -8,7 +8,6 @@ export function useCommentDelete(suggestionId: string) {
   return useMutation({
     mutationFn: (commentId: string) => {
       const responce = commentsApi.commentsCommentIdDelete(commentId);
-      console.log('23');
       return responce;
     },
     onSuccess: () => {

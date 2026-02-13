@@ -10,6 +10,7 @@ import {
 } from '@/shared/ui';
 import {
   memo,
+  useContext,
   useMemo,
   type Dispatch,
   type JSX,
@@ -17,6 +18,10 @@ import {
 } from 'react';
 import { EllipsisVertical } from 'lucide-react';
 import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import {
+  commentContext,
+  CommentContextProviter,
+} from '../model/CommentsContext';
 
 interface CommentsListProps {
   userList: Array<ProjectUser> | undefined;
@@ -68,48 +73,46 @@ export function CommentsList({
   }, [comments]);
 
   return (
-    <RecursiveCommentHelper
-      usersMap={usersMap}
-      commentsTree={commentsTree}
-      isAdmin={isAdmin}
-      replyCommentId={replyCommentId}
-      onReplyComment={id => setReplyCommentId(id)}
-      onDeleteComment={id => onDeleteComment(id)}
-      renderReply={renderReply}
-      maxDepth={maxReplyDepth}
-    />
+    <CommentContextProviter
+      value={{
+        usersMap,
+        commentsTree,
+        isAdmin,
+        replyCommentId,
+        onReplyComment: setReplyCommentId,
+        onDeleteComment,
+        renderReply,
+      }}
+    >
+      <RecursiveCommentHelper
+        maxDepth={maxReplyDepth}
+        depth={0}
+        parentId={null}
+      />
+    </CommentContextProviter>
   );
 }
 
 type CommentProps = {
   parentId?: string | null;
-
-  usersMap: Map<string, ProjectUser>;
-  commentsTree: Map<string | null, Comment[]>;
-  isAdmin: boolean;
-
-  replyCommentId: string | null;
-  onReplyComment: (commentId: string) => void;
-  onDeleteComment: (commentId: string) => void;
-  renderReply: (commentId: string) => JSX.Element;
-
   depth?: number;
   maxDepth: number;
 };
 
 const RecursiveCommentHelper = memo(
-  ({
-    parentId = null,
-    usersMap,
-    commentsTree,
-    isAdmin,
-    replyCommentId,
-    onReplyComment,
-    onDeleteComment,
-    renderReply,
-    depth = 0,
-    maxDepth,
-  }: CommentProps) => {
+  ({ parentId = null, depth = 0, maxDepth }: CommentProps) => {
+    const context = useContext(commentContext);
+    if (!context) return null;
+    const {
+      usersMap,
+      commentsTree,
+      isAdmin,
+      replyCommentId,
+      onReplyComment,
+      onDeleteComment,
+      renderReply,
+    } = context;
+
     const comments = commentsTree.get(parentId) ?? [];
 
     if (comments.length === 0) return null;
@@ -188,14 +191,7 @@ const RecursiveCommentHelper = memo(
                   <RecursiveCommentHelper
                     parentId={comment.comment_id}
                     depth={depth + 1}
-                    commentsTree={commentsTree}
-                    usersMap={usersMap}
                     maxDepth={maxDepth}
-                    isAdmin={isAdmin}
-                    replyCommentId={replyCommentId}
-                    onReplyComment={onReplyComment}
-                    onDeleteComment={onDeleteComment}
-                    renderReply={renderReply}
                   />
                 </div>
               )}
