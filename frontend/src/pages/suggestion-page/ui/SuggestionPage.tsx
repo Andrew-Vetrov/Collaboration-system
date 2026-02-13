@@ -3,7 +3,7 @@ import { useSuggestion } from '@/entities/suggestion';
 import { Button, Card, CardContent } from '@/shared/ui';
 import { STATUS_LABELS } from '@/entities/suggestion/lib/status';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { EditSuggestionDialog } from './EditSuggestionDialog';
 import { useProjectPermissions } from '@/entities/project/api/useProjectPermissions';
 import { useAuthMe } from '@/entities/main-user/api/useAuthMe';
@@ -35,6 +35,19 @@ const SuggestionPage = () => {
   const { mutate: deleteCommentMutation } = useCommentDelete(suggestionId);
 
   const [replyCommentId, setReplyCommentId] = useState<string | null>(null);
+
+  const renderReply = useCallback(
+    (commentId: string) => (
+      <CommentReplyForm
+        suggestionId={suggestionId}
+        commentId={commentId}
+        formOptions={formOption}
+        replyCommentId={replyCommentId}
+        setReplyCommentId={setReplyCommentId}
+      />
+    ),
+    [suggestionId, formOption, replyCommentId, setReplyCommentId]
+  );
 
   if (isLoading) {
     return <div className="p-8 text-center">Загрузка...</div>;
@@ -82,28 +95,20 @@ const SuggestionPage = () => {
               </CardContent>
             </Card>
 
-            <div className="mt-8 w-full mx-auto flex flex-col gap-4">
+            <div className="mt-8 w-full flex flex-col gap-4">
               <CommentForm
                 suggestionId={suggestionId}
                 formOptions={formOption}
               />
               <CommentsList
-                userList={userList}
+                userList={userList?.users}
                 comments={comments}
                 maxReplyDepth={maxReplyDepth}
                 replyCommentId={replyCommentId}
                 setReplyCommentId={setReplyCommentId}
                 isAdmin={permissions?.is_admin || false}
                 onDeleteComment={deleteCommentMutation}
-                renderReply={commentId => (
-                  <CommentReplyForm
-                    suggestionId={suggestionId}
-                    commentId={commentId}
-                    formOptions={formOption}
-                    replyCommentId={replyCommentId}
-                    setReplyCommentId={setReplyCommentId}
-                  />
-                )}
+                renderReply={commentId => renderReply(commentId)}
               />
             </div>
           </div>
