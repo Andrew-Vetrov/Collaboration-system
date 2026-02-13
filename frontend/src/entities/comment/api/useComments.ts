@@ -7,10 +7,10 @@ export function useComments(suggestionId: string) {
   return useQuery<Comment[]>({
     queryKey: getCommentsQueryKey(suggestionId),
     queryFn: async () => {
-      const responce =
+      const response =
         await commentsApi.suggestionsSuggestionIdCommentsGet(suggestionId);
 
-      return responce.data;
+      return response.data;
     },
   });
 }

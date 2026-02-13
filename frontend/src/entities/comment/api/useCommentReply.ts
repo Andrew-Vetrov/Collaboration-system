@@ -12,8 +12,8 @@ export function useCommentReply(suggestionId: string, commentId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: CommentIdReplyPostRequest) => {
-      const responce = await commentsApi.commentIdReplyPost(commentId, data);
-      return responce.data;
+      const response = await commentsApi.commentIdReplyPost(commentId, data);
+      return response.data;
     },
 
     onMutate: async (data: CommentIdReplyPostRequest) => {

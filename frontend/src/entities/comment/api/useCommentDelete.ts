@@ -7,8 +7,8 @@ export function useCommentDelete(suggestionId: string) {
 
   return useMutation({
     mutationFn: (commentId: string) => {
-      const responce = commentsApi.commentsCommentIdDelete(commentId);
-      return responce;
+      const response = commentsApi.commentsCommentIdDelete(commentId);
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

@@ -7,9 +7,9 @@ export function useProjectUsers(projectId: string) {
   return useQuery<ProjectUserList | undefined>({
     queryKey: getProjectUsersQueryKey(projectId),
     queryFn: async () => {
-      const responce = await projectsApi.projectsProjectIdUsersGet(projectId);
+      const response = await projectsApi.projectsProjectIdUsersGet(projectId);
 
-      return responce.data.data;
+      return response.data.data;
     },
   });
 }

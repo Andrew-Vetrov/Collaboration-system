@@ -7,11 +7,11 @@ export function useCommentCreate(suggestionId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: SuggestionsSuggestionIdCommentsPostRequest) => {
-      const responce = await commentsApi.suggestionsSuggestionIdCommentsPost(
+      const response = await commentsApi.suggestionsSuggestionIdCommentsPost(
         suggestionId,
         data
       );
-      return responce.data;
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
