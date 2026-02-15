@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**suggestion_id** | **string** |  | [optional] [default to undefined]
+**suggestion_id** | **string** |  | [default to undefined]
 **user_id** | **string** |  | [default to undefined]
 **project_id** | **string** |  | [default to undefined]
 **placed_at** | **string** |  | [optional] [default to undefined]

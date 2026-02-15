@@ -33,7 +33,7 @@ export function MainUserMenu({ handleLogout }: MainUserMenuProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <span>{user?.nickname}</span>
+          <span className="block max-w-[150px] truncate">{user?.nickname}</span>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <span>{user?.email}</span>
