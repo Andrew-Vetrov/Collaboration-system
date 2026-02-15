@@ -26,8 +26,8 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
   }
   return (
     <div className="flex flex-col items-center w-screen">
-      <h1 className="text-center text-3xl mb-4 mt-4">Мои предложения</h1>
-      <div className="grid gap-4 w-[70%]">
+      <h1 className="text-center text-3xl my-4">Мои предложения</h1>
+      <div className="grid gap-4 w-[90%] sm:w-[70%] grid-cols-1">
         {suggestions
           .filter(suggestion => suggestion.status != 'draft')
           .map(suggestion => (
@@ -36,7 +36,7 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
               className="p-6 hover:shadow-lg transition-shadow duration-200"
             >
               <Link
-                className="flex justify-between"
+                className="flex flex-col sm:flex-row sm:justify-between gap-4"
                 to={routes.suggestionRoute(
                   props.projectId,
                   suggestion.suggestion_id || ''

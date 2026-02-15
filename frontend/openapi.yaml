@@ -660,20 +660,8 @@ paths:
                   data:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        invite_id:
-                          type: string
-                          format: uuid
-                        project_id:
-                          type: string
-                          format: uuid
-                        mail:
-                          type: string
-                          format: email
-                        invited_at:
-                          type: string
-                          format: date-time
+                      $ref: '#/components/schemas/Invite'
+                required: [data]
         '400':
           description: Неверные данные
         '401':
@@ -700,20 +688,8 @@ paths:
                   data:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        invite_id:
-                          type: string
-                          format: uuid
-                        project_id:
-                          type: string
-                          format: uuid
-                        mail:
-                          type: string
-                          format: email
-                        invited_at:
-                          type: string
-                          format: date-time
+                      $ref: '#/components/schemas/Invite'
+                required: [data]
         '401':
           description: Не авторизован
   /invites/{invite_id}:
@@ -966,6 +942,39 @@ components:
       required:
         - is_admin
         - likes_remain
+    
+    Invite:
+      type: object
+      properties:
+        invite_id:
+          type: string
+          format: uuid
+          description: Идентификатор приглашения
+        project_id:
+          type: string
+          format: uuid
+          description: Идентификатор проекта
+        mail:
+          type: string
+          format: email
+          description: Email приглашённого пользователя
+        invited_at:
+          type: string
+          format: date-time
+          description: Дата и время отправки приглашения
+        sender_nickname:
+          type: string
+        project_name:
+          type: string
+      required:
+        - invite_id
+        - project_id
+        - mail
+        - invited_at
+        - project_name
+        - sender_nickname
+      additionalProperties: false
+
 
 
 

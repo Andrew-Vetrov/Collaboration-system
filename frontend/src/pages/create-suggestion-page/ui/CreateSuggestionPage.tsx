@@ -35,8 +35,8 @@ export default function CreateSuggestionPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-8 p-4">
-        <aside className="w-full bg-card sm:w-80 shrink-0  rounded-lg shadow p-4 flex flex-col gap-4">
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-8 p-4">
+        <aside className="w-full bg-card md:w-80 shrink-0  rounded-lg shadow p-4 flex flex-col gap-4">
           <h2 className="text-2xl font-bold text-center">Список черновиков</h2>
 
           <div className="flex-1 overflow-auto">

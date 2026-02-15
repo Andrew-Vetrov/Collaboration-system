@@ -1,13 +1,20 @@
 import type { JSX } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/shared/ui';
+import { ArrowLeft, TableOfContents } from 'lucide-react';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shared/ui';
 
 import { handleLogout } from '@/features/auth-by-google/';
 import { ModeToggle } from '@/features/theme-toggle';
 import { MainUserMenu } from '@/entities/main-user';
 import { routes } from '@/shared/route';
 import { useProjectPermissions } from '@/entities/project/api/useProjectPermissions';
+import { InvitesMenu } from '@/entities/invites/ui/InvitesMenu';
 
 export const Header = (): JSX.Element => {
   const navigate = useNavigate();
@@ -29,7 +36,7 @@ export const Header = (): JSX.Element => {
   const { data: permissions } = useProjectPermissions(projectId);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur px-4 py-3">
+    <header className="border-b bg-background/95 backdrop-blur px-4 py-3">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center">
           {showBackButton && (
@@ -45,7 +52,28 @@ export const Header = (): JSX.Element => {
           </div>
         )}
 
-        <div className="flex items-center gap-6 md:gap-8">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="md:hidden">
+            <TableOfContents />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex flex-col items-center">
+            {/* <DropdownMenuItem> */}
+            <InvitesMenu isSubMenu={true} />
+            {/* </DropdownMenuItem> */}
+            <DropdownMenuItem>
+              <ModeToggle />
+            </DropdownMenuItem>
+            {/* <DropdownMenuItem> */}
+            <MainUserMenu
+              handleLogout={() => handleLogout(navigate)}
+              isSubMenu={true}
+            />
+            {/* </DropdownMenuItem> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="hidden md:flex items-center gap-6 md:gap-8">
+          <InvitesMenu />
           <ModeToggle />
           <MainUserMenu handleLogout={() => handleLogout(navigate)} />
         </div>

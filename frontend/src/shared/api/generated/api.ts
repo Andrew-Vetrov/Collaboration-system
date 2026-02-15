@@ -46,6 +46,26 @@ export interface CurrentUser {
     'nickname': string;
     'avatar_url': string;
 }
+export interface Invite {
+    /**
+     * Идентификатор приглашения
+     */
+    'invite_id': string;
+    /**
+     * Идентификатор проекта
+     */
+    'project_id': string;
+    /**
+     * Email приглашённого пользователя
+     */
+    'mail': string;
+    /**
+     * Дата и время отправки приглашения
+     */
+    'invited_at': string;
+    'sender_nickname': string;
+    'project_name': string;
+}
 export interface Like {
     'like_id'?: string;
     'user_id': string;
@@ -119,13 +139,7 @@ export interface ProjectsPostRequest {
     'description': string;
 }
 export interface ProjectsProjectIdInvitesGet200Response {
-    'data'?: Array<ProjectsProjectIdInvitesGet200ResponseDataInner>;
-}
-export interface ProjectsProjectIdInvitesGet200ResponseDataInner {
-    'invite_id'?: string;
-    'project_id'?: string;
-    'mail'?: string;
-    'invited_at'?: string;
+    'data': Array<Invite>;
 }
 export interface ProjectsProjectIdSettingsGet200Response {
     'data'?: ProjectSettings;

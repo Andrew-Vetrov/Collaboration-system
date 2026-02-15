@@ -4,6 +4,7 @@ import {
   SuggestionsApi,
   CommentsApi,
   AuthorizeApi,
+  InvitesApi,
 } from './generated';
 
 const config = new Configuration({
@@ -15,3 +16,4 @@ export const projectsApi = new ProjectsApi(config);
 export const suggestionsApi = new SuggestionsApi(config);
 export const commentsApi = new CommentsApi(config);
 export const authApi = new AuthorizeApi(config);
+export const invitesApi = new InvitesApi(config);
