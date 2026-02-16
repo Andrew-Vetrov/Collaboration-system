@@ -29,7 +29,9 @@ export function InviteView({ invite, className }: InviteViewProps) {
 
         <div className="text-muted-foreground">
           приглашает в проект{' '}
-          <span className="font-medium break-all">{invite.project_name}</span>
+          <span className="font-medium wrap-break-word">
+            {invite.project_name}
+          </span>
         </div>
       </div>
 

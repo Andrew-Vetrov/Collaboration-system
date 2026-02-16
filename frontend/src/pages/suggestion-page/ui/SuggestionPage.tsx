@@ -1,4 +1,4 @@
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useSuggestion } from '@/entities/suggestion';
 import { Button, Card, CardContent } from '@/shared/ui';
 import { STATUS_LABELS } from '@/entities/suggestion/lib/status';
@@ -15,6 +15,7 @@ import { CommentReplyForm } from './CommentReplyForm';
 import { formOption, maxReplyDepth } from '../lib/utilData';
 import { useCommentDelete } from '@/entities/comment/api/useCommentDelete';
 import { LikesSection } from './LikesSection';
+import { useSuggestionDelete } from '@/features/suggestion-delete/api/useSuggestionDelete';
 
 const SuggestionPage = () => {
   const { projectId, suggestionId } = useParams<{
@@ -27,9 +28,22 @@ const SuggestionPage = () => {
     return <Navigate to="/not-found" replace />;
   }
 
+  const navigate = useNavigate();
+
   const { data: permissions } = useProjectPermissions(projectId);
   const { data: currentUser } = useAuthMe();
   const { data: suggestion, isLoading, isError } = useSuggestion(suggestionId);
+  const { mutate: deleteSuggestion, isPending } = useSuggestionDelete(
+    projectId,
+    suggestionId
+  );
+  const handleDeleteSuggestiontMutation = () => {
+    deleteSuggestion(undefined, {
+      onSuccess: () => {
+        navigate(`/projects/${projectId}`);
+      },
+    });
+  };
 
   const { data: userList } = useProjectUsers(projectId);
   const { data: comments } = useComments(suggestionId);
@@ -80,13 +94,18 @@ const SuggestionPage = () => {
         <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6 px-2 md:px-4">
           <div className="shrink-0 md:w-32 md:min-w-32 flex items-start">
             {canEdit && (
-              <Button
-                variant="outline"
-                className="w-full md:w-auto"
-                onClick={() => setIsOpen(true)}
-              >
-                Редактировать
-              </Button>
+              <div className="flex flex-col gap-2 w-full md:w-auto">
+                <Button variant="outline" onClick={() => setIsOpen(true)}>
+                  Редактировать
+                </Button>
+                <Button
+                  disabled={isPending}
+                  variant="outline"
+                  onClick={handleDeleteSuggestiontMutation}
+                >
+                  {isPending ? 'Удаление' : 'Удалить'}
+                </Button>
+              </div>
             )}
           </div>
 
