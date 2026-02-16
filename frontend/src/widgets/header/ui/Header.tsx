@@ -58,7 +58,7 @@ export const Header = (): JSX.Element => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="flex flex-col items-center">
             {/* <DropdownMenuItem> */}
-            <InvitesMenu isSubMenu={true} />
+            <InvitesMenu />
             {/* </DropdownMenuItem> */}
             <DropdownMenuItem>
               <ModeToggle />

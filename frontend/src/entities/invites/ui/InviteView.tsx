@@ -11,30 +11,55 @@ interface InviteViewProps {
 
 export function InviteView({ invite, className }: InviteViewProps) {
   const { mutate: replyMutation } = useReplyToInvite();
+
   return (
-    <div className="flex">
-      <div>руддщ</div>
-      <div className={cn('flex items-center gap-1', className)}>
+    <div
+      className={cn(
+        'flex flex-col gap-3 w-full p-3 sm:flex-row sm:items-center sm:gap-2',
+        className
+      )}
+    >
+      <div className="flex-1 min-w-0 text-sm">
+        <div className="text-foreground">
+          Пользователь{' '}
+          <span className="font-semibold wrap-break-word">
+            {invite.sender_nickname}
+          </span>
+        </div>
+
+        <div className="text-muted-foreground">
+          приглашает в проект{' '}
+          <span className="font-medium break-all">{invite.project_name}</span>
+        </div>
+      </div>
+
+      <div className="flex gap-2 sm:gap-1 self-end sm:self-auto">
         <Button
-          onClick={() => {
-            replyMutation({ inviteId: invite.invite_id, inviteResponse: true });
-          }}
           variant="outline"
-          className="size-8"
+          size="icon"
+          className="h-9 w-9"
+          onClick={() =>
+            replyMutation({
+              inviteId: invite.invite_id,
+              inviteResponse: true,
+            })
+          }
         >
-          <Plus className="size-8" />
+          <Plus className="h-4 w-4" />
         </Button>
+
         <Button
-          onClick={() => {
+          variant="outline"
+          size="icon"
+          className="h-9 w-9"
+          onClick={() =>
             replyMutation({
               inviteId: invite.invite_id,
               inviteResponse: false,
-            });
-          }}
-          variant="outline"
-          className="size-8"
+            })
+          }
         >
-          <Minus className="size-8" />
+          <Minus className="h-4 w-4" />
         </Button>
       </div>
     </div>
