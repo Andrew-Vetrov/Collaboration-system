@@ -9,6 +9,7 @@ interface useProjectSetUserPermissionsMutationProps {
 
 export function useProjectSetUserPermissions(projectId: string) {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({
       userId,

@@ -8,7 +8,6 @@ export function useProjectInvites(projectId: string) {
     queryKey: getProjectInvitesQueryKey(projectId),
     queryFn: async () => {
       const response = await invitesApi.projectsProjectIdInvitesGet(projectId);
-      console.log(response.data.data);
       return response.data.data;
     },
   });

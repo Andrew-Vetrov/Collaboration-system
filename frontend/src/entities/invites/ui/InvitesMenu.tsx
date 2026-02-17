@@ -8,7 +8,7 @@ import { useInvites } from '../api/useInvites';
 import { InviteView } from './InviteView';
 
 export function InvitesMenu() {
-  const { data: invites } = useInvites();
+  const { data: invites, isLoading } = useInvites();
 
   return (
     <DropdownMenu>
@@ -20,7 +20,7 @@ export function InvitesMenu() {
         sideOffset={4}
         className="w-72 sm:w-90"
       >
-        {!invites ? (
+        {!isLoading ? (
           <div className="px-4 py-2">Загрузка...</div>
         ) : invites.length === 0 ? (
           <div className="px-4 py-2">Нет приглашений</div>

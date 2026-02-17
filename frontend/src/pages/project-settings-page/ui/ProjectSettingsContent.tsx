@@ -15,7 +15,6 @@ import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import type { SettingsFormInput } from '../model/types';
-import { handleSettingsFormSubmit } from '../lib/handleSettingsFormSubmit';
 import { useProjectSettingsUpdate } from '@/entities/project/api/useProjectSettingsUpdate';
 
 interface ProjectSettingsContentProps {
@@ -67,6 +66,15 @@ export function ProjectSettingsContent({
     }
   }, [isSuccess, settings, reset]);
 
+  const onSubmit = handleSubmit(formData => {
+    const transformedData = {
+      ...formData,
+      vote_interval: `${formData.vote_interval.value} ${formData.vote_interval.unit}`,
+    };
+
+    return updateSettings(transformedData);
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -80,13 +88,9 @@ export function ProjectSettingsContent({
       <div className="text-destructive">Ошибка загрузки настроек проекта</div>
     );
   }
+
   return (
-    <form
-      onSubmit={handleSubmit(formData =>
-        handleSettingsFormSubmit(formData, updateSettings)
-      )}
-      className="flex flex-col gap-4"
-    >
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
         <Label htmlFor="name-id">Имя проекта</Label>
         <Input

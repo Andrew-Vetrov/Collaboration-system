@@ -10,7 +10,14 @@ interface InviteViewProps {
 }
 
 export function InviteView({ invite, className }: InviteViewProps) {
-  const { mutate: replyMutation } = useReplyToInvite();
+  const { mutate: replyToInviteMutation } = useReplyToInvite();
+  const onAccept = () =>
+    replyToInviteMutation({ inviteId: invite.invite_id, inviteResponse: true });
+  const onReject = () =>
+    replyToInviteMutation({
+      inviteId: invite.invite_id,
+      inviteResponse: false,
+    });
 
   return (
     <div
@@ -40,12 +47,7 @@ export function InviteView({ invite, className }: InviteViewProps) {
           variant="outline"
           size="icon"
           className="h-9 w-9"
-          onClick={() =>
-            replyMutation({
-              inviteId: invite.invite_id,
-              inviteResponse: true,
-            })
-          }
+          onClick={onAccept}
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -54,12 +56,7 @@ export function InviteView({ invite, className }: InviteViewProps) {
           variant="outline"
           size="icon"
           className="h-9 w-9"
-          onClick={() =>
-            replyMutation({
-              inviteId: invite.invite_id,
-              inviteResponse: false,
-            })
-          }
+          onClick={onReject}
         >
           <Minus className="h-4 w-4" />
         </Button>
