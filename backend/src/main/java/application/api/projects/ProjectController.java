@@ -1,20 +1,22 @@
 package application.api.projects;
 
 import application.database.entities.Project;
+import application.database.entities.ProjectRights;
 import application.database.services.ProjectService;
 import application.dtos.*;
 import application.dtos.requests.CreateProjectRequest;
-import application.dtos.responses.ErrorResponse;
-import application.dtos.responses.GetProjectResponse;
-import application.dtos.responses.PostProjectResponse;
-import application.exceptions.NoUserException;
+import application.dtos.requests.UpdateProjectSettingsRequest;
+import application.dtos.requests.UpdateUserPermissionsRequest;
+import application.dtos.responses.*;
 import application.security.JwtService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,28 +33,124 @@ public class ProjectController {
     @PostMapping("/projects")
     public PostProjectResponse createProject(
             @Valid @RequestBody CreateProjectRequest request) throws AuthException {
-        UUID userUuid = jwtService.getCurrentUserId();
-        Project project = projectService.createProject(request, userUuid);
-        return new PostProjectResponse(projectService.convertToBasicDto(project));
+        UUID userId = jwtService.getCurrentUserId();
+        Project project = projectService.createProject(request, userId);
+        return new PostProjectResponse(new ProjectBasicDto(project));
     }
 
     @GetMapping("/projects")
     public GetProjectResponse getUserProjects() throws AuthException {
-        UUID userUuid = jwtService.getCurrentUserId();
-        List<Project> projects = projectService.getUserProjects(userUuid);
-        log.info("Found " + projects.size() + " projects for " + userUuid);
+        UUID userId = jwtService.getCurrentUserId();
+        List<Project> projects = projectService.getUserProjects(userId);
+        log.info("Found " + projects.size() + " projects for " + userId);
         List<ProjectBasicDto> dtos = projects.stream()
-                .map(projectService::convertToBasicDto)
+                .map(ProjectBasicDto::new)
                 .toList();
         return new GetProjectResponse(dtos);
     }
 
-    @ExceptionHandler(NoUserException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse noUserHandler(NoUserException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(), request.getRequestURI());
+    @GetMapping("/projects/{projectId}/permissions/me")
+    public UserPermissionsResponse getMyPermissions(
+            @PathVariable("projectId") UUID projectId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        projectService.validateUserProjectAccess(userId, projectId);
+        //Сможем достать, т.к. уже проверили пользователя в методе validate
+        ProjectRights permissions = projectService.getUserProjectRights(userId, projectId).get();
+
+        log.info("User {} retrieved permissions for project {}: isAdmin={}, votesLeft={}",
+                userId, projectId, permissions.getIsAdmin(), permissions.getVotesLeft());
+
+        return new UserPermissionsResponse(permissions);
+    }
+
+    @GetMapping("/projects/{projectId}/settings")
+    public GetProjectSettingsResponse getProjectSettings(
+            @PathVariable("projectId") UUID projectId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        projectService.validateUserProjectAccess(userId, projectId);
+
+        Project project = projectService.getProjectById(projectId);
+        log.info("User {} retrieved settings for project {}", userId, projectId);
+
+        ProjectFullDto projectFullDto = new ProjectFullDto(project);
+        return new GetProjectSettingsResponse(projectFullDto);
+    }
+
+
+    @PutMapping("/projects/{projectId}/settings")
+    public String updateProjectSettings(
+            @PathVariable("projectId") UUID projectId,
+            @Valid @RequestBody UpdateProjectSettingsRequest request) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+
+        if (!projectService.isUserProjectAdmin(userId, projectId)) {
+            throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
+        }
+
+        projectService.updateProjectSettings(projectId, request);
+        log.info("User {} updated settings for project {}", userId, projectId);
+
+        return "Настройки проекта успешно обновлены";
+    }
+
+    @GetMapping("/projects/{projectId}/users")
+    public GetProjectUsersResponse getProjectUsers(
+            @PathVariable("projectId") UUID projectId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        projectService.validateUserProjectAccess(userId, projectId);
+
+        List<ProjectUserDto> users = projectService.getProjectUsers(projectId);
+
+        log.info("User {} retrieved users list for project {} ({} users)",
+                userId, projectId, users.size());
+
+        return new GetProjectUsersResponse(new GetProjectUsersDto(projectId, users));
+    }
+
+    @DeleteMapping("/projects/{projectId}/users/{userId}")
+    public String removeUserFromProject(
+            @PathVariable("projectId") UUID projectId,
+            @PathVariable("userId") UUID userId) throws AuthException {
+
+        UUID currentUserId = jwtService.getCurrentUserId();
+        if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
+            throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
+        }
+
+        // Нельзя удалить администратора или создателя проекта
+        if (projectService.isUserProjectAdmin(userId, projectId)
+                || projectService.getProjectById(projectId).getOwnerId().equals(userId)) {
+            throw new AccessDeniedException("Cannot remove this user from the project");
+        }
+
+        projectService.removeUserFromProject(projectId, userId);
+        log.info("User {}  removed user {} from project {}",
+                currentUserId, userId, projectId);
+
+        return "Пользователь успешно удален из проекта";
+    }
+
+    @PutMapping("/projects/{projectId}/users/{userId}")
+    public String updateUserPermissions(
+            @PathVariable("projectId") UUID projectId,
+            @PathVariable("userId") UUID userId,
+            @Valid @RequestBody UpdateUserPermissionsRequest request) throws AuthException {
+
+        UUID currentUserId = jwtService.getCurrentUserId();
+        // Проверяем, что текущий пользователь является создателем проекта
+        if (projectService.getProjectById(projectId).getOwnerId().equals(userId)) {
+            throw new AccessDeniedException("User is not an admin of project: " + projectId);
+        }
+
+        projectService.updateUserPermissions(projectId, userId, request.is_admin());
+        log.info("User {} (admin) updated permissions for user {} in project {}: isAdmin={}",
+                currentUserId, userId, projectId, request.is_admin());
+
+        return "Права пользователя успешно изменены";
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -71,4 +169,19 @@ public class ProjectController {
                 e.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse accessDeniedHandler(AccessDeniedException e, HttpServletRequest request) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(HttpStatus.FORBIDDEN.value(),
+                e.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse entityNotFoundHandler(EntityNotFoundException e, HttpServletRequest request) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
+                e.getMessage(), request.getRequestURI());
+    }
 }
