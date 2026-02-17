@@ -2,10 +2,12 @@ import { invitesApi } from '@/shared/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getInvitesQueryKey } from '../lib/getInviteQueryKey';
 import type { Invite } from '../model/types';
+import { getProjectInvitesQueryKey } from '../lib/getProjectInvitesQueryKey';
 
 interface ReplyToInviteVariables {
   inviteId: string;
   inviteResponse: boolean;
+  projectId?: string;
 }
 
 export function useReplyToInvite() {
@@ -38,8 +40,13 @@ export function useReplyToInvite() {
         context.previusInvitesData
       );
     },
-    onSettled: () => {
+    onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({ queryKey: getInvitesQueryKey() });
+      if (variables.projectId) {
+        queryClient.invalidateQueries({
+          queryKey: getProjectInvitesQueryKey(variables.projectId),
+        });
+      }
     },
   });
 }

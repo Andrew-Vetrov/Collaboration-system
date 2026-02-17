@@ -3,6 +3,7 @@ import type { SuggestionsSuggestionIdPutRequest } from '@/shared/api/generated';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Suggestion } from '@/entities/suggestion/model/types';
 import { getSuggestionsQueryKey } from '@/entities/suggestion/lib/getSuggestionsQueryKey';
+import { getSuggestionQueryKey } from '@/entities/suggestion/lib/getSuggestionQueryKey';
 
 export function useSuggestionUpdate(project_id: string, suggestionId: string) {
   const queryClient = useQueryClient();
@@ -20,6 +21,9 @@ export function useSuggestionUpdate(project_id: string, suggestionId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: getSuggestionsQueryKey(project_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: getSuggestionQueryKey(suggestionId),
       });
     },
   });

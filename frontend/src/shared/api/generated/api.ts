@@ -58,13 +58,15 @@ export interface Invite {
     /**
      * Email приглашённого пользователя
      */
-    'mail': string;
+    'email': string;
     /**
      * Дата и время отправки приглашения
      */
     'invited_at': string;
     'sender_nickname': string;
     'project_name': string;
+    'receiver_nickname': string;
+    'receiver_avatar'?: string;
 }
 export interface Like {
     'like_id'?: string;
@@ -101,12 +103,12 @@ export const ProjectProjectIdSuggestionsPostRequestStatusEnum = {
 export type ProjectProjectIdSuggestionsPostRequestStatusEnum = typeof ProjectProjectIdSuggestionsPostRequestStatusEnum[keyof typeof ProjectProjectIdSuggestionsPostRequestStatusEnum];
 
 export interface ProjectSettings {
-    'id'?: string;
-    'name'?: string;
-    'description'?: string;
-    'vote_interval'?: string;
-    'votes_for_interval'?: number;
-    'owner_id'?: string;
+    'id': string;
+    'name': string;
+    'description': string;
+    'vote_interval': string;
+    'votes_for_interval': number;
+    'owner_id': string;
 }
 export interface ProjectUser {
     'user_id': string;

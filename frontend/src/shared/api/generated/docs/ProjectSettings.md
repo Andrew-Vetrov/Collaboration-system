@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **string** |  | [optional] [default to undefined]
-**name** | **string** |  | [optional] [default to undefined]
-**description** | **string** |  | [optional] [default to undefined]
-**vote_interval** | **string** |  | [optional] [default to undefined]
-**votes_for_interval** | **number** |  | [optional] [default to undefined]
-**owner_id** | **string** |  | [optional] [default to undefined]
+**id** | **string** |  | [default to undefined]
+**name** | **string** |  | [default to undefined]
+**description** | **string** |  | [default to undefined]
+**vote_interval** | **string** |  | [default to undefined]
+**votes_for_interval** | **number** |  | [default to undefined]
+**owner_id** | **string** |  | [default to undefined]
 
 ## Example
 

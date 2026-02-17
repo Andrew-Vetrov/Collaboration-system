@@ -10,6 +10,7 @@ import { ProjectLayout } from '../layouts/project-layout/ProjectLayout';
 
 const ProjectsPage = lazy(() => import('@/pages/projects-page'));
 const ProjectPage = lazy(() => import('@/pages/project-page'));
+const ProjectSettingsPage = lazy(() => import('@/pages/project-settings-page'));
 const SuggestionPage = lazy(() => import('@/pages/suggestion-page'));
 const CreateSuggestionPage = lazy(
   () => import('@/pages/create-suggestion-page')
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
             element: <ProjectLayout />,
             children: [
               { index: true, element: <ProjectPage /> },
+              {
+                path: routesPaths.projectSettingPagePath,
+                element: <ProjectSettingsPage />,
+              },
 
               {
                 path: routesPaths.suggestionPagePath,

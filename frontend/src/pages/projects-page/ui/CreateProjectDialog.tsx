@@ -65,7 +65,7 @@ export const CreateProjectDialog = (
               <Input
                 {...register('name', {
                   required: 'Необходимо написать имя проекта',
-                  maxLength: 30,
+                  maxLength: { message: 'Максимум 100 символов', value: 100 },
                 })}
                 id="name-1"
                 name="name"
@@ -77,6 +77,7 @@ export const CreateProjectDialog = (
               <Textarea
                 {...register('description', {
                   required: 'Необходимо написать описание для проекта',
+                  maxLength: { message: 'Максимум 2000 символов', value: 2000 },
                 })}
                 id="description-1"
                 name="description"

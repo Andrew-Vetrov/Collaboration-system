@@ -670,6 +670,7 @@ paths:
           description: Недостаточно прав для просмотра приглашений
         '404':
           description: Проект не найден
+          
   /invites:
     get:
       summary: Получить список приглашений пользователя (себя)
@@ -793,6 +794,8 @@ components:
         owner_id:
           type: string
           format: uuid
+      required: [id, name, description, vote_interval, votes_for_interval, owner_id]
+
 
     CurrentUser:
       type: object
@@ -954,7 +957,7 @@ components:
           type: string
           format: uuid
           description: Идентификатор проекта
-        mail:
+        email:
           type: string
           format: email
           description: Email приглашённого пользователя
@@ -966,13 +969,18 @@ components:
           type: string
         project_name:
           type: string
+        receiver_nickname:
+          type: string
+        receiver_avatar:
+          type: string
       required:
         - invite_id
         - project_id
-        - mail
+        - email
         - invited_at
         - project_name
         - sender_nickname
+        - receiver_nickname
       additionalProperties: false
 
 

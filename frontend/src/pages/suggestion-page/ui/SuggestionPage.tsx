@@ -1,9 +1,7 @@
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useSuggestion } from '@/entities/suggestion';
 import { Button, Card, CardContent } from '@/shared/ui';
-import { STATUS_LABELS } from '@/entities/suggestion/lib/status';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { EditSuggestionDialog } from './EditSuggestionDialog';
 import { useProjectPermissions } from '@/entities/project/api/useProjectPermissions';
 import { useAuthMe } from '@/entities/main-user/api/useAuthMe';
@@ -16,6 +14,7 @@ import { formOption, maxReplyDepth } from '../lib/utilData';
 import { useCommentDelete } from '@/entities/comment/api/useCommentDelete';
 import { LikesSection } from './LikesSection';
 import { useSuggestionDelete } from '@/features/suggestion-delete/api/useSuggestionDelete';
+import { routes } from '@/shared/route';
 
 const SuggestionPage = () => {
   const { projectId, suggestionId } = useParams<{
@@ -40,7 +39,7 @@ const SuggestionPage = () => {
   const handleDeleteSuggestiontMutation = () => {
     deleteSuggestion(undefined, {
       onSuccess: () => {
-        navigate(`/projects/${projectId}`);
+        navigate(routes.projectRoute(projectId));
       },
     });
   };
