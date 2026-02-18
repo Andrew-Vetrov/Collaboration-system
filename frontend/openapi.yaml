@@ -660,20 +660,8 @@ paths:
                   data:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        invite_id:
-                          type: string
-                          format: uuid
-                        project_id:
-                          type: string
-                          format: uuid
-                        mail:
-                          type: string
-                          format: email
-                        invited_at:
-                          type: string
-                          format: date-time
+                      $ref: '#/components/schemas/Invite'
+                required: [data]
         '400':
           description: Неверные данные
         '401':
@@ -682,6 +670,7 @@ paths:
           description: Недостаточно прав для просмотра приглашений
         '404':
           description: Проект не найден
+          
   /invites:
     get:
       summary: Получить список приглашений пользователя (себя)
@@ -700,20 +689,8 @@ paths:
                   data:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        invite_id:
-                          type: string
-                          format: uuid
-                        project_id:
-                          type: string
-                          format: uuid
-                        mail:
-                          type: string
-                          format: email
-                        invited_at:
-                          type: string
-                          format: date-time
+                      $ref: '#/components/schemas/Invite'
+                required: [data]
         '401':
           description: Не авторизован
   /invites/{invite_id}:
@@ -817,6 +794,8 @@ components:
         owner_id:
           type: string
           format: uuid
+      required: [id, name, description, vote_interval, votes_for_interval, owner_id]
+
 
     CurrentUser:
       type: object
@@ -966,6 +945,44 @@ components:
       required:
         - is_admin
         - likes_remain
+    
+    Invite:
+      type: object
+      properties:
+        invite_id:
+          type: string
+          format: uuid
+          description: Идентификатор приглашения
+        project_id:
+          type: string
+          format: uuid
+          description: Идентификатор проекта
+        email:
+          type: string
+          format: email
+          description: Email приглашённого пользователя
+        invited_at:
+          type: string
+          format: date-time
+          description: Дата и время отправки приглашения
+        sender_nickname:
+          type: string
+        project_name:
+          type: string
+        receiver_nickname:
+          type: string
+        receiver_avatar:
+          type: string
+      required:
+        - invite_id
+        - project_id
+        - email
+        - invited_at
+        - project_name
+        - sender_nickname
+        - receiver_nickname
+      additionalProperties: false
+
 
 
 

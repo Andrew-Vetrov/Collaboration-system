@@ -46,6 +46,28 @@ export interface CurrentUser {
     'nickname': string;
     'avatar_url': string;
 }
+export interface Invite {
+    /**
+     * Идентификатор приглашения
+     */
+    'invite_id': string;
+    /**
+     * Идентификатор проекта
+     */
+    'project_id': string;
+    /**
+     * Email приглашённого пользователя
+     */
+    'email': string;
+    /**
+     * Дата и время отправки приглашения
+     */
+    'invited_at': string;
+    'sender_nickname': string;
+    'project_name': string;
+    'receiver_nickname': string;
+    'receiver_avatar'?: string;
+}
 export interface Like {
     'like_id'?: string;
     'user_id': string;
@@ -81,12 +103,12 @@ export const ProjectProjectIdSuggestionsPostRequestStatusEnum = {
 export type ProjectProjectIdSuggestionsPostRequestStatusEnum = typeof ProjectProjectIdSuggestionsPostRequestStatusEnum[keyof typeof ProjectProjectIdSuggestionsPostRequestStatusEnum];
 
 export interface ProjectSettings {
-    'id'?: string;
-    'name'?: string;
-    'description'?: string;
-    'vote_interval'?: string;
-    'votes_for_interval'?: number;
-    'owner_id'?: string;
+    'id': string;
+    'name': string;
+    'description': string;
+    'vote_interval': string;
+    'votes_for_interval': number;
+    'owner_id': string;
 }
 export interface ProjectUser {
     'user_id': string;
@@ -119,13 +141,7 @@ export interface ProjectsPostRequest {
     'description': string;
 }
 export interface ProjectsProjectIdInvitesGet200Response {
-    'data'?: Array<ProjectsProjectIdInvitesGet200ResponseDataInner>;
-}
-export interface ProjectsProjectIdInvitesGet200ResponseDataInner {
-    'invite_id'?: string;
-    'project_id'?: string;
-    'mail'?: string;
-    'invited_at'?: string;
+    'data': Array<Invite>;
 }
 export interface ProjectsProjectIdSettingsGet200Response {
     'data'?: ProjectSettings;

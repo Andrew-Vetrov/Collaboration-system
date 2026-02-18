@@ -78,7 +78,7 @@ export function SuggestionEditingFields({
         )}
       </div>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex flex-col sm:flex-row gap-3 justify-end">
         <Button
           type="submit"
           className="bg-blue-600 text-white hover:bg-blue-700"

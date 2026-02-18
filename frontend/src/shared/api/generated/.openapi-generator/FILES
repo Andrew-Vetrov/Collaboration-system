@@ -10,6 +10,7 @@ docs/CommentIdReplyPostRequest.md
 docs/CommentsApi.md
 docs/CreateSuggestionRequest.md
 docs/CurrentUser.md
+docs/Invite.md
 docs/InvitesApi.md
 docs/Like.md
 docs/ProjectBasic.md
@@ -24,7 +25,6 @@ docs/ProjectsGet200Response.md
 docs/ProjectsPost201Response.md
 docs/ProjectsPostRequest.md
 docs/ProjectsProjectIdInvitesGet200Response.md
-docs/ProjectsProjectIdInvitesGet200ResponseDataInner.md
 docs/ProjectsProjectIdSettingsGet200Response.md
 docs/ProjectsProjectIdSettingsPutRequest.md
 docs/ProjectsProjectIdUsersGet200Response.md

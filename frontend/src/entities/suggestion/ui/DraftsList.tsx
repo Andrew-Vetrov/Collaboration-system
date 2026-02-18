@@ -3,6 +3,7 @@ import { useSuggestions } from '../api/useSuggestions';
 import type { Suggestion } from '../model/types';
 
 type DraftsListProps = {
+  className?: string;
   clickSuggestion: (suggestion: Suggestion) => void;
 };
 

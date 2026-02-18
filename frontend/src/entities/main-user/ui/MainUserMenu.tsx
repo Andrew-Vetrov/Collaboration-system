@@ -3,19 +3,66 @@ import {
   AvatarFallback,
   Button,
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from '@/shared/ui';
 import { useAuthMe } from '../api/useAuthMe';
 import { LogOut } from 'lucide-react';
 
 interface MainUserMenuProps {
+  isSubMenu?: boolean;
   handleLogout: () => void;
 }
 
-export function MainUserMenu({ handleLogout }: MainUserMenuProps) {
+export function MainUserMenu({
+  handleLogout,
+  isSubMenu = false,
+}: MainUserMenuProps) {
   const { data: user } = useAuthMe();
+
+  if (isSubMenu) {
+    return (
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger>
+          <div className="flex items-center gap-2">
+            <Avatar className="h-6 w-6">
+              <AvatarFallback>
+                <img
+                  src={user?.avatar_url}
+                  alt="User avatar"
+                  className="w-full h-full object-cover"
+                />
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate">{user?.nickname}</span>
+          </div>
+        </DropdownMenuSubTrigger>
+
+        <DropdownMenuPortal>
+          <DropdownMenuSubContent>
+            <DropdownMenuItem>
+              <span className="block max-w-[150px] truncate">
+                {user?.nickname}
+              </span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <span>{user?.email}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Выйти</span>
+            </DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuPortal>
+      </DropdownMenuSub>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -28,7 +75,7 @@ export function MainUserMenu({ handleLogout }: MainUserMenuProps) {
                 className="w-full h-full object-cover"
               />
             </AvatarFallback>
-          </Avatar>{' '}
+          </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -38,7 +85,7 @@ export function MainUserMenu({ handleLogout }: MainUserMenuProps) {
         <DropdownMenuItem>
           <span>{user?.email}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleLogout()}>
+        <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Выйти</span>
         </DropdownMenuItem>

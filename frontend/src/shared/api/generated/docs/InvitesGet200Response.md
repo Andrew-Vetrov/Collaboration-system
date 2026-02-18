@@ -1,18 +1,18 @@
-# ProjectsProjectIdInvitesGet200Response
+# InvitesGet200Response
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | [**Array&lt;Invite&gt;**](Invite.md) |  | [default to undefined]
+**data** | [**Array&lt;ProjectsProjectIdInvitesGet200ResponseDataInner&gt;**](ProjectsProjectIdInvitesGet200ResponseDataInner.md) |  | [optional] [default to undefined]
 
 ## Example
 
 ```typescript
-import { ProjectsProjectIdInvitesGet200Response } from './api';
+import { InvitesGet200Response } from './api';
 
-const instance: ProjectsProjectIdInvitesGet200Response = {
+const instance: InvitesGet200Response = {
     data,
 };
 ```
