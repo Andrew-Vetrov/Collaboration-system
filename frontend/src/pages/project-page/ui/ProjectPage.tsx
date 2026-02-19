@@ -55,9 +55,7 @@ const ProjectPage = (): JSX.Element => {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger className="order-2 sm:order-3 size-8 sm:size-10 justify-self-end">
-            <Button variant="outline" size="icon" className="size-8 sm:size-10">
-              <EllipsisVertical className="size-8 sm:size-10 " />
-            </Button>
+            <EllipsisVertical className="size-8 sm:size-10 " />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="">
             {isAdmin && (

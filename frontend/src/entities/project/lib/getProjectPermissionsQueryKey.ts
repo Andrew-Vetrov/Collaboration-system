@@ -1,3 +1,3 @@
-export function getProjectPermissionsQueryKey(id: string) {
-  return ['project', id, 'permissions'];
+export function getProjectPermissionsQueryKey(projectId: string) {
+  return ['project', projectId, 'permissions'];
 }
