@@ -143,7 +143,11 @@ const SuggestionPage = () => {
             </div>
           </div>
 
-          <LikesSection suggestion={suggestion} className="hidden md:flex" />
+          <LikesSection
+            projectId={projectId}
+            suggestion={suggestion}
+            className="hidden md:flex"
+          />
         </div>
       </div>
       {canEdit && (

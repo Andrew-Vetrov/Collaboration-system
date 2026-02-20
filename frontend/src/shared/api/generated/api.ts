@@ -165,6 +165,7 @@ export interface Suggestion {
     'placed_at'?: string;
     'last_edit'?: string;
     'likes_amount'?: number;
+    'user_likes_amount'?: number;
     'name': string;
     'description': string;
     'status': SuggestionStatusEnum;

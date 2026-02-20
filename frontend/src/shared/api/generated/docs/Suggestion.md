@@ -11,6 +11,7 @@ Name | Type | Description | Notes
 **placed_at** | **string** |  | [optional] [default to undefined]
 **last_edit** | **string** |  | [optional] [default to undefined]
 **likes_amount** | **number** |  | [optional] [default to undefined]
+**user_likes_amount** | **number** |  | [optional] [default to undefined]
 **name** | **string** |  | [default to undefined]
 **description** | **string** |  | [default to undefined]
 **status** | **string** |  | [default to undefined]
@@ -27,6 +28,7 @@ const instance: Suggestion = {
     placed_at,
     last_edit,
     likes_amount,
+    user_likes_amount,
     name,
     description,
     status,

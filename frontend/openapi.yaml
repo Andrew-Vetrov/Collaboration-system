@@ -863,6 +863,8 @@ components:
           format: date-time
         likes_amount:
           type: integer
+        user_likes_amount:
+          type: integer
         name:
           type: string
           maxLength: 250
