@@ -142,8 +142,8 @@ public class ProjectController {
 
         UUID currentUserId = jwtService.getCurrentUserId();
         // Проверяем, что текущий пользователь является создателем проекта
-        if (projectService.getProjectById(projectId).getOwnerId().equals(userId)) {
-            throw new AccessDeniedException("User is not an admin of project: " + projectId);
+        if (!projectService.getProjectById(projectId).getOwnerId().equals(currentUserId)) {
+            throw new AccessDeniedException("User is not an owner of project: " + projectId);
         }
 
         projectService.updateUserPermissions(projectId, userId, request.is_admin());

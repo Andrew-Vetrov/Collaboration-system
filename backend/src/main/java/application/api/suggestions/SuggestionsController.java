@@ -66,15 +66,6 @@ public class SuggestionsController {
         return suggestionService.getSuggestionDetail(suggestionId, userUuid);
     }
 
-
-    @ExceptionHandler(NoUserException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse noUserHandler(NoUserException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
