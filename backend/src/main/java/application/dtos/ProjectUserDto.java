@@ -10,18 +10,18 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProjectUserDto {
     @JsonProperty("user_id")
-    private final UUID user_id;
+    private final UUID userId;
     @JsonProperty("email")
     private final String email;
     @JsonProperty("nickname")
     private final String nickname;
     @JsonProperty("is_admin")
-    private final boolean is_admin;
+    private final boolean isAdmin;
 
     public ProjectUserDto(User user, boolean is_admin){
-        user_id = user.getId();
+        userId = user.getId();
         email = user.getMail();
         nickname = user.getNickname();
-        this.is_admin = is_admin;
+        this.isAdmin = is_admin;
     }
 }

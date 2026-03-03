@@ -35,6 +35,8 @@ public class ProjectController {
             @Valid @RequestBody CreateProjectRequest request) throws AuthException {
         UUID userId = jwtService.getCurrentUserId();
         Project project = projectService.createProject(request, userId);
+        log.debug("User {} created project {}",
+                userId, project.getId());
         return new PostProjectResponse(new ProjectBasicDto(project));
     }
 
@@ -42,7 +44,8 @@ public class ProjectController {
     public GetProjectResponse getUserProjects() throws AuthException {
         UUID userId = jwtService.getCurrentUserId();
         List<Project> projects = projectService.getUserProjects(userId);
-        log.info("Found " + projects.size() + " projects for " + userId);
+        log.debug("User {} retrieved projects list ({} projects)",
+                userId, projects.size());
         List<ProjectBasicDto> dtos = projects.stream()
                 .map(ProjectBasicDto::new)
                 .toList();
@@ -54,11 +57,9 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        projectService.validateUserProjectAccess(userId, projectId);
-        //Сможем достать, т.к. уже проверили пользователя в методе validate
-        ProjectRights permissions = projectService.getUserProjectRights(userId, projectId).get();
+        ProjectRights permissions = projectService.validateAndGetUserProjectAccess(userId, projectId);
 
-        log.info("User {} retrieved permissions for project {}: isAdmin={}, votesLeft={}",
+        log.debug("User {} retrieved permissions for project {}: isAdmin={}, votesLeft={}",
                 userId, projectId, permissions.getIsAdmin(), permissions.getVotesLeft());
 
         return new UserPermissionsResponse(permissions);
@@ -69,10 +70,10 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        projectService.validateUserProjectAccess(userId, projectId);
+        projectService.validateAndGetUserProjectAccess(userId, projectId);
 
         Project project = projectService.getProjectById(projectId);
-        log.info("User {} retrieved settings for project {}", userId, projectId);
+        log.debug("User {} retrieved settings for project {}", userId, projectId);
 
         ProjectFullDto projectFullDto = new ProjectFullDto(project);
         return new GetProjectSettingsResponse(projectFullDto);
@@ -91,7 +92,7 @@ public class ProjectController {
         }
 
         projectService.updateProjectSettings(projectId, request);
-        log.info("User {} updated settings for project {}", userId, projectId);
+        log.debug("User {} updated settings for project {}", userId, projectId);
 
         return "Настройки проекта успешно обновлены";
     }
@@ -101,11 +102,11 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        projectService.validateUserProjectAccess(userId, projectId);
+        projectService.validateAndGetUserProjectAccess(userId, projectId);
 
         List<ProjectUserDto> users = projectService.getProjectUsers(projectId);
 
-        log.info("User {} retrieved users list for project {} ({} users)",
+        log.debug("User {} retrieved users list for project {} ({} users)",
                 userId, projectId, users.size());
 
         return new GetProjectUsersResponse(new GetProjectUsersDto(projectId, users));
@@ -122,13 +123,15 @@ public class ProjectController {
         }
 
         // Нельзя удалить администратора или создателя проекта
-        if (projectService.isUserProjectAdmin(userId, projectId)
-                || projectService.getProjectById(projectId).getOwnerId().equals(userId)) {
-            throw new AccessDeniedException("Cannot remove this user from the project");
+        if (projectService.isUserProjectAdmin(userId, projectId)) {
+            throw new AccessDeniedException("Cannot remove admin user from the project");
+        }
+        if (projectService.getProjectById(projectId).getOwnerId().equals(userId)) {
+            throw new AccessDeniedException("Cannot remove owner from the project");
         }
 
         projectService.removeUserFromProject(projectId, userId);
-        log.info("User {}  removed user {} from project {}",
+        log.debug("User {}  removed user {} from project {}",
                 currentUserId, userId, projectId);
 
         return "Пользователь успешно удален из проекта";
@@ -146,9 +149,9 @@ public class ProjectController {
             throw new AccessDeniedException("User is not an owner of project: " + projectId);
         }
 
-        projectService.updateUserPermissions(projectId, userId, request.is_admin());
-        log.info("User {} (admin) updated permissions for user {} in project {}: isAdmin={}",
-                currentUserId, userId, projectId, request.is_admin());
+        projectService.updateUserPermissions(projectId, userId, request.isAdmin());
+        log.debug("User {} (admin) updated permissions for user {} in project {}: isAdmin={}",
+                currentUserId, userId, projectId, request.isAdmin());
 
         return "Права пользователя успешно изменены";
     }
@@ -156,7 +159,7 @@ public class ProjectController {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
+        log.warn("Illegal argument during: {}", request.getRequestURI(), e);
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                 e.getMessage(), request.getRequestURI());
     }
@@ -164,7 +167,7 @@ public class ProjectController {
     @ExceptionHandler(AuthException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
+        log.warn("Unauthorized request to: {}", request.getRequestURI(), e);
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
                 e.getMessage(), request.getRequestURI());
     }
@@ -172,7 +175,7 @@ public class ProjectController {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse accessDeniedHandler(AccessDeniedException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
+        log.warn("Access denied during: {}", request.getRequestURI(), e);
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(),
                 e.getMessage(), request.getRequestURI());
     }
@@ -180,7 +183,7 @@ public class ProjectController {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse entityNotFoundHandler(EntityNotFoundException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
+        log.warn("Entity not found during: {}", request.getRequestURI(), e);
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
                 e.getMessage(), request.getRequestURI());
     }

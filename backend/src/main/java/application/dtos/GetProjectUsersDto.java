@@ -1,5 +1,6 @@
 package application.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,6 +10,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 public class GetProjectUsersDto {
-    private final UUID project_id;
+    @JsonProperty("project_id")
+    private final UUID projectId;
     private final List<ProjectUserDto> users;
 }

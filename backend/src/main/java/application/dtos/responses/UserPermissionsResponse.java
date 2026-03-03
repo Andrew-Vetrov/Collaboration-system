@@ -8,13 +8,13 @@ import lombok.AllArgsConstructor;
 public class UserPermissionsResponse {
 
     @JsonProperty("is_admin")
-    private final boolean is_admin;
+    private final boolean isAdmin;
 
     @JsonProperty("likes_remain")
-    private final int likes_remain;
+    private final int likesRemain;
 
     public UserPermissionsResponse(ProjectRights rights) {
-        this.is_admin     = rights.getIsAdmin();
-        this.likes_remain = rights.getVotesLeft();
+        this.isAdmin     = rights.getIsAdmin();
+        this.likesRemain = rights.getVotesLeft();
     }
 }

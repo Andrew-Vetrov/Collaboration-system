@@ -5,5 +5,6 @@ import lombok.Getter;
 
 @Getter
 public class UpdateUserPermissionsRequest {
-    private boolean is_admin;
+    @JsonProperty("is_admin")
+    private boolean isAdmin;
 }

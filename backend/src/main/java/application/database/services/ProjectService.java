@@ -85,10 +85,13 @@ public class ProjectService {
         return projectRightsRepository.findByUserIdAndProjectId(userId, projectId);
     }
 
-    public void validateUserProjectAccess(UUID userId, UUID projectId) {
-        if (getUserProjectRights(userId, projectId).isEmpty()) {
+    public ProjectRights validateAndGetUserProjectAccess(UUID userId, UUID projectId) {
+        Optional<ProjectRights> userRights = getUserProjectRights(userId, projectId);
+        if (userRights.isEmpty()) {
             throw new AccessDeniedException("User " + userId + " has no access to project " + projectId);
         }
+        return userRights.get();
+
     }
 
     public Project getProjectById(UUID projectId) {
@@ -142,17 +145,17 @@ public class ProjectService {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new IllegalArgumentException("Name is not specified");
         }
-        if (request.getVote_interval() == null || request.getVote_interval().isBlank()) {
+        if (request.getVoteInterval() == null || request.getVoteInterval().isBlank()) {
             throw new IllegalArgumentException("Vote interval is not specified");
         }
-        if (request.getVotes_for_interval() == null) {
+        if (request.getVotesForInterval() == null) {
             throw new IllegalArgumentException("Votes for interval is not specified");
         }
 
         project.setName(request.getName());
         project.setDescription(request.getDescription());
-        project.setVoteInterval(parseDuration(request.getVote_interval()));
-        project.setVotesForInterval(request.getVotes_for_interval());
+        project.setVoteInterval(parseDuration(request.getVoteInterval()));
+        project.setVotesForInterval(request.getVotesForInterval());
 
         projectRepository.save(project);
     }
