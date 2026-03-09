@@ -139,8 +139,12 @@ public class ProjectService {
     }
 
     @Transactional
-    public void updateProjectSettings(UUID projectId, UpdateProjectSettingsRequest request) {
+    public void updateProjectSettings(UUID projectId, UpdateProjectSettingsRequest request, UUID userId) {
         Project project = getProjectById(projectId);
+
+        if (!isUserProjectAdmin(userId, projectId)) {
+            throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
+        }
 
         if (request.getName() == null || request.getName().isBlank()) {
             throw new IllegalArgumentException("Name is not specified");
@@ -179,17 +183,33 @@ public class ProjectService {
     }
 
     @Transactional
-    public void removeUserFromProject(UUID projectId, UUID userId) {
-        ProjectRights rights = projectRightsRepository.findByUserIdAndProjectId(userId, projectId)
-                .orElseThrow(() -> new EntityNotFoundException("User " + userId + " is not a member of project " + projectId));
+    public void removeUserFromProject(UUID projectId, UUID targetUserId, UUID currentUserId) {
+        if (!isUserProjectAdmin(currentUserId, projectId)) {
+            throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
+        }
+
+        // Нельзя удалить администратора или создателя проекта
+        if (isUserProjectAdmin(targetUserId, projectId)) {
+            throw new AccessDeniedException("Cannot remove admin user from the project");
+        }
+        if (getProjectById(projectId).getOwnerId().equals(targetUserId)) {
+            throw new AccessDeniedException("Cannot remove owner from the project");
+        }
+
+        ProjectRights rights = projectRightsRepository.findByUserIdAndProjectId(targetUserId, projectId)
+                .orElseThrow(() -> new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId));
 
         projectRightsRepository.delete(rights);
     }
 
     @Transactional
-    public void updateUserPermissions(UUID projectId, UUID userId, boolean isAdmin) {
-        ProjectRights rights = projectRightsRepository.findByUserIdAndProjectId(userId, projectId)
-                .orElseThrow(() -> new EntityNotFoundException("User " + userId + " is not a member of project " + projectId));
+    public void updateUserPermissions(UUID projectId, UUID targetUserId, boolean isAdmin, UUID currentUserId) {
+        // Проверяем, что текущий пользователь является создателем проекта
+        if (!getProjectById(projectId).getOwnerId().equals(currentUserId)) {
+            throw new AccessDeniedException("User is not an owner of project: " + projectId);
+        }
+        ProjectRights rights = projectRightsRepository.findByUserIdAndProjectId(targetUserId, projectId)
+                .orElseThrow(() -> new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId));
 
         rights.setIsAdmin(isAdmin);
         projectRightsRepository.save(rights);

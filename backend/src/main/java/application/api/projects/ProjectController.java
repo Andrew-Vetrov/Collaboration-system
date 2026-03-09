@@ -87,11 +87,8 @@ public class ProjectController {
 
         UUID userId = jwtService.getCurrentUserId();
 
-        if (!projectService.isUserProjectAdmin(userId, projectId)) {
-            throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
-        }
 
-        projectService.updateProjectSettings(projectId, request);
+        projectService.updateProjectSettings(projectId, request, userId);
         log.debug("User {} updated settings for project {}", userId, projectId);
 
         return "Настройки проекта успешно обновлены";
@@ -118,19 +115,8 @@ public class ProjectController {
             @PathVariable("userId") UUID userId) throws AuthException {
 
         UUID currentUserId = jwtService.getCurrentUserId();
-        if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
-            throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
-        }
 
-        // Нельзя удалить администратора или создателя проекта
-        if (projectService.isUserProjectAdmin(userId, projectId)) {
-            throw new AccessDeniedException("Cannot remove admin user from the project");
-        }
-        if (projectService.getProjectById(projectId).getOwnerId().equals(userId)) {
-            throw new AccessDeniedException("Cannot remove owner from the project");
-        }
-
-        projectService.removeUserFromProject(projectId, userId);
+        projectService.removeUserFromProject(projectId, userId, currentUserId);
         log.debug("User {}  removed user {} from project {}",
                 currentUserId, userId, projectId);
 
@@ -144,12 +130,8 @@ public class ProjectController {
             @Valid @RequestBody UpdateUserPermissionsRequest request) throws AuthException {
 
         UUID currentUserId = jwtService.getCurrentUserId();
-        // Проверяем, что текущий пользователь является создателем проекта
-        if (!projectService.getProjectById(projectId).getOwnerId().equals(currentUserId)) {
-            throw new AccessDeniedException("User is not an owner of project: " + projectId);
-        }
 
-        projectService.updateUserPermissions(projectId, userId, request.isAdmin());
+        projectService.updateUserPermissions(projectId, userId, request.isAdmin(), currentUserId);
         log.debug("User {} (admin) updated permissions for user {} in project {}: isAdmin={}",
                 currentUserId, userId, projectId, request.isAdmin());
 
