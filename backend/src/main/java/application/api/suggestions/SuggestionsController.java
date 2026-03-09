@@ -8,7 +8,6 @@ import application.dtos.SuggestionDetailDto;
 import application.dtos.SuggestionDto;
 import application.dtos.responses.ErrorResponse;
 import application.dtos.responses.GetProjectSuggestionsResponse;
-import application.exceptions.NoUserException;
 import application.security.JwtService;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,15 +64,6 @@ public class SuggestionsController {
         UUID userUuid = jwtService.getCurrentUserId();
 
         return suggestionService.getSuggestionDetail(suggestionId, userUuid);
-    }
-
-
-    @ExceptionHandler(NoUserException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse noUserHandler(NoUserException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -17,7 +17,8 @@ DECLARE
 BEGIN
     -- Проверка существования пользователя
     IF NOT EXISTS (SELECT 1 FROM users WHERE id = user_uuid) THEN
-        RAISE EXCEPTION 'User with UUID % not found', user_uuid;
+        INSERT INTO users (id, mail, nickname)
+        VALUES (user_uuid, 'testmail', 'testnickname');
     END IF;
 
     -- Создание 3 проектов
