@@ -26,9 +26,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Все пути OAuth2 login flow — открыты
                         .requestMatchers(
-                                "/auth", "/auth/**",
-                                "/login/**", "/oauth2/**",
-                                "/error", "/", "/favicon.ico"
+                                "/auth", "/login/**", "/oauth2/**", "/"
                         ).permitAll()
                         .requestMatchers("/projects", "/projects/**").authenticated()
                         .anyRequest().authenticated()

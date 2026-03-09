@@ -2,6 +2,7 @@ package application.database.services;
 
 import application.database.entities.User;
 import application.database.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,11 @@ public class UserService {
     public User findOrCreateByEmail(String email) {
         return userRepository.findByMail(email)
                 .orElseGet(() -> createNewUserFromEmail(email));
+    }
+
+    public User findById(UUID userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User " + userId + " not found"));
     }
 
     private User createNewUserFromEmail(String email) {
