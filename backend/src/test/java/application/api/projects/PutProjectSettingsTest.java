@@ -57,7 +57,12 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
     void apiPutProjectSettings_NonExistentUser() {
         UUID nonExistentId = UUID.randomUUID();
         String jwt = jwtService.generateToken(nonExistentId);
-        UUID projectId = UUID.randomUUID();
+        Project project = Project.builder()
+                .ownerId(testUser.getId())
+                .name("Test Project")
+                .description("Description")
+                .build();
+        Project savedProject = projectRepository.save(project);
 
         String body = """
                 {
@@ -68,12 +73,12 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
                 }
                 """;
 
-        makePostProjectSettingsRequest(projectId, jwt, body)
+        makePostProjectSettingsRequest(savedProject.getId(), jwt, body)
                 .expectStatus().isNotFound()
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(404)
                 .jsonPath("$.error").isEqualTo("User not found: " + nonExistentId)
-                .jsonPath("$.path").isEqualTo("/projects/" + projectId + "/settings");
+                .jsonPath("$.path").isEqualTo("/projects/" + savedProject.getId() + "/settings");
     }
 
     @Test
