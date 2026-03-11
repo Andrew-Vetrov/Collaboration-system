@@ -2,6 +2,7 @@ package application.database.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnTransformer;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -14,6 +15,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Suggestion {
+    public enum SuggestionStatus {
+        DRAFT,
+        NEW,
+        DISCUSSION,
+        PLANNED,
+        IN_PROGRESS,
+        ACCEPTED,
+        REJECTED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -36,6 +47,11 @@ public class Suggestion {
     @Column(name = "description")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    @ColumnTransformer(
+            read = "status::text",
+            write = "?::suggestion_status"
+    )
+    private SuggestionStatus status;
 }

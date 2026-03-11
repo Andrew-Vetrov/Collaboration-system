@@ -9,6 +9,7 @@ import application.dtos.SuggestionDto;
 import application.dtos.responses.ErrorResponse;
 import application.dtos.responses.GetProjectSuggestionsResponse;
 import application.security.JwtService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,17 +36,7 @@ public class SuggestionsController {
             @RequestParam(required = false) String status) throws AuthException {
 
         UUID userUuid = jwtService.getCurrentUserId();
-
-        // Проверка доступа: пользователь должен иметь права на проект
-        List<Project> userProjects = projectService.getUserProjects(userUuid);
-        boolean hasAccess = userProjects.stream()
-                .anyMatch(p -> p.getId().equals(projectId));
-
-        if (!hasAccess) {
-            throw new AuthException("User " + userUuid + " has no access to project: " + projectId);
-        }
-
-        List<Suggestion> suggestions = suggestionService.getSuggestions(projectId, status);
+        List<Suggestion> suggestions = suggestionService.getSuggestions(projectId, userUuid, status);
 
         List<SuggestionDto> dtos = suggestions.stream()
                 .map(suggestionService::convertToSuggestionDtoWithLikes)
@@ -69,7 +60,7 @@ public class SuggestionsController {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
+        log.warn("Illegal argument during: {}", request.getRequestURI(), e);
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                 e.getMessage(), request.getRequestURI());
     }
@@ -77,16 +68,24 @@ public class SuggestionsController {
     @ExceptionHandler(AuthException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
+        log.warn("Unauthorized request to: {}", request.getRequestURI(), e);
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
                 e.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse accessDeniedHandler(AccessDeniedException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
+        log.warn("Access denied during: {}", request.getRequestURI(), e);
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(),
+                e.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse entityNotFoundHandler(EntityNotFoundException e, HttpServletRequest request) {
+        log.warn("Entity not found during: {}", request.getRequestURI(), e);
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
                 e.getMessage(), request.getRequestURI());
     }
 

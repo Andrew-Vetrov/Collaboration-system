@@ -11,5 +11,5 @@ import java.util.UUID;
 @Repository
 public interface SuggestionRepository extends JpaRepository<Suggestion, UUID> {
     List<Suggestion> findAllByProjectId(UUID projectId);
-    List<Suggestion> findAllByProjectIdAndStatus(UUID projectId, String status);
+    List<Suggestion> findAllByProjectIdAndStatus(UUID projectId, Suggestion.SuggestionStatus status);
 }
