@@ -214,4 +214,21 @@ public class ProjectService {
         rights.setIsAdmin(isAdmin);
         projectRightsRepository.save(rights);
     }
+
+    @Transactional
+    public void consumeVote(UUID userId, UUID projectId) {
+        ProjectRights rights = validateAndGetUserProjectAccess(userId, projectId);
+        if (rights.getVotesLeft() < 1) {
+            throw new IllegalArgumentException("User " + userId + " has no votes left in project " + projectId);
+        }
+        rights.setVotesLeft(rights.getVotesLeft() - 1);
+        projectRightsRepository.save(rights);
+    }
+
+    @Transactional
+    public void restoreVote(UUID userId, UUID projectId) {
+        ProjectRights rights = validateAndGetUserProjectAccess(userId, projectId);
+        rights.setVotesLeft(rights.getVotesLeft() + 1);
+        projectRightsRepository.save(rights);
+    }
 }

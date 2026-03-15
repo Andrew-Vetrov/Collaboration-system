@@ -6,6 +6,7 @@ import application.database.services.ProjectService;
 import application.database.services.SuggestionService;
 import application.dtos.SuggestionDetailDto;
 import application.dtos.SuggestionDto;
+import application.dtos.requests.CreateAndUpdateSuggestionRequest;
 import application.dtos.responses.ErrorResponse;
 import application.dtos.responses.GetProjectSuggestionsResponse;
 import application.security.JwtService;
@@ -55,6 +56,65 @@ public class SuggestionsController {
         UUID userUuid = jwtService.getCurrentUserId();
 
         return suggestionService.getSuggestionDetail(suggestionId, userUuid);
+    }
+
+    @PostMapping("/suggestions/{suggestionId}/likes")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String addLike(
+            @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        suggestionService.addLike(suggestionId, userId);
+
+        log.debug("User {} added like to suggestion {}", userId, suggestionId);
+        return "Реакция добавлена";
+    }
+
+    @DeleteMapping("/suggestions/{suggestionId}/likes")
+    public String removeLike(
+            @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        suggestionService.removeLike(suggestionId, userId);
+
+        log.debug("User {} removed like from suggestion {}", userId, suggestionId);
+        return "Реакция удалена";
+    }
+
+    @PostMapping("/project/{projectId}/suggestions")
+    @ResponseStatus(HttpStatus.CREATED)
+    public SuggestionDetailDto createSuggestion(
+            @PathVariable("projectId") UUID projectId,
+            @RequestBody CreateAndUpdateSuggestionRequest request) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        SuggestionDetailDto dto = suggestionService.createSuggestion(projectId, request, userId);
+
+        log.info("User {} created suggestion in project {}", userId, projectId);
+        return dto;
+    }
+
+    @PutMapping("/suggestions/{suggestionId}")
+    public SuggestionDetailDto updateSuggestion(
+            @PathVariable("suggestionId") UUID suggestionId,
+            @RequestBody CreateAndUpdateSuggestionRequest request) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        SuggestionDetailDto dto = suggestionService.updateSuggestion(suggestionId, request, userId);
+
+        log.debug("User {} updated suggestion {}", userId, suggestionId);
+        return dto;
+    }
+
+    @DeleteMapping("/suggestions/{suggestionId}")
+    public String deleteSuggestion(
+            @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        suggestionService.deleteSuggestion(suggestionId, userId);
+
+        log.debug("User {} deleted suggestion {}", userId, suggestionId);
+        return "Предложение или черновик успешно удалено";
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
