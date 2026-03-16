@@ -3,7 +3,7 @@ package application.api.users;
 import application.database.entities.User;
 import application.database.services.UserService;
 import application.dtos.responses.ErrorResponse;
-import application.dtos.responses.GetAuthMeResponse;
+import application.dtos.responses.GetUsersMeResponse;
 import application.security.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.security.auth.message.AuthException;
@@ -26,11 +26,11 @@ public class UsersController {
     private final JwtService jwtService;
     private final UserService userService;
 
-    @GetMapping("/auth/me")
-    public GetAuthMeResponse getAuthMe() throws AuthException {
+    @GetMapping("/users/me")
+    public GetUsersMeResponse getUsersMe() throws AuthException {
         UUID userId = jwtService.getCurrentUserId();
         User user = userService.findById(userId);
-        return new GetAuthMeResponse(user.getId(), user.getMail(), user.getNickname(), "");
+        return new GetUsersMeResponse(user.getId(), user.getMail(), user.getNickname(), "");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

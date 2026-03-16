@@ -81,6 +81,6 @@ public class PutProjectSuggestionTest extends SuggestionBaseClassTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("New name")
-                .jsonPath("$.status").isEqualTo("NEW");
+                .jsonPath("$.status").isEqualTo("new");
     }
 }

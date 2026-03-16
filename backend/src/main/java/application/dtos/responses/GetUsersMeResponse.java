@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-public class GetAuthMeResponse {
+public class GetUsersMeResponse {
     @JsonProperty("user_id")
     private final UUID userId;
     @JsonProperty("email")

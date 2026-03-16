@@ -96,7 +96,7 @@ public class PostProjectSuggestionTest extends SuggestionBaseClassTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("New feature")
-                .jsonPath("$.status").isEqualTo("NEW")
+                .jsonPath("$.status").isEqualTo("new")
                 .jsonPath("$.likes_amount").isEqualTo(0);
     }
 
@@ -114,7 +114,7 @@ public class PostProjectSuggestionTest extends SuggestionBaseClassTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("justname")
-                .jsonPath("$.status").isEqualTo("DRAFT")
+                .jsonPath("$.status").isEqualTo("draft")
                 .jsonPath("$.likes_amount").isEqualTo(0);
     }
 }

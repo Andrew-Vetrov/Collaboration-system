@@ -70,12 +70,10 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        projectService.validateAndGetUserProjectAccess(userId, projectId);
 
-        Project project = projectService.getProjectById(projectId);
+        ProjectFullDto projectFullDto = projectService.getProjectSettings(projectId, userId);
         log.debug("User {} retrieved settings for project {}", userId, projectId);
 
-        ProjectFullDto projectFullDto = new ProjectFullDto(project);
         return new GetProjectSettingsResponse(projectFullDto);
     }
 
@@ -99,9 +97,8 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        projectService.validateAndGetUserProjectAccess(userId, projectId);
 
-        List<ProjectUserDto> users = projectService.getProjectUsers(projectId);
+        List<ProjectUserDto> users = projectService.getProjectUsers(projectId, userId);
 
         log.debug("User {} retrieved users list for project {} ({} users)",
                 userId, projectId, users.size());

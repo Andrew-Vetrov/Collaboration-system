@@ -36,7 +36,7 @@ public class GetProjectSuggestionsTest extends SuggestionBaseClassTest{
                 .jsonPath("$.data").isArray()
                 .jsonPath("$.data.length()").isEqualTo(3)
                 .jsonPath("$.data[*].name").value(hasItems("Idea A", "Idea B", "Idea C"))
-                .jsonPath("$.data[*].status").value(hasItems("NEW", "DISCUSSION", "PLANNED"))
+                .jsonPath("$.data[*].status").value(hasItems("new", "discussion", "planned"))
                 .jsonPath("$.data[*].likes").value(everyItem(is(0)));
     }
 
@@ -47,11 +47,11 @@ public class GetProjectSuggestionsTest extends SuggestionBaseClassTest{
         createSuggestion("New 2", Suggestion.SuggestionStatus.NEW);
         createSuggestion("Rejected", Suggestion.SuggestionStatus.REJECTED);
 
-        makeGetProjectSuggestionsRequest(testProject.getId(), "NEW", validJwt)
+        makeGetProjectSuggestionsRequest(testProject.getId(), "new", validJwt)
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.data.length()").isEqualTo(2)
-                .jsonPath("$.data[*].status").value(everyItem(is("NEW")))
+                .jsonPath("$.data[*].status").value(everyItem(is("new")))
                 .jsonPath("$.data[*].name").value(containsInAnyOrder("New 1", "New 2"));
     }
 

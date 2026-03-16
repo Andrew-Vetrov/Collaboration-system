@@ -179,7 +179,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
     }
 
     @Test
-    void apiPutProjectSettings_ValidRequest() {
+    void apiPutProjectSettings_ValidRequest_bigPeriod() {
         // Создаём проект для testUser как admin
         Project project = Project.builder()
                 .ownerId(testUser.getId())
@@ -200,7 +200,40 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
                 {
                     "name": "newname",
                     "description": "Updated Description",
-                    "vote_interval": "1 week",
+                    "vote_interval": "5 weeks",
+                    "votes_for_interval": 4
+                }
+                """;
+
+
+        makePostProjectSettingsRequest(savedProject.getId(), validJwt, body)
+                .expectStatus().isOk()
+                .expectBody(String.class).isEqualTo("Настройки проекта успешно обновлены");
+    }
+
+    @Test
+    void apiPutProjectSettings_ValidRequest_smallPeriod() {
+        // Создаём проект для testUser как admin
+        Project project = Project.builder()
+                .ownerId(testUser.getId())
+                .name("Test Project")
+                .description("Description")
+                .build();
+        Project savedProject = projectRepository.save(project);
+
+        ProjectRights rights = ProjectRights.builder()
+                .userId(testUser.getId())
+                .project(savedProject)
+                .isAdmin(true)
+                .votesLeft(5)
+                .build();
+        projectRightsRepository.save(rights);
+
+        String body = """
+                {
+                    "name": "newname",
+                    "description": "Updated Description",
+                    "vote_interval": "30 hours",
                     "votes_for_interval": 4
                 }
                 """;

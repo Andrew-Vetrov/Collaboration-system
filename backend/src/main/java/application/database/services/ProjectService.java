@@ -2,6 +2,7 @@ package application.database.services;
 
 import application.database.entities.User;
 import application.database.repositories.UserRepository;
+import application.dtos.ProjectFullDto;
 import application.dtos.ProjectUserDto;
 import application.dtos.requests.CreateProjectRequest;
 import application.database.entities.Project;
@@ -9,6 +10,7 @@ import application.database.entities.ProjectRights;
 import application.database.repositories.ProjectRepository;
 import application.database.repositories.ProjectRightsRepository;
 import application.dtos.requests.UpdateProjectSettingsRequest;
+import application.dtos.responses.GetProjectSettingsResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -133,7 +135,6 @@ public class ProjectService {
             case "day", "days"       -> Duration.ofDays(value);
             case "hour", "hours"     -> Duration.ofHours(value);
             case "minute", "minutes" -> Duration.ofMinutes(value);
-            case "second", "seconds" -> Duration.ofSeconds(value);
             default -> throw new IllegalArgumentException("Unsupported unit: " + unit);
         };
     }
@@ -164,10 +165,12 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-    public List<ProjectUserDto> getProjectUsers(UUID projectId) {
+    public List<ProjectUserDto> getProjectUsers(UUID projectId, UUID currentUserId) {
         if (!projectRepository.existsById(projectId)) {
             throw new EntityNotFoundException("Project not found: " + projectId);
         }
+
+        validateAndGetUserProjectAccess(currentUserId, projectId);
 
         List<ProjectRights> rights = projectRightsRepository.findAllByProjectId(projectId);
         List<ProjectUserDto> ans = new ArrayList<>();
@@ -230,5 +233,42 @@ public class ProjectService {
         ProjectRights rights = validateAndGetUserProjectAccess(userId, projectId);
         rights.setVotesLeft(rights.getVotesLeft() + 1);
         projectRightsRepository.save(rights);
+    }
+
+    public ProjectFullDto getProjectSettings(UUID projectId, UUID currentUserId){
+        validateAndGetUserProjectAccess(currentUserId, projectId);
+
+        Project project = getProjectById(projectId);
+        return new ProjectFullDto(
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                formatDuration(project.getVoteInterval()),
+                project.getVotesForInterval(),
+                project.getOwnerId());
+    }
+
+    private String formatDuration(Duration duration) {
+        if (duration == null) {
+            return null;
+        }
+
+        long totalMinutes = duration.toMinutes();
+        if (totalMinutes % 60 != 0) {
+            return totalMinutes + " minute" + (totalMinutes > 1 ? "s" : "");
+        }
+
+        long totalHours = duration.toHours();
+        if (totalHours % 24 != 0){
+            return totalHours + " hour" + (totalHours > 1 ? "s" : "");
+        }
+
+        long totalDays = duration.toDays();
+        if (totalDays % 7 != 0) {
+            return totalDays + " day" + (totalDays > 1 ? "s" : "");
+        }
+
+        long weeks = totalDays / 7;
+        return weeks + " week" + (weeks > 1 ? "s" : "");
     }
 }

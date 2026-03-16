@@ -1,32 +1,17 @@
 package application.authorization;
 
-import application.database.entities.Project;
 import application.database.services.UserService;
-import application.dtos.ProjectBasicDto;
-import application.dtos.responses.ErrorResponse;
-import application.dtos.responses.GetAuthMeResponse;
-import application.dtos.responses.GetProjectResponse;
 import application.security.JwtService;
 import application.database.entities.User;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.security.auth.message.AuthException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 //@RestController

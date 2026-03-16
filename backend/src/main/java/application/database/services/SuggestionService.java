@@ -33,7 +33,7 @@ public class SuggestionService {
         if (statusStr == null || statusStr.isBlank()) {
             return suggestionRepository.findAllByProjectId(projectId);
         }
-        return suggestionRepository.findAllByProjectIdAndStatus(projectId, Suggestion.SuggestionStatus.valueOf(statusStr));
+        return suggestionRepository.findAllByProjectIdAndStatus(projectId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
     }
 
     public SuggestionDto convertToSuggestionDtoWithLikes(Suggestion suggestion) {
@@ -48,7 +48,7 @@ public class SuggestionService {
                 likesCount,
                 suggestion.getName(),
                 suggestion.getDescription(),
-                suggestion.getStatus().toString()
+                suggestion.getStatus().toString().toLowerCase()
         );
     }
 
@@ -62,17 +62,7 @@ public class SuggestionService {
 
         long likesAmount = likeRepository.countBySuggestionId(suggestionId);
 
-        return new SuggestionDetailDto(
-                suggestion.getId(),
-                suggestion.getUserId(),
-                suggestion.getProjectId(),
-                suggestion.getPlacedAt(),
-                suggestion.getLastEdit(),
-                likesAmount,
-                suggestion.getName(),
-                suggestion.getDescription(),
-                suggestion.getStatus().toString()
-        );
+        return makeSuggestionDetailDto(suggestion, likesAmount);
     }
 
     @Transactional
@@ -139,17 +129,7 @@ public class SuggestionService {
 
         long likesAmount = likeRepository.countBySuggestionId(saved.getId());
 
-        return new SuggestionDetailDto(
-                saved.getId(),
-                saved.getUserId(),
-                saved.getProjectId(),
-                saved.getPlacedAt(),
-                saved.getLastEdit(),
-                likesAmount,
-                saved.getName(),
-                saved.getDescription(),
-                saved.getStatus().toString()
-        );
+        return makeSuggestionDetailDto(saved, likesAmount);
     }
 
     @Transactional
@@ -190,17 +170,7 @@ public class SuggestionService {
 
         long likesAmount = likeRepository.countBySuggestionId(suggestionId);
 
-        return new SuggestionDetailDto(
-                suggestion.getId(),
-                suggestion.getUserId(),
-                suggestion.getProjectId(),
-                suggestion.getPlacedAt(),
-                suggestion.getLastEdit(),
-                likesAmount,
-                suggestion.getName(),
-                suggestion.getDescription(),
-                suggestion.getStatus().toString()
-        );
+        return makeSuggestionDetailDto(suggestion, likesAmount);
     }
 
     @Transactional
@@ -213,5 +183,19 @@ public class SuggestionService {
         }
 
         suggestionRepository.delete(suggestion);
+    }
+
+    private SuggestionDetailDto makeSuggestionDetailDto(Suggestion suggestion, long likesAmount){
+        return new SuggestionDetailDto(
+                suggestion.getId(),
+                suggestion.getUserId(),
+                suggestion.getProjectId(),
+                suggestion.getPlacedAt(),
+                suggestion.getLastEdit(),
+                likesAmount,
+                suggestion.getName(),
+                suggestion.getDescription(),
+                suggestion.getStatus().toString().toLowerCase()
+        );
     }
 }

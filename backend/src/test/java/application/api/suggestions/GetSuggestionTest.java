@@ -35,7 +35,7 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
                 .jsonPath("$.suggestion_id").isEqualTo(suggestion.getId().toString())
                 .jsonPath("$.name").isEqualTo("Improve login page")
                 .jsonPath("$.description").isEqualTo("Test description")
-                .jsonPath("$.status").isEqualTo("NEW")
+                .jsonPath("$.status").isEqualTo("new")
                 .jsonPath("$.likes_amount").isEqualTo(0)
                 .jsonPath("$.project_id").isEqualTo(testProject.getId().toString())
                 .jsonPath("$.user_id").isEqualTo(testUser.getId().toString());
@@ -61,7 +61,7 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("Add export feature")
-                .jsonPath("$.status").isEqualTo("DISCUSSION");
+                .jsonPath("$.status").isEqualTo("discussion");
     }
 
     @Test
@@ -82,7 +82,7 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
                 .expectBody()
                 .jsonPath("$.suggestion_id").isEqualTo(suggestion.getId().toString())
                 .jsonPath("$.name").isEqualTo("Feature with likes")
-                .jsonPath("$.status").isEqualTo("NEW")
+                .jsonPath("$.status").isEqualTo("new")
                 .jsonPath("$.likes_amount").isEqualTo(3)
                 .jsonPath("$.likes_amount").isNumber();
     }
