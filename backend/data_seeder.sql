@@ -1,4 +1,6 @@
 -- docker exec -i postgres_db psql -U user -d colaboration_system_db < ./data_seeder.sql
+-- Для отправки запросов через командную строку можно использовать:
+-- docker exec -it postgres_db psql -U user -d colaboration_system_db -c "SELECT * FROM users;"
 
 DO $$
 DECLARE
@@ -15,6 +17,15 @@ DECLARE
     like_id UUID;
     likes_count INT;
 BEGIN
+    -- Полное очистка таблиц
+    DELETE FROM likes;
+    DELETE FROM comments;
+    DELETE FROM project_invites;
+    DELETE FROM suggestions;
+    DELETE FROM project_rights;
+    DELETE FROM projects;
+    DELETE FROM users;
+
     -- Проверка существования пользователя
     IF NOT EXISTS (SELECT 1 FROM users WHERE id = user_uuid) THEN
         INSERT INTO users (id, mail, nickname)
@@ -55,7 +66,7 @@ BEGIN
                 NOW(),
                 format('Suggestion %s for %s', j, project_names[i]),
                 'test suggestion description',
-                'new'
+                'NEW'::suggestion_status
             );
 
             -- Случайное количество лайков (0–10)

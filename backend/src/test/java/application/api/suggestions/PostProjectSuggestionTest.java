@@ -86,7 +86,8 @@ public class PostProjectSuggestionTest extends SuggestionBaseClassTest {
         String body = """
                 {
                     "name": "New feature",
-                    "description": "test"
+                    "description": "test",
+                    "status": "NEW"
                 }
                 """;
 
@@ -95,6 +96,24 @@ public class PostProjectSuggestionTest extends SuggestionBaseClassTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("New feature")
+                .jsonPath("$.status").isEqualTo("NEW")
+                .jsonPath("$.likes_amount").isEqualTo(0);
+    }
+
+
+    @Test
+    void createSuggestion_valid_notFullBody() {
+        String body = """
+                {
+                    "name": "justname"
+                }
+                """;
+
+        postProjectSuggestionRequest(testProject.getId(), body, validJwt)
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("justname")
                 .jsonPath("$.status").isEqualTo("DRAFT")
                 .jsonPath("$.likes_amount").isEqualTo(0);
     }
