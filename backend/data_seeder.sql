@@ -17,14 +17,13 @@ DECLARE
     like_id UUID;
     likes_count INT;
 BEGIN
-    -- Полное очистка таблиц
+    -- Полное очистка таблиц кроме users
     DELETE FROM likes;
     DELETE FROM comments;
     DELETE FROM project_invites;
     DELETE FROM suggestions;
     DELETE FROM project_rights;
     DELETE FROM projects;
-    DELETE FROM users;
 
     -- Проверка существования пользователя
     IF NOT EXISTS (SELECT 1 FROM users WHERE id = user_uuid) THEN

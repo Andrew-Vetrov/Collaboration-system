@@ -29,7 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
+//@RestController
+@Controller
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
@@ -64,39 +65,8 @@ public class AuthController {
         return "redirect:" + frontendUrl + "/auth/success?token=" + encode(myJwt);
     }
 
-    @GetMapping("/auth/me")
-    public GetAuthMeResponse getAuthMe() throws AuthException {
-        UUID userId = jwtService.getCurrentUserId();
-        User user = userService.findById(userId);
-        return new GetAuthMeResponse(user.getId(), user.getMail(), user.getNickname(), "");
-    }
-
     private String encode(String value) {
         return java.net.URLEncoder.encode(value != null ? value : "",
                 java.nio.charset.StandardCharsets.UTF_8);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
-        log.warn("Illegal argument during: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(AuthException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
-        log.warn("Unauthorized request to: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse entityNotFoundHandler(EntityNotFoundException e, HttpServletRequest request) {
-        log.warn("Entity not found during: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                e.getMessage(), request.getRequestURI());
     }
 }
