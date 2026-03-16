@@ -439,7 +439,7 @@ paths:
               schema:
                 type: string
 
-  /auth/me:
+  /users/me:
     get:
       summary: Текущий пользователь
       tags:

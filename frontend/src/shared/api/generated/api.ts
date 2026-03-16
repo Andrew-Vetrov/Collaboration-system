@@ -277,8 +277,8 @@ export const AuthorizeApiAxiosParamCreator = function (configuration?: Configura
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        authMeGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/auth/me`;
+        usersMeGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/users/me`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -345,10 +345,10 @@ export const AuthorizeApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async authMeGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CurrentUser>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.authMeGet(options);
+        async usersMeGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CurrentUser>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.usersMeGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AuthorizeApi.authMeGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AuthorizeApi.usersMeGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -385,8 +385,8 @@ export const AuthorizeApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        authMeGet(options?: RawAxiosRequestConfig): AxiosPromise<CurrentUser> {
-            return localVarFp.authMeGet(options).then((request) => request(axios, basePath));
+        usersMeGet(options?: RawAxiosRequestConfig): AxiosPromise<CurrentUser> {
+            return localVarFp.usersMeGet(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -422,8 +422,8 @@ export class AuthorizeApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public authMeGet(options?: RawAxiosRequestConfig) {
-        return AuthorizeApiFp(this.configuration).authMeGet(options).then((request) => request(this.axios, this.basePath));
+    public usersMeGet(options?: RawAxiosRequestConfig) {
+        return AuthorizeApiFp(this.configuration).usersMeGet(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

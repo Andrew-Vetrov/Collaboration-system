@@ -26,7 +26,7 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
   }
   return (
     <div className="flex flex-col items-center w-full">
-      <h1 className="text-center text-3xl my-4">Мои предложения</h1>
+      <h1 className="text-center text-3xl my-4">Предложения</h1>
       <div className="grid gap-4 w-[90%] sm:w-[70%] grid-cols-1">
         {suggestions
           .filter(suggestion => suggestion.status != 'draft')

@@ -7,7 +7,7 @@ export function useAuthMe() {
   return useQuery<CurrentUser>({
     queryKey: getAuthMeQueryKey(),
     queryFn: async () => {
-      const response = await authApi.authMeGet();
+      const response = await authApi.usersMeGet();
       return response.data;
     },
     retry: false,
