@@ -45,12 +45,12 @@ export function MainUserMenu({
 
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
-            <DropdownMenuItem>
+            <DropdownMenuItem className="pointer-events-none">
               <span className="block max-w-[150px] truncate">
                 {user?.nickname}
               </span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem className="pointer-events-none">
               <span>{user?.email}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout}>
@@ -79,10 +79,10 @@ export function MainUserMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem>
+        <DropdownMenuItem className="pointer-events-none">
           <span className="block max-w-[150px] truncate">{user?.nickname}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem className="pointer-events-none">
           <span>{user?.email}</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout}>
