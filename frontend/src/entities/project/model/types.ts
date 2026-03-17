@@ -8,6 +8,6 @@ export type { ProjectsProjectIdSettingsPutRequest } from '@/shared/api/generated
 export const PROJECT_INTERVAL_UNITS = {
   minutes: 'Минуты',
   hours: 'Часы',
+  days: 'Дни',
   weeks: 'Недели',
-  months: 'Месяца',
 };
