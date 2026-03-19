@@ -32,28 +32,4 @@ public class UsersController {
         User user = userService.findById(userId);
         return new GetUsersMeResponse(user.getId(), user.getMail(), user.getNickname(), "");
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
-        log.warn("Illegal argument during: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(AuthException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
-        log.warn("Unauthorized request to: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse entityNotFoundHandler(EntityNotFoundException e, HttpServletRequest request) {
-        log.warn("Entity not found during: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                e.getMessage(), request.getRequestURI());
-    }
 }

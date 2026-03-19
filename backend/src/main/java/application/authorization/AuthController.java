@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.UUID;
 
-//@RestController
 @Controller
 @RequiredArgsConstructor
 @Slf4j
