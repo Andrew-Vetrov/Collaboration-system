@@ -37,6 +37,7 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
                 .jsonPath("$.description").isEqualTo("Test description")
                 .jsonPath("$.status").isEqualTo("new")
                 .jsonPath("$.likes_amount").isEqualTo(0)
+                .jsonPath("$.user_likes_amount").isEqualTo(0)
                 .jsonPath("$.project_id").isEqualTo(testProject.getId().toString())
                 .jsonPath("$.user_id").isEqualTo(testUser.getId().toString());
     }
@@ -72,7 +73,7 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
         User user2 = createBlankUser("user2@example.com");
         User user3 = createBlankUser("user3@example.com");
 
-        saveLike(user1.getId(), suggestion.getId());
+        saveLike(testUser.getId(), suggestion.getId());
         saveLike(user2.getId(), suggestion.getId());
         saveLike(user3.getId(), suggestion.getId());
 
@@ -84,6 +85,7 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
                 .jsonPath("$.name").isEqualTo("Feature with likes")
                 .jsonPath("$.status").isEqualTo("new")
                 .jsonPath("$.likes_amount").isEqualTo(3)
+                .jsonPath("$.user_likes_amount").isEqualTo(1)
                 .jsonPath("$.likes_amount").isNumber();
     }
 

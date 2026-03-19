@@ -1,12 +1,10 @@
 package application.database.services;
 
 import application.database.entities.Like;
-import application.database.entities.Project;
 import application.database.entities.Suggestion;
 import application.database.repositories.LikeRepository;
 import application.database.repositories.SuggestionRepository;
 import application.dtos.SuggestionDetailDto;
-import application.dtos.SuggestionDto;
 import application.dtos.requests.CreateAndUpdateSuggestionRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -26,30 +25,25 @@ public class SuggestionService {
     private final LikeRepository likeRepository;
     private final ProjectService projectService;
 
-    public List<Suggestion> getSuggestions(UUID projectId, UUID currentUserId, String statusStr) {
+    public List<SuggestionDetailDto> getSuggestionDetails(UUID projectId, UUID currentUserId, String statusStr) {
         projectService.getProjectById(projectId); // Проверка существования проекта
         projectService.getUserProjectRights(currentUserId, projectId) // Проверка прав
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to project " + projectId));
+        List<Suggestion> suggestions;
         if (statusStr == null || statusStr.isBlank()) {
-            return suggestionRepository.findAllByProjectId(projectId);
+            suggestions = suggestionRepository.findAllByProjectId(projectId);
         }
-        return suggestionRepository.findAllByProjectIdAndStatus(projectId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
-    }
+        else {
+            suggestions = suggestionRepository
+                    .findAllByProjectIdAndStatus(projectId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
+        }
 
-    public SuggestionDto convertToSuggestionDtoWithLikes(Suggestion suggestion) {
-        long likesCount = likeRepository.countBySuggestionId(suggestion.getId());
+        List<SuggestionDetailDto> dtos = new ArrayList<>();
+        for(Suggestion suggestion : suggestions){
+            dtos.add(makeSuggestionDetailDto(suggestion, currentUserId));
+        }
 
-        return new SuggestionDto(
-                suggestion.getId(),
-                suggestion.getUserId(),
-                suggestion.getProjectId(),
-                suggestion.getPlacedAt(),
-                suggestion.getLastEdit(),
-                likesCount,
-                suggestion.getName(),
-                suggestion.getDescription(),
-                suggestion.getStatus().toString().toLowerCase()
-        );
+        return dtos;
     }
 
     public SuggestionDetailDto getSuggestionDetail(UUID suggestionId, UUID currentUserId) {
@@ -60,9 +54,7 @@ public class SuggestionService {
         projectService.getUserProjectRights(currentUserId, suggestion.getProjectId())
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to suggestion " + suggestionId));
 
-        long likesAmount = likeRepository.countBySuggestionId(suggestionId);
-
-        return makeSuggestionDetailDto(suggestion, likesAmount);
+        return makeSuggestionDetailDto(suggestion, currentUserId);
     }
 
     @Transactional
@@ -127,9 +119,7 @@ public class SuggestionService {
 
         Suggestion saved = suggestionRepository.save(suggestion);
 
-        long likesAmount = likeRepository.countBySuggestionId(saved.getId());
-
-        return makeSuggestionDetailDto(saved, likesAmount);
+        return makeSuggestionDetailDto(saved, currentUserId);
     }
 
     @Transactional
@@ -168,9 +158,7 @@ public class SuggestionService {
         suggestion.setLastEdit(now);
         suggestionRepository.save(suggestion);
 
-        long likesAmount = likeRepository.countBySuggestionId(suggestionId);
-
-        return makeSuggestionDetailDto(suggestion, likesAmount);
+        return makeSuggestionDetailDto(suggestion, currentUserId);
     }
 
     @Transactional
@@ -185,7 +173,9 @@ public class SuggestionService {
         suggestionRepository.delete(suggestion);
     }
 
-    private SuggestionDetailDto makeSuggestionDetailDto(Suggestion suggestion, long likesAmount){
+    private SuggestionDetailDto makeSuggestionDetailDto(Suggestion suggestion, UUID userId){
+        long likesAmount = likeRepository.countBySuggestionId(suggestion.getId());
+        long userLikesAmount = likeRepository.countByUserIdAndSuggestionId(userId, suggestion.getId());
         return new SuggestionDetailDto(
                 suggestion.getId(),
                 suggestion.getUserId(),
@@ -193,6 +183,7 @@ public class SuggestionService {
                 suggestion.getPlacedAt(),
                 suggestion.getLastEdit(),
                 likesAmount,
+                userLikesAmount,
                 suggestion.getName(),
                 suggestion.getDescription(),
                 suggestion.getStatus().toString().toLowerCase()

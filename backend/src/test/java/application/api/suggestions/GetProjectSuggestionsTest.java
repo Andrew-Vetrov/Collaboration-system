@@ -37,7 +37,8 @@ public class GetProjectSuggestionsTest extends SuggestionBaseClassTest{
                 .jsonPath("$.data.length()").isEqualTo(3)
                 .jsonPath("$.data[*].name").value(hasItems("Idea A", "Idea B", "Idea C"))
                 .jsonPath("$.data[*].status").value(hasItems("new", "discussion", "planned"))
-                .jsonPath("$.data[*].likes").value(everyItem(is(0)));
+                .jsonPath("$.data[*].likes_amount").value(everyItem(is(0)))
+                .jsonPath("$.data[0].user_likes_amount").isEqualTo(0);
     }
 
     @Test
@@ -119,6 +120,7 @@ public class GetProjectSuggestionsTest extends SuggestionBaseClassTest{
                 .jsonPath("$.data.length()").isEqualTo(2)
                 .jsonPath("$.data[0].name").isEqualTo("Popular idea")
                 .jsonPath("$.data[0].likes_amount").isEqualTo(2)
-                .jsonPath("$.data[1].likes_amount").isEqualTo(0);
+                .jsonPath("$.data[1].likes_amount").isEqualTo(0)
+                .jsonPath("$.data[0].user_likes_amount").isEqualTo(0);
     }
 }

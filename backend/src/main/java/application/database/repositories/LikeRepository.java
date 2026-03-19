@@ -10,6 +10,7 @@ import java.util.UUID;
 @Repository
 public interface LikeRepository extends JpaRepository<Like, UUID> {
     long countBySuggestionId(UUID suggestionId);
+    long countByUserIdAndSuggestionId(UUID userId, UUID suggestionId);
 
     List<Like> findByUserIdAndSuggestionId(UUID userId, UUID suggestionId);
 }

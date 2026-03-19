@@ -5,7 +5,6 @@ import application.database.entities.Suggestion;
 import application.database.services.ProjectService;
 import application.database.services.SuggestionService;
 import application.dtos.SuggestionDetailDto;
-import application.dtos.SuggestionDto;
 import application.dtos.requests.CreateAndUpdateSuggestionRequest;
 import application.dtos.responses.ErrorResponse;
 import application.dtos.responses.GetProjectSuggestionsResponse;
@@ -29,7 +28,6 @@ public class SuggestionsController {
 
     private final JwtService jwtService;
     private final SuggestionService suggestionService;
-    private final ProjectService projectService;
 
     @GetMapping("/project/{projectId}/suggestions")
     public GetProjectSuggestionsResponse getProjectSuggestions(
@@ -37,16 +35,13 @@ public class SuggestionsController {
             @RequestParam(required = false) String status) throws AuthException {
 
         UUID userUuid = jwtService.getCurrentUserId();
-        List<Suggestion> suggestions = suggestionService.getSuggestions(projectId, userUuid, status);
 
-        List<SuggestionDto> dtos = suggestions.stream()
-                .map(suggestionService::convertToSuggestionDtoWithLikes)
-                .toList();
+        List<SuggestionDetailDto> suggestions = suggestionService.getSuggestionDetails(projectId, userUuid, status);
 
         log.info("User {} retrieved {} suggestions for project {} (status filter: {})",
-                userUuid, dtos.size(), projectId, status != null ? status : "all");
+                userUuid, suggestions.size(), projectId, status != null ? status : "all");
 
-        return new GetProjectSuggestionsResponse(dtos);
+        return new GetProjectSuggestionsResponse(suggestions);
     }
 
     @GetMapping("/suggestions/{suggestionId}")
