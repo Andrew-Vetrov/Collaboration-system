@@ -49,7 +49,7 @@ public class GetProjectUsersTest extends ProjectBaseClassTest{
                 .expectStatus().isNotFound()
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(404)
-                .jsonPath("$.error").isEqualTo("User not found: " + nonExistentId)
+                .jsonPath("$.error").isEqualTo("Project not found: " + projectId)
                 .jsonPath("$.path").isEqualTo("/projects/" + projectId + "/users");
     }
 

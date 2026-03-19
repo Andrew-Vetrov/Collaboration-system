@@ -5,10 +5,11 @@ import application.database.entities.Suggestion;
 import application.database.services.ProjectService;
 import application.database.services.SuggestionService;
 import application.dtos.SuggestionDetailDto;
-import application.dtos.SuggestionDto;
+import application.dtos.requests.CreateAndUpdateSuggestionRequest;
 import application.dtos.responses.ErrorResponse;
 import application.dtos.responses.GetProjectSuggestionsResponse;
 import application.security.JwtService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,6 @@ public class SuggestionsController {
 
     private final JwtService jwtService;
     private final SuggestionService suggestionService;
-    private final ProjectService projectService;
 
     @GetMapping("/project/{projectId}/suggestions")
     public GetProjectSuggestionsResponse getProjectSuggestions(
@@ -36,25 +36,12 @@ public class SuggestionsController {
 
         UUID userUuid = jwtService.getCurrentUserId();
 
-        // Проверка доступа: пользователь должен иметь права на проект
-        List<Project> userProjects = projectService.getUserProjects(userUuid);
-        boolean hasAccess = userProjects.stream()
-                .anyMatch(p -> p.getId().equals(projectId));
-
-        if (!hasAccess) {
-            throw new AuthException("User " + userUuid + " has no access to project: " + projectId);
-        }
-
-        List<Suggestion> suggestions = suggestionService.getSuggestions(projectId, status);
-
-        List<SuggestionDto> dtos = suggestions.stream()
-                .map(suggestionService::convertToSuggestionDtoWithLikes)
-                .toList();
+        List<SuggestionDetailDto> suggestions = suggestionService.getSuggestionDetails(projectId, userUuid, status);
 
         log.info("User {} retrieved {} suggestions for project {} (status filter: {})",
-                userUuid, dtos.size(), projectId, status != null ? status : "all");
+                userUuid, suggestions.size(), projectId, status != null ? status : "all");
 
-        return new GetProjectSuggestionsResponse(dtos);
+        return new GetProjectSuggestionsResponse(suggestions);
     }
 
     @GetMapping("/suggestions/{suggestionId}")
@@ -66,28 +53,62 @@ public class SuggestionsController {
         return suggestionService.getSuggestionDetail(suggestionId, userUuid);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(), request.getRequestURI());
+    @PostMapping("/suggestions/{suggestionId}/likes")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String addLike(
+            @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        suggestionService.addLike(suggestionId, userId);
+
+        log.debug("User {} added like to suggestion {}", userId, suggestionId);
+        return "Реакция добавлена";
     }
 
-    @ExceptionHandler(AuthException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
-        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
-                e.getMessage(), request.getRequestURI());
+    @DeleteMapping("/suggestions/{suggestionId}/likes")
+    public String removeLike(
+            @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        suggestionService.removeLike(suggestionId, userId);
+
+        log.debug("User {} removed like from suggestion {}", userId, suggestionId);
+        return "Реакция удалена";
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse accessDeniedHandler(AccessDeniedException e, HttpServletRequest request) {
-        log.warn(e.getMessage());
-        return new ErrorResponse(HttpStatus.FORBIDDEN.value(),
-                e.getMessage(), request.getRequestURI());
+    @PostMapping("/project/{projectId}/suggestions")
+    @ResponseStatus(HttpStatus.CREATED)
+    public SuggestionDetailDto createSuggestion(
+            @PathVariable("projectId") UUID projectId,
+            @RequestBody CreateAndUpdateSuggestionRequest request) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        SuggestionDetailDto dto = suggestionService.createSuggestion(projectId, request, userId);
+
+        log.info("User {} created suggestion in project {}", userId, projectId);
+        return dto;
     }
 
+    @PutMapping("/suggestions/{suggestionId}")
+    public SuggestionDetailDto updateSuggestion(
+            @PathVariable("suggestionId") UUID suggestionId,
+            @RequestBody CreateAndUpdateSuggestionRequest request) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        SuggestionDetailDto dto = suggestionService.updateSuggestion(suggestionId, request, userId);
+
+        log.debug("User {} updated suggestion {}", userId, suggestionId);
+        return dto;
+    }
+
+    @DeleteMapping("/suggestions/{suggestionId}")
+    public String deleteSuggestion(
+            @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        suggestionService.deleteSuggestion(suggestionId, userId);
+
+        log.debug("User {} deleted suggestion {}", userId, suggestionId);
+        return "Предложение или черновик успешно удалено";
+    }
 }

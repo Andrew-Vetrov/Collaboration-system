@@ -24,6 +24,8 @@ public class SuggestionDetailDto {
     private final ZonedDateTime lastEdit;
     @JsonProperty("likes_amount")
     private final long likesAmount;
+    @JsonProperty("user_likes_amount")
+    private final long userLikesAmount;
     private final String name;
     private final String description;
     private final String status;

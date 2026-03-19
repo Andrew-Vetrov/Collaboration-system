@@ -99,13 +99,13 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
     }
 
     @Test
-    void apiGetProjectSettings_ValidRequest() {
+    void apiGetProjectSettings_ValidRequest_intervalHours() {
         // Создаём проект для testUser
         Project project = Project.builder()
                 .ownerId(testUser.getId())
-                .name("Test Project")
+                .name("Hours Project")
                 .description("Description")
-                .voteInterval(Duration.parse("PT1H"))
+                .voteInterval(Duration.ofHours(30))
                 .votesForInterval(10)
                 .build();
         Project savedProject = projectRepository.save(project);
@@ -120,7 +120,75 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
 
         makeGetProjectSettingsRequest(savedProject.getId(), validJwt)
                 .expectStatus().isOk()
-                .expectBody();
+                .expectBody()
+                .jsonPath("$.data.id").isEqualTo(project.getId().toString())
+                .jsonPath("$.data.name").isEqualTo("Hours Project")
+                .jsonPath("$.data.description").isEqualTo("Description")
+                .jsonPath("$.data.vote_interval").isEqualTo("30 hours")
+                .jsonPath("$.data.votes_for_interval").isEqualTo(10)
+                .jsonPath("$.data.owner_id").isEqualTo(testUser.getId().toString());
+    }
+
+    @Test
+    void apiGetProjectSettings_ValidRequest_intervalDays() {
+        // Создаём проект для testUser
+        Project project = Project.builder()
+                .ownerId(testUser.getId())
+                .name("Days Project")
+                .description("Description")
+                .voteInterval(Duration.ofDays(40))
+                .votesForInterval(16)
+                .build();
+        Project savedProject = projectRepository.save(project);
+
+        ProjectRights rights = ProjectRights.builder()
+                .userId(testUser.getId())
+                .project(savedProject)
+                .isAdmin(true)
+                .votesLeft(5)
+                .build();
+        projectRightsRepository.save(rights);
+
+        makeGetProjectSettingsRequest(savedProject.getId(), validJwt)
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.data.id").isEqualTo(project.getId().toString())
+                .jsonPath("$.data.name").isEqualTo("Days Project")
+                .jsonPath("$.data.description").isEqualTo("Description")
+                .jsonPath("$.data.vote_interval").isEqualTo("40 days")
+                .jsonPath("$.data.votes_for_interval").isEqualTo(16)
+                .jsonPath("$.data.owner_id").isEqualTo(testUser.getId().toString());
+    }
+
+    @Test
+    void apiGetProjectSettings_ValidRequest_intervalMinutes() {
+        // Создаём проект для testUser
+        Project project = Project.builder()
+                .ownerId(testUser.getId())
+                .name("Minutes Project")
+                .description("Description")
+                .voteInterval(Duration.ofMinutes(80))
+                .votesForInterval(25)
+                .build();
+        Project savedProject = projectRepository.save(project);
+
+        ProjectRights rights = ProjectRights.builder()
+                .userId(testUser.getId())
+                .project(savedProject)
+                .isAdmin(true)
+                .votesLeft(5)
+                .build();
+        projectRightsRepository.save(rights);
+
+        makeGetProjectSettingsRequest(savedProject.getId(), validJwt)
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.data.id").isEqualTo(project.getId().toString())
+                .jsonPath("$.data.name").isEqualTo("Minutes Project")
+                .jsonPath("$.data.description").isEqualTo("Description")
+                .jsonPath("$.data.vote_interval").isEqualTo("80 minutes")
+                .jsonPath("$.data.votes_for_interval").isEqualTo(25)
+                .jsonPath("$.data.owner_id").isEqualTo(testUser.getId().toString());
     }
 
 }

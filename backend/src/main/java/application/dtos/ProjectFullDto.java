@@ -17,12 +17,6 @@ public class ProjectFullDto {
     private final String voteInterval;
     @JsonProperty("votes_for_interval")
     private final int votesForInterval;
-
-    public ProjectFullDto(Project project){
-        id = project.getId();
-        name = project.getName();
-        description = project.getDescription();
-        voteInterval = project.getVoteInterval().toString();
-        votesForInterval = project.getVotesForInterval();
-    }
+    @JsonProperty("owner_id")
+    private final UUID ownerId;
 }

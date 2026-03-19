@@ -70,12 +70,10 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        projectService.validateAndGetUserProjectAccess(userId, projectId);
 
-        Project project = projectService.getProjectById(projectId);
+        ProjectFullDto projectFullDto = projectService.getProjectSettings(projectId, userId);
         log.debug("User {} retrieved settings for project {}", userId, projectId);
 
-        ProjectFullDto projectFullDto = new ProjectFullDto(project);
         return new GetProjectSettingsResponse(projectFullDto);
     }
 
@@ -99,9 +97,8 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        projectService.validateAndGetUserProjectAccess(userId, projectId);
 
-        List<ProjectUserDto> users = projectService.getProjectUsers(projectId);
+        List<ProjectUserDto> users = projectService.getProjectUsers(projectId, userId);
 
         log.debug("User {} retrieved users list for project {} ({} users)",
                 userId, projectId, users.size());
@@ -136,37 +133,5 @@ public class ProjectController {
                 currentUserId, userId, projectId, request.isAdmin());
 
         return "Права пользователя успешно изменены";
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse illegalArgumentHandler(IllegalArgumentException e, HttpServletRequest request) {
-        log.warn("Illegal argument during: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(AuthException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse unauthorizedHandler(AuthException e, HttpServletRequest request) {
-        log.warn("Unauthorized request to: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse accessDeniedHandler(AccessDeniedException e, HttpServletRequest request) {
-        log.warn("Access denied during: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.FORBIDDEN.value(),
-                e.getMessage(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse entityNotFoundHandler(EntityNotFoundException e, HttpServletRequest request) {
-        log.warn("Entity not found during: {}", request.getRequestURI(), e);
-        return new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                e.getMessage(), request.getRequestURI());
     }
 }

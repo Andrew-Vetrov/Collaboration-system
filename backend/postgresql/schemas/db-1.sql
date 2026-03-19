@@ -1,6 +1,10 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE suggestion_status AS ENUM ('draft', 'new', 'discussion', 'planned', 'in_progress', 'accepted', 'rejected');
+ALTER DATABASE colaboration_system_db SET intervalstyle = 'postgres_verbose';
+
+SET intervalstyle = 'postgres_verbose';
+
+CREATE TYPE suggestion_status AS ENUM ('DRAFT', 'NEW', 'DISCUSSION', 'PLANNED', 'IN_PROGRESS', 'ACCEPTED', 'REJECTED');
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -38,7 +42,7 @@ CREATE TABLE IF NOT EXISTS suggestions
     last_edit       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     name            TEXT NOT NULL,
     description     TEXT,
-    status          suggestion_status NOT NULL DEFAULT 'draft'
+    status          suggestion_status NOT NULL DEFAULT 'DRAFT'
 );
 
 CREATE TABLE IF NOT EXISTS likes

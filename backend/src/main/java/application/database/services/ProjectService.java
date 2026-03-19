@@ -2,6 +2,7 @@ package application.database.services;
 
 import application.database.entities.User;
 import application.database.repositories.UserRepository;
+import application.dtos.ProjectFullDto;
 import application.dtos.ProjectUserDto;
 import application.dtos.requests.CreateProjectRequest;
 import application.database.entities.Project;
@@ -9,6 +10,8 @@ import application.database.entities.ProjectRights;
 import application.database.repositories.ProjectRepository;
 import application.database.repositories.ProjectRightsRepository;
 import application.dtos.requests.UpdateProjectSettingsRequest;
+import application.dtos.responses.GetProjectSettingsResponse;
+import application.helpers.DurationHelper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +36,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectRightsRepository projectRightsRepository;
     private final UserRepository userRepository;
+    private final DurationHelper durationHelper = new DurationHelper();
 
     @Transactional
     public Project createProject(CreateProjectRequest request, UUID ownerId) throws EntityNotFoundException {
@@ -107,36 +111,6 @@ public class ProjectService {
         return rights.get().getIsAdmin();
     }
 
-    // Для преобразования из установленного формата длительности (число-слово) в Duration
-    // Возможно, стоит всё же поменять этот формат
-    private Duration parseDuration(String input) {
-        if (input == null || input.trim().isEmpty()) {
-            throw new IllegalArgumentException("Duration string cannot be empty");
-        }
-
-        // Убираем лишние пробелы, приводим к нижнему регистру
-        String s = input.trim().toLowerCase();
-
-        // Ожидаемый формат: число + пробел + единица (week, day, hour, minute, etc.)
-        Pattern pattern = Pattern.compile("^(\\d+)\\s*([a-z]+)$");
-        Matcher matcher = pattern.matcher(s);
-
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid duration format: " + input);
-        }
-
-        long value = Long.parseLong(matcher.group(1));
-        String unit = matcher.group(2);
-
-        return switch (unit) {
-            case "week", "weeks"     -> Duration.ofDays(value*7);
-            case "day", "days"       -> Duration.ofDays(value);
-            case "hour", "hours"     -> Duration.ofHours(value);
-            case "minute", "minutes" -> Duration.ofMinutes(value);
-            case "second", "seconds" -> Duration.ofSeconds(value);
-            default -> throw new IllegalArgumentException("Unsupported unit: " + unit);
-        };
-    }
 
     @Transactional
     public void updateProjectSettings(UUID projectId, UpdateProjectSettingsRequest request, UUID userId) {
@@ -158,16 +132,18 @@ public class ProjectService {
 
         project.setName(request.getName());
         project.setDescription(request.getDescription());
-        project.setVoteInterval(parseDuration(request.getVoteInterval()));
+        project.setVoteInterval(durationHelper.parseDuration(request.getVoteInterval()));
         project.setVotesForInterval(request.getVotesForInterval());
 
         projectRepository.save(project);
     }
 
-    public List<ProjectUserDto> getProjectUsers(UUID projectId) {
+    public List<ProjectUserDto> getProjectUsers(UUID projectId, UUID currentUserId) {
         if (!projectRepository.existsById(projectId)) {
             throw new EntityNotFoundException("Project not found: " + projectId);
         }
+
+        validateAndGetUserProjectAccess(currentUserId, projectId);
 
         List<ProjectRights> rights = projectRightsRepository.findAllByProjectId(projectId);
         List<ProjectUserDto> ans = new ArrayList<>();
@@ -213,5 +189,35 @@ public class ProjectService {
 
         rights.setIsAdmin(isAdmin);
         projectRightsRepository.save(rights);
+    }
+
+    @Transactional
+    public void consumeVote(UUID userId, UUID projectId) {
+        ProjectRights rights = validateAndGetUserProjectAccess(userId, projectId);
+        if (rights.getVotesLeft() < 1) {
+            throw new IllegalArgumentException("User " + userId + " has no votes left in project " + projectId);
+        }
+        rights.setVotesLeft(rights.getVotesLeft() - 1);
+        projectRightsRepository.save(rights);
+    }
+
+    @Transactional
+    public void restoreVote(UUID userId, UUID projectId) {
+        ProjectRights rights = validateAndGetUserProjectAccess(userId, projectId);
+        rights.setVotesLeft(rights.getVotesLeft() + 1);
+        projectRightsRepository.save(rights);
+    }
+
+    public ProjectFullDto getProjectSettings(UUID projectId, UUID currentUserId){
+        validateAndGetUserProjectAccess(currentUserId, projectId);
+
+        Project project = getProjectById(projectId);
+        return new ProjectFullDto(
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                durationHelper.formatDuration(project.getVoteInterval()),
+                project.getVotesForInterval(),
+                project.getOwnerId());
     }
 }
