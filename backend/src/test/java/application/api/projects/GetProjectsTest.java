@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class GetProjectsTest extends ProjectBaseClassTest{
@@ -64,6 +65,7 @@ public class GetProjectsTest extends ProjectBaseClassTest{
                 .ownerId(testUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project saved = projectRepository.save(project);
 

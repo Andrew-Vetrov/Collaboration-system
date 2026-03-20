@@ -63,6 +63,7 @@ public class SuggestionBaseClassTest {
                 .ownerId(testUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         testProject = projectRepository.save(testProject);
 

@@ -1,6 +1,8 @@
 package application.database.services;
 
 import application.database.entities.Like;
+import application.database.entities.Project;
+import application.database.entities.ProjectRights;
 import application.database.entities.Suggestion;
 import application.database.repositories.LikeRepository;
 import application.database.repositories.SuggestionRepository;
@@ -77,19 +79,31 @@ public class SuggestionService {
     public void removeLike(UUID suggestionId, UUID userId) {
         Suggestion suggestion = suggestionRepository.findById(suggestionId)
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
+        UUID projectId = suggestion.getProjectId();
+        projectService.validateAndGetUserProjectAccess(userId, projectId);
+        Project project = projectService.getProjectById(projectId);
 
-        // restoreVote внутри проверит доступ
+        ZonedDateTime currentPeriodStart = project.getVotePeriodStart();
+
+        // Ищем все лайки этого пользователя на это предложение
         List<Like> userLikes = likeRepository.findByUserIdAndSuggestionId(userId, suggestionId);
         if (userLikes.isEmpty()) {
             throw new EntityNotFoundException("No like found for user " + userId + " on suggestion " + suggestionId);
         }
 
-        Like oldestLike = userLikes.stream()
-                .min(Comparator.comparing(Like::getPlacedAt))
-                .orElseThrow();
+        // Фильтруем только лайки из текущего периода
+        List<Like> removableLikes = userLikes.stream()
+                .filter(like -> !like.getPlacedAt().isBefore(currentPeriodStart))
+                .toList();
 
-        likeRepository.delete(oldestLike);
-        projectService.restoreVote(userId, suggestion.getProjectId());
+        if (removableLikes.isEmpty()) {
+            throw new IllegalStateException(
+                    "No likes from the current voting period. You can only remove likes placed after " +
+                            currentPeriodStart);
+        }
+
+        likeRepository.delete(removableLikes.getFirst());
+        projectService.restoreVote(userId, projectId);
     }
 
     @Transactional

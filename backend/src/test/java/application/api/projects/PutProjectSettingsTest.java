@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class PutProjectSettingsTest extends ProjectBaseClassTest{
@@ -61,6 +62,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
                 .ownerId(testUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -115,6 +117,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
                 .ownerId(otherUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -158,6 +161,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
                 .ownerId(testUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -185,6 +189,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
                 .ownerId(testUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -218,6 +223,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
                 .ownerId(testUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
