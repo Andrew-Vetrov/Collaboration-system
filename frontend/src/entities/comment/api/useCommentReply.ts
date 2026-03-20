@@ -1,7 +1,7 @@
 import { commentsApi } from '@/shared/api';
 import {
+  type CommentsCommentIdReplyPostRequest,
   type CurrentUser,
-  type CommentIdReplyPostRequest,
 } from '@/shared/api/generated';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCommentsQueryKey } from '../lib/getCommentsQueryKey';
@@ -11,12 +11,15 @@ import { getAuthMeQueryKey } from '@/entities/main-user/lib/getAuthMeQueryKey';
 export function useCommentReply(suggestionId: string, commentId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: CommentIdReplyPostRequest) => {
-      const response = await commentsApi.commentIdReplyPost(commentId, data);
+    mutationFn: async (data: CommentsCommentIdReplyPostRequest) => {
+      const response = await commentsApi.commentsCommentIdReplyPost(
+        commentId,
+        data
+      );
       return response.data;
     },
 
-    onMutate: async (data: CommentIdReplyPostRequest) => {
+    onMutate: async (data: CommentsCommentIdReplyPostRequest) => {
       queryClient.cancelQueries({
         queryKey: getCommentsQueryKey(suggestionId),
       });
