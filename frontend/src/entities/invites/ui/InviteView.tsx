@@ -19,6 +19,8 @@ export function InviteView({ invite, className }: InviteViewProps) {
       inviteResponse: false,
     });
 
+  // console.log(invite);
+
   return (
     <div
       className={cn(

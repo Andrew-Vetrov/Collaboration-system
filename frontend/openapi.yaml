@@ -543,7 +543,7 @@ paths:
           description: Пользователь не авторизован
         '404':
           description: Предложение не найдено
-  /{comment_id}/reply:
+  /comments/{comment_id}/reply:
     post:
       summary: Ответить на комментарий
       tags:

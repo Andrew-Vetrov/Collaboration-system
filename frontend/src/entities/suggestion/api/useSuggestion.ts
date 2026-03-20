@@ -10,6 +10,7 @@ export const useSuggestion = (suggestionId: string | undefined) => {
       if (!suggestionId) return null;
       const response =
         await suggestionsApi.suggestionsSuggestionIdGet(suggestionId);
+      // console.log(response);
       return response.data ?? null;
     },
     enabled: !!suggestionId,
