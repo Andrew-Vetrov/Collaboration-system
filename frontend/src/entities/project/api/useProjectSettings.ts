@@ -11,6 +11,7 @@ export function useProjectSettings(projectId: string) {
         await projectsApi.projectsProjectIdSettingsGet(projectId);
 
       const data = response.data.data;
+      // console.log(data);
 
       if (!data) {
         throw new Error('Настройки проекта не получены (data is undefined)');

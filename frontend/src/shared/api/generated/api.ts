@@ -32,7 +32,7 @@ export interface Comment {
     'last_edit': string;
     'text': string;
 }
-export interface CommentIdReplyPostRequest {
+export interface CommentsCommentIdReplyPostRequest {
     'text': string;
 }
 export interface CreateSuggestionRequest {
@@ -436,48 +436,6 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * 
-         * @summary Ответить на комментарий
-         * @param {string} commentId 
-         * @param {CommentIdReplyPostRequest} commentIdReplyPostRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        commentIdReplyPost: async (commentId: string, commentIdReplyPostRequest: CommentIdReplyPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'commentId' is not null or undefined
-            assertParamExists('commentIdReplyPost', 'commentId', commentId)
-            // verify required parameter 'commentIdReplyPostRequest' is not null or undefined
-            assertParamExists('commentIdReplyPost', 'commentIdReplyPostRequest', commentIdReplyPostRequest)
-            const localVarPath = `/{comment_id}/reply`
-                .replace(`{${"comment_id"}}`, encodeURIComponent(String(commentId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication sessionAuth required
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(commentIdReplyPostRequest, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary Удалить комментарий
          * @param {string} commentId 
          * @param {*} [options] Override http request option.
@@ -508,6 +466,48 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Ответить на комментарий
+         * @param {string} commentId 
+         * @param {CommentsCommentIdReplyPostRequest} commentsCommentIdReplyPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        commentsCommentIdReplyPost: async (commentId: string, commentsCommentIdReplyPostRequest: CommentsCommentIdReplyPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'commentId' is not null or undefined
+            assertParamExists('commentsCommentIdReplyPost', 'commentId', commentId)
+            // verify required parameter 'commentsCommentIdReplyPostRequest' is not null or undefined
+            assertParamExists('commentsCommentIdReplyPost', 'commentsCommentIdReplyPostRequest', commentsCommentIdReplyPostRequest)
+            const localVarPath = `/comments/{comment_id}/reply`
+                .replace(`{${"comment_id"}}`, encodeURIComponent(String(commentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication sessionAuth required
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(commentsCommentIdReplyPostRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -607,20 +607,6 @@ export const CommentsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Ответить на комментарий
-         * @param {string} commentId 
-         * @param {CommentIdReplyPostRequest} commentIdReplyPostRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async commentIdReplyPost(commentId: string, commentIdReplyPostRequest: CommentIdReplyPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Comment>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.commentIdReplyPost(commentId, commentIdReplyPostRequest, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['CommentsApi.commentIdReplyPost']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @summary Удалить комментарий
          * @param {string} commentId 
          * @param {*} [options] Override http request option.
@@ -630,6 +616,20 @@ export const CommentsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commentsCommentIdDelete(commentId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['CommentsApi.commentsCommentIdDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Ответить на комментарий
+         * @param {string} commentId 
+         * @param {CommentsCommentIdReplyPostRequest} commentsCommentIdReplyPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async commentsCommentIdReplyPost(commentId: string, commentsCommentIdReplyPostRequest: CommentsCommentIdReplyPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Comment>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.commentsCommentIdReplyPost(commentId, commentsCommentIdReplyPostRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommentsApi.commentsCommentIdReplyPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -670,17 +670,6 @@ export const CommentsApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * 
-         * @summary Ответить на комментарий
-         * @param {string} commentId 
-         * @param {CommentIdReplyPostRequest} commentIdReplyPostRequest 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        commentIdReplyPost(commentId: string, commentIdReplyPostRequest: CommentIdReplyPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<Comment> {
-            return localVarFp.commentIdReplyPost(commentId, commentIdReplyPostRequest, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary Удалить комментарий
          * @param {string} commentId 
          * @param {*} [options] Override http request option.
@@ -688,6 +677,17 @@ export const CommentsApiFactory = function (configuration?: Configuration, baseP
          */
         commentsCommentIdDelete(commentId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.commentsCommentIdDelete(commentId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Ответить на комментарий
+         * @param {string} commentId 
+         * @param {CommentsCommentIdReplyPostRequest} commentsCommentIdReplyPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        commentsCommentIdReplyPost(commentId: string, commentsCommentIdReplyPostRequest: CommentsCommentIdReplyPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<Comment> {
+            return localVarFp.commentsCommentIdReplyPost(commentId, commentsCommentIdReplyPostRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -719,18 +719,6 @@ export const CommentsApiFactory = function (configuration?: Configuration, baseP
 export class CommentsApi extends BaseAPI {
     /**
      * 
-     * @summary Ответить на комментарий
-     * @param {string} commentId 
-     * @param {CommentIdReplyPostRequest} commentIdReplyPostRequest 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public commentIdReplyPost(commentId: string, commentIdReplyPostRequest: CommentIdReplyPostRequest, options?: RawAxiosRequestConfig) {
-        return CommentsApiFp(this.configuration).commentIdReplyPost(commentId, commentIdReplyPostRequest, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @summary Удалить комментарий
      * @param {string} commentId 
      * @param {*} [options] Override http request option.
@@ -738,6 +726,18 @@ export class CommentsApi extends BaseAPI {
      */
     public commentsCommentIdDelete(commentId: string, options?: RawAxiosRequestConfig) {
         return CommentsApiFp(this.configuration).commentsCommentIdDelete(commentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Ответить на комментарий
+     * @param {string} commentId 
+     * @param {CommentsCommentIdReplyPostRequest} commentsCommentIdReplyPostRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public commentsCommentIdReplyPost(commentId: string, commentsCommentIdReplyPostRequest: CommentsCommentIdReplyPostRequest, options?: RawAxiosRequestConfig) {
+        return CommentsApiFp(this.configuration).commentsCommentIdReplyPost(commentId, commentsCommentIdReplyPostRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

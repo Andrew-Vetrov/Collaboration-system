@@ -6,8 +6,8 @@ common.ts
 configuration.ts
 docs/AuthorizeApi.md
 docs/Comment.md
-docs/CommentIdReplyPostRequest.md
 docs/CommentsApi.md
+docs/CommentsCommentIdReplyPostRequest.md
 docs/CreateSuggestionRequest.md
 docs/CurrentUser.md
 docs/Invite.md

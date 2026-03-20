@@ -4,66 +4,10 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**commentIdReplyPost**](#commentidreplypost) | **POST** /{comment_id}/reply | Ответить на комментарий|
 |[**commentsCommentIdDelete**](#commentscommentiddelete) | **DELETE** /comments/{comment_id} | Удалить комментарий|
+|[**commentsCommentIdReplyPost**](#commentscommentidreplypost) | **POST** /comments/{comment_id}/reply | Ответить на комментарий|
 |[**suggestionsSuggestionIdCommentsGet**](#suggestionssuggestionidcommentsget) | **GET** /suggestions/{suggestion_id}/comments | Получить список комментариев к предложению|
 |[**suggestionsSuggestionIdCommentsPost**](#suggestionssuggestionidcommentspost) | **POST** /suggestions/{suggestion_id}/comments | Оставить комментарий к предложению|
-
-# **commentIdReplyPost**
-> Comment commentIdReplyPost(commentIdReplyPostRequest)
-
-
-### Example
-
-```typescript
-import {
-    CommentsApi,
-    Configuration,
-    CommentIdReplyPostRequest
-} from './api';
-
-const configuration = new Configuration();
-const apiInstance = new CommentsApi(configuration);
-
-let commentId: string; // (default to undefined)
-let commentIdReplyPostRequest: CommentIdReplyPostRequest; //
-
-const { status, data } = await apiInstance.commentIdReplyPost(
-    commentId,
-    commentIdReplyPostRequest
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **commentIdReplyPostRequest** | **CommentIdReplyPostRequest**|  | |
-| **commentId** | [**string**] |  | defaults to undefined|
-
-
-### Return type
-
-**Comment**
-
-### Authorization
-
-[sessionAuth](../README.md#sessionAuth)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**201** | Ответ создан |  -  |
-|**401** | Пользователь не авторизован |  -  |
-|**404** | Комментарий или предложение не найдены |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **commentsCommentIdDelete**
 > commentsCommentIdDelete()
@@ -115,6 +59,62 @@ void (empty response body)
 |**401** | Пользователь не авторизован |  -  |
 |**403** | Недостаточно прав для удаления комментария |  -  |
 |**404** | Комментарий не найден |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **commentsCommentIdReplyPost**
+> Comment commentsCommentIdReplyPost(commentsCommentIdReplyPostRequest)
+
+
+### Example
+
+```typescript
+import {
+    CommentsApi,
+    Configuration,
+    CommentsCommentIdReplyPostRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new CommentsApi(configuration);
+
+let commentId: string; // (default to undefined)
+let commentsCommentIdReplyPostRequest: CommentsCommentIdReplyPostRequest; //
+
+const { status, data } = await apiInstance.commentsCommentIdReplyPost(
+    commentId,
+    commentsCommentIdReplyPostRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **commentsCommentIdReplyPostRequest** | **CommentsCommentIdReplyPostRequest**|  | |
+| **commentId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**Comment**
+
+### Authorization
+
+[sessionAuth](../README.md#sessionAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**201** | Ответ создан |  -  |
+|**401** | Пользователь не авторизован |  -  |
+|**404** | Комментарий или предложение не найдены |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

@@ -78,7 +78,7 @@ export function EditSuggestionDialog(props: EditSuggestionDialogProps) {
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-3">
-              <Label htmlFor="name-id">Имя проекта</Label>
+              <Label htmlFor="name-id">Имя предложения</Label>
               <Input
                 id="name-id"
                 {...register('name', {

@@ -3,7 +3,7 @@ export interface SettingsFormInput {
   description: string;
   vote_interval: {
     value: number;
-    unit: 'minutes' | 'hours' | 'weeks' | 'months';
+    unit: 'minutes' | 'hours' | 'weeks' | 'days';
   };
   votes_for_interval: number;
 }

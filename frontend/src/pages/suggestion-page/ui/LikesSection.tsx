@@ -39,12 +39,14 @@ export function LikesSection({
       </div>
       <div className="flex gap-1">
         <span>Всего лайков:</span>
-        <span className="tabular-nums">{suggestion.likes_amount}</span>
+        <span className="tabular-nums">{suggestion.likes_amount || 0}</span>
       </div>
 
       <div className="flex gap-1">
         <span>Ваших лайков:</span>
-        <span className="tabular-nums">{suggestion.user_likes_amount}</span>
+        <span className="tabular-nums">
+          {suggestion.user_likes_amount || 0}
+        </span>
       </div>
       <div className="flex gap-2 items-center">
         <Button variant="outline" onClick={() => addLike()}>

@@ -43,7 +43,7 @@ export const CreateProjectDialog = (
           props.setIsOpen(false);
         },
         onError: err => {
-          console.error('Ошибка создания проекта:', err);
+          // console.error('Ошибка создания проекта:', err);
         },
       }
     );

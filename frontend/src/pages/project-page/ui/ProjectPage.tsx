@@ -32,11 +32,11 @@ const ProjectPage = (): JSX.Element => {
       { userId: currentUser.user_id, isCurrentUser: true },
       {
         onSuccess: () => {
-          console.log('oker');
+          // console.log('oker');
           navigate(routes.projectsRoute());
         },
-        onError: () => {
-          console.log('erro');
+        onError: e => {
+          // console.log(e.message);
         },
       }
     );
