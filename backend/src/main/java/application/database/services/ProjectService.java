@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,7 @@ public class ProjectService {
                 .ownerId(ownerId)
                 .name(request.getName())
                 .description(request.getDescription())
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
 
         Project savedProject = projectRepository.save(project);
@@ -94,6 +96,10 @@ public class ProjectService {
         if (userRights.isEmpty()) {
             throw new AccessDeniedException("User " + userId + " has no access to project " + projectId);
         }
+
+        Project project = getProjectById(projectId);
+        resetProjectVotesIfNeeded(project);
+
         return userRights.get();
 
     }
@@ -130,10 +136,17 @@ public class ProjectService {
             throw new IllegalArgumentException("Votes for interval is not specified");
         }
 
+        //При изменении настроек голосования начинается новый период голосования
+        if(durationHelper.parseDuration(request.getVoteInterval()) != project.getVoteInterval()
+                || request.getVotesForInterval() != project.getVotesForInterval()){
+            project.setVotePeriodStart(ZonedDateTime.now());
+        }
+
         project.setName(request.getName());
         project.setDescription(request.getDescription());
         project.setVoteInterval(durationHelper.parseDuration(request.getVoteInterval()));
         project.setVotesForInterval(request.getVotesForInterval());
+
 
         projectRepository.save(project);
     }
@@ -226,6 +239,34 @@ public class ProjectService {
                 project.getDescription(),
                 durationHelper.formatDuration(project.getVoteInterval()),
                 project.getVotesForInterval(),
+                project.getVotePeriodStart(),
                 project.getOwnerId());
+    }
+
+    private void resetProjectVotesIfNeeded(Project project) {
+        ZonedDateTime now = ZonedDateTime.now();
+        Duration interval = project.getVoteInterval();
+
+        Duration elapsed = Duration.between(project.getVotePeriodStart(), now);
+        if (elapsed.compareTo(interval) < 0) {
+            return; //Обновлять голоса рано
+        }
+
+        // Сколько полных периодов прошло
+        long periodsPassed = elapsed.dividedBy(interval);
+        ZonedDateTime newStart = project.getVotePeriodStart()
+                .plus(interval.multipliedBy(periodsPassed));
+
+        project.setVotePeriodStart(newStart);
+        projectRepository.save(project);
+
+        // Сбрасываем голоса у всех участников проекта
+        List<ProjectRights> allRights = projectRightsRepository.findAllByProjectId(project.getId());
+        for (ProjectRights rights : allRights) {
+            rights.setVotesLeft(project.getVotesForInterval());
+        }
+        projectRightsRepository.saveAll(allRights);
+
+        log.debug("Project {} votes reset. New period start: {}", project.getId(), newStart);
     }
 }

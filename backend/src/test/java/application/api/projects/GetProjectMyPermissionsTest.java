@@ -6,6 +6,7 @@ import application.database.entities.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class GetProjectMyPermissionsTest extends ProjectBaseClassTest{
@@ -78,6 +79,7 @@ public class GetProjectMyPermissionsTest extends ProjectBaseClassTest{
                 .ownerId(otherUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -104,6 +106,7 @@ public class GetProjectMyPermissionsTest extends ProjectBaseClassTest{
                 .ownerId(testUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 

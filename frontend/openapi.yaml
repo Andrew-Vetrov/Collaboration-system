@@ -791,6 +791,8 @@ components:
           type: string
         votes_for_interval:
           type: integer
+        voting_period_start:
+          type: date-time
         owner_id:
           type: string
           format: uuid
