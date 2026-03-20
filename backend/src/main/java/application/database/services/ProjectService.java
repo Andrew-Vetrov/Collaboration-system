@@ -160,16 +160,24 @@ public class ProjectService {
 
     @Transactional
     public void removeUserFromProject(UUID projectId, UUID targetUserId, UUID currentUserId) {
-        if (!isUserProjectAdmin(currentUserId, projectId)) {
-            throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
-        }
+        validateAndGetUserProjectAccess(currentUserId, projectId);
 
-        // Нельзя удалить администратора или создателя проекта
-        if (isUserProjectAdmin(targetUserId, projectId)) {
-            throw new AccessDeniedException("Cannot remove admin user from the project");
+        if(targetUserId == currentUserId
+                && getProjectById(projectId).getOwnerId().equals(targetUserId)) { // Владелец проекта не может выйти из него
+            throw new AccessDeniedException("Cannot exit project being an owner");
         }
-        if (getProjectById(projectId).getOwnerId().equals(targetUserId)) {
-            throw new AccessDeniedException("Cannot remove owner from the project");
+        else if (targetUserId != currentUserId){
+            if (!isUserProjectAdmin(currentUserId, projectId)) {
+                throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
+            }
+
+            //Нельзя удалить администратора и владельца
+            if (isUserProjectAdmin(targetUserId, projectId)) {
+                throw new AccessDeniedException("Cannot remove admin user from the project");
+            }
+            if (getProjectById(projectId).getOwnerId().equals(targetUserId)) {
+                throw new AccessDeniedException("Cannot remove owner from the project");
+            }
         }
 
         ProjectRights rights = projectRightsRepository.findByUserIdAndProjectId(targetUserId, projectId)
