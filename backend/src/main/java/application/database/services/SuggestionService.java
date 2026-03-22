@@ -97,7 +97,7 @@ public class SuggestionService {
                 .toList();
 
         if (removableLikes.isEmpty()) {
-            throw new IllegalStateException(
+            throw new EntityNotFoundException(
                     "No likes from the current voting period. You can only remove likes placed after " +
                             currentPeriodStart);
         }

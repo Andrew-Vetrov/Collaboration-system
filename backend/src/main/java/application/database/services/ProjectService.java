@@ -10,7 +10,6 @@ import application.database.entities.ProjectRights;
 import application.database.repositories.ProjectRepository;
 import application.database.repositories.ProjectRightsRepository;
 import application.dtos.requests.UpdateProjectSettingsRequest;
-import application.dtos.responses.GetProjectSettingsResponse;
 import application.helpers.DurationHelper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -98,7 +94,7 @@ public class ProjectService {
         }
 
         Project project = getProjectById(projectId);
-        resetProjectVotesIfNeeded(project);
+        restartProjectVotingPeriodIfNeeded(project);
 
         return userRights.get();
 
@@ -149,6 +145,7 @@ public class ProjectService {
 
 
         projectRepository.save(project);
+        resetProjectVotes(project);
     }
 
     public List<ProjectUserDto> getProjectUsers(UUID projectId, UUID currentUserId) {
@@ -175,11 +172,11 @@ public class ProjectService {
     public void removeUserFromProject(UUID projectId, UUID targetUserId, UUID currentUserId) {
         validateAndGetUserProjectAccess(currentUserId, projectId);
 
-        if(targetUserId == currentUserId
+        if(targetUserId.equals(currentUserId)
                 && getProjectById(projectId).getOwnerId().equals(targetUserId)) { // Владелец проекта не может выйти из него
             throw new AccessDeniedException("Cannot exit project being an owner");
         }
-        else if (targetUserId != currentUserId){
+        else if (!targetUserId.equals(currentUserId)){
             if (!isUserProjectAdmin(currentUserId, projectId)) {
                 throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
             }
@@ -243,7 +240,7 @@ public class ProjectService {
                 project.getOwnerId());
     }
 
-    private void resetProjectVotesIfNeeded(Project project) {
+    private void restartProjectVotingPeriodIfNeeded(Project project) {
         ZonedDateTime now = ZonedDateTime.now();
         Duration interval = project.getVoteInterval();
 
@@ -260,13 +257,16 @@ public class ProjectService {
         project.setVotePeriodStart(newStart);
         projectRepository.save(project);
 
-        // Сбрасываем голоса у всех участников проекта
+        resetProjectVotes(project);
+
+        log.debug("Project {} votes reset. New period start: {}", project.getId(), newStart);
+    }
+
+    private void resetProjectVotes(Project project){
         List<ProjectRights> allRights = projectRightsRepository.findAllByProjectId(project.getId());
         for (ProjectRights rights : allRights) {
             rights.setVotesLeft(project.getVotesForInterval());
         }
         projectRightsRepository.saveAll(allRights);
-
-        log.debug("Project {} votes reset. New period start: {}", project.getId(), newStart);
     }
 }
