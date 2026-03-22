@@ -129,7 +129,7 @@ export function ProjectSettingsContent({
             {...register('vote_interval.value', {
               required: 'Необходимо задать интервал',
               min: { value: 1, message: 'Минимум 1' },
-              max: { value: 100, message: 'Максимум 100' },
+              max: { value: 999, message: 'Максимум 999' },
               valueAsNumber: true,
             })}
             type="number"
@@ -172,7 +172,7 @@ export function ProjectSettingsContent({
           {...register('votes_for_interval', {
             required: 'Необходимо задать количество реакций',
             min: { value: 1, message: 'Минимум 1' },
-            max: { value: 100, message: 'Максимум 100' },
+            max: { value: 999, message: 'Максимум 999' },
             valueAsNumber: true,
           })}
           id="votes_for_interval-id"
