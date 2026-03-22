@@ -184,6 +184,18 @@ public class SuggestionService {
             throw new AccessDeniedException("Only project admins can delete suggestions");
         }
 
+        //Возвращаем пользователям поставленные лайки за текущий период на это предложение
+        Project project = projectService.getProjectById(suggestion.getProjectId());
+        List<Like> suggestionLikes = likeRepository.findBySuggestionId(suggestionId);
+        // Фильтруем только лайки из текущего периода
+        List<Like> removableLikes = suggestionLikes.stream()
+                .filter(like -> !like.getPlacedAt().isBefore(project.getVotePeriodStart()))
+                .toList();
+        for(Like like : removableLikes){
+            likeRepository.delete(like);
+            projectService.restoreVote(like.getUserId(), project.getId());
+        }
+
         suggestionRepository.delete(suggestion);
     }
 
