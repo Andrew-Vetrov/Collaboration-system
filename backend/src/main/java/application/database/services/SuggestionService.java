@@ -97,7 +97,7 @@ public class SuggestionService {
                 .toList();
 
         if (removableLikes.isEmpty()) {
-            throw new IllegalStateException(
+            throw new EntityNotFoundException(
                     "No likes from the current voting period. You can only remove likes placed after " +
                             currentPeriodStart);
         }
@@ -182,6 +182,18 @@ public class SuggestionService {
 
         if (!projectService.isUserProjectAdmin(currentUserId, suggestion.getProjectId())) {
             throw new AccessDeniedException("Only project admins can delete suggestions");
+        }
+
+        //Возвращаем пользователям поставленные лайки за текущий период на это предложение
+        Project project = projectService.getProjectById(suggestion.getProjectId());
+        List<Like> suggestionLikes = likeRepository.findBySuggestionId(suggestionId);
+        // Фильтруем только лайки из текущего периода
+        List<Like> removableLikes = suggestionLikes.stream()
+                .filter(like -> !like.getPlacedAt().isBefore(project.getVotePeriodStart()))
+                .toList();
+        for(Like like : removableLikes){
+            likeRepository.delete(like);
+            projectService.restoreVote(like.getUserId(), project.getId());
         }
 
         suggestionRepository.delete(suggestion);

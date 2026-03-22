@@ -43,7 +43,7 @@ public class DeleteProjectUserTest extends ProjectBaseClassTest{
     }
 
     @Test
-    void apiDeleteUserFromProject_NotAdmin() {
+    void apiDeleteUserFromProject_selfDeleting_valid() {
         // Создаём проект, testUser не admin
         User otherUser = User.builder()
                 .mail("other@example.com")
@@ -76,11 +76,8 @@ public class DeleteProjectUserTest extends ProjectBaseClassTest{
         projectRightsRepository.save(userRights);
 
         makeDeleteProjectUserRequest(savedProject.getId(), testUser.getId(), validJwt)
-                .expectStatus().isForbidden()
-                .expectBody()
-                .jsonPath("$.status").isEqualTo(403)
-                .jsonPath("$.error").isEqualTo("User " + testUser.getId() + " is not an admin of project: " + savedProject.getId())
-                .jsonPath("$.path").isEqualTo("/projects/" + savedProject.getId() + "/users/" + testUser.getId());
+                .expectStatus().isOk()
+                .expectBody(String.class).isEqualTo("Пользователь успешно удален из проекта");
     }
 
     @Test
@@ -147,7 +144,7 @@ public class DeleteProjectUserTest extends ProjectBaseClassTest{
                 .expectStatus().isForbidden()
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(403)
-                .jsonPath("$.error").isEqualTo("Cannot remove admin user from the project")
+                .jsonPath("$.error").isEqualTo("Cannot exit project being an owner")
                 .jsonPath("$.path").isEqualTo("/projects/" + savedProject.getId() + "/users/" + testUser.getId());
     }
 

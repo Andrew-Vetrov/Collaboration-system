@@ -28,10 +28,10 @@ public class DurationHelper {
         String unit = matcher.group(2);
 
         return switch (unit) {
-            case "week", "weeks"     -> Duration.ofDays(value*7);
-            case "day", "days"       -> Duration.ofDays(value);
-            case "hour", "hours"     -> Duration.ofHours(value);
-            case "minute", "minutes" -> Duration.ofMinutes(value);
+            case "weeks"     -> Duration.ofDays(value*7);
+            case "days"       -> Duration.ofDays(value);
+            case "hours"     -> Duration.ofHours(value);
+            case "minutes" -> Duration.ofMinutes(value);
             default -> throw new IllegalArgumentException("Unsupported unit: " + unit);
         };
     }
@@ -43,20 +43,20 @@ public class DurationHelper {
 
         long totalMinutes = duration.toMinutes();
         if (totalMinutes % 60 != 0) {
-            return totalMinutes + " minute" + (totalMinutes > 1 ? "s" : "");
+            return totalMinutes + " minutes";
         }
 
         long totalHours = duration.toHours();
         if (totalHours % 24 != 0){
-            return totalHours + " hour" + (totalHours > 1 ? "s" : "");
+            return totalHours + " hours";
         }
 
         long totalDays = duration.toDays();
         if (totalDays % 7 != 0) {
-            return totalDays + " day" + (totalDays > 1 ? "s" : "");
+            return totalDays + " days";
         }
 
         long weeks = totalDays / 7;
-        return weeks + " week" + (weeks > 1 ? "s" : "");
+        return weeks + " weeks";
     }
 }
