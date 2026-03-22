@@ -13,4 +13,5 @@ public interface LikeRepository extends JpaRepository<Like, UUID> {
     long countByUserIdAndSuggestionId(UUID userId, UUID suggestionId);
 
     List<Like> findByUserIdAndSuggestionId(UUID userId, UUID suggestionId);
+    List<Like> findBySuggestionId(UUID suggestionId);
 }

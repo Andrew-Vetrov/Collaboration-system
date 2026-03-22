@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class GetProjectSettingsTest extends ProjectBaseClassTest{
@@ -79,6 +80,7 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
                 .ownerId(otherUser.getId())
                 .name("Test Project")
                 .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -107,6 +109,7 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
                 .description("Description")
                 .voteInterval(Duration.ofHours(30))
                 .votesForInterval(10)
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -126,6 +129,7 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
                 .jsonPath("$.data.description").isEqualTo("Description")
                 .jsonPath("$.data.vote_interval").isEqualTo("30 hours")
                 .jsonPath("$.data.votes_for_interval").isEqualTo(10)
+                .jsonPath("$.data.voting_period_start").exists()
                 .jsonPath("$.data.owner_id").isEqualTo(testUser.getId().toString());
     }
 
@@ -138,6 +142,7 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
                 .description("Description")
                 .voteInterval(Duration.ofDays(40))
                 .votesForInterval(16)
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -157,6 +162,7 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
                 .jsonPath("$.data.description").isEqualTo("Description")
                 .jsonPath("$.data.vote_interval").isEqualTo("40 days")
                 .jsonPath("$.data.votes_for_interval").isEqualTo(16)
+                .jsonPath("$.data.voting_period_start").exists()
                 .jsonPath("$.data.owner_id").isEqualTo(testUser.getId().toString());
     }
 
@@ -169,6 +175,7 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
                 .description("Description")
                 .voteInterval(Duration.ofMinutes(80))
                 .votesForInterval(25)
+                .votePeriodStart(ZonedDateTime.now())
                 .build();
         Project savedProject = projectRepository.save(project);
 
@@ -188,6 +195,7 @@ public class GetProjectSettingsTest extends ProjectBaseClassTest{
                 .jsonPath("$.data.description").isEqualTo("Description")
                 .jsonPath("$.data.vote_interval").isEqualTo("80 minutes")
                 .jsonPath("$.data.votes_for_interval").isEqualTo(25)
+                .jsonPath("$.data.voting_period_start").exists()
                 .jsonPath("$.data.owner_id").isEqualTo(testUser.getId().toString());
     }
 

@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
@@ -38,4 +39,7 @@ public class Project {
     @Column(name = "votes_for_interval")
     @Builder.Default
     private Integer votesForInterval = 1;
+
+    @Column(name = "voting_period_start", nullable = false)
+    private ZonedDateTime votePeriodStart;
 }

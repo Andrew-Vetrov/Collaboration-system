@@ -16,7 +16,7 @@ export function useProjectDeleteUser(projectId: string) {
       userId,
       isCurrentUser = false,
     }: ProjectDeleteUserMutationFunctionProps) => {
-      console.log(projectId, ' ', userId);
+      // console.log(projectId, ' ', userId);
       return projectsApi.projectsProjectIdUsersUserIdDelete(projectId, userId);
     },
     onSuccess: (_data, variables) => {

@@ -13,7 +13,7 @@ import {
 } from '@/shared/ui';
 import { Loader2 } from 'lucide-react';
 import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import type { SettingsFormInput } from '../model/types';
 import { useProjectSettingsUpdate } from '@/entities/project/api/useProjectSettingsUpdate';
 
@@ -30,12 +30,14 @@ export function ProjectSettingsContent({
     isError,
     isSuccess,
   } = useProjectSettings(projectId);
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-    control,
+    watch,
+    setValue,
   } = useForm<SettingsFormInput>({
     defaultValues: {
       name: '',
@@ -59,8 +61,8 @@ export function ProjectSettingsContent({
           unit: (settings.vote_interval.split(' ')[1] || 'hours') as
             | 'minutes'
             | 'hours'
-            | 'weeks'
-            | 'months',
+            | 'days'
+            | 'weeks',
         },
       });
     }
@@ -71,7 +73,6 @@ export function ProjectSettingsContent({
       ...formData,
       vote_interval: `${formData.vote_interval.value} ${formData.vote_interval.unit}`,
     };
-
     return updateSettings(transformedData);
   });
 
@@ -95,7 +96,7 @@ export function ProjectSettingsContent({
         <Label htmlFor="name-id">Имя проекта</Label>
         <Input
           {...register('name', {
-            maxLength: { message: 'Максимум 100 символов', value: 100 },
+            maxLength: { value: 100, message: 'Максимум 100 символов' },
             required: 'Необходимо написать имя проекта',
           })}
           id="name-id"
@@ -109,7 +110,7 @@ export function ProjectSettingsContent({
         <Textarea
           {...register('description', {
             required: 'Необходимо написать описание для проекта',
-            maxLength: { message: 'Максимум 2000 символов', value: 2000 },
+            maxLength: { value: 2000, message: 'Максимум 2000 символов' },
           })}
           id="description-1"
           name="description"
@@ -129,34 +130,36 @@ export function ProjectSettingsContent({
               required: 'Необходимо задать интервал',
               min: { value: 1, message: 'Минимум 1' },
               max: { value: 100, message: 'Максимум 100' },
+              valueAsNumber: true,
             })}
             type="number"
             className="max-w-20"
           />
-          <Controller
-            name="vote_interval.unit"
-            control={control}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(PROJECT_INTERVAL_UNITS).map(
-                    ([key, value]) => (
-                      <SelectItem key={key} value={key}>
-                        {value}
-                      </SelectItem>
-                    )
-                  )}
-                </SelectContent>
-              </Select>
-            )}
-          />
+          {settings && (
+            <Select
+              value={
+                watch('vote_interval.unit') ||
+                settings.vote_interval.split(' ')[1] ||
+                'hours'
+              }
+              onValueChange={value => setValue('vote_interval.unit', value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(PROJECT_INTERVAL_UNITS).map(([key, value]) => (
+                  <SelectItem key={key} value={key}>
+                    {value}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
-        {errors.vote_interval && (
+        {errors.vote_interval?.value && (
           <p className="text-red-500 text-sm mt-1">
-            {errors.vote_interval.value?.message}
+            {errors.vote_interval.value.message}
           </p>
         )}
       </div>

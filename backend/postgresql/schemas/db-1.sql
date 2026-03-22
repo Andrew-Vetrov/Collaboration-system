@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS projects
     name            TEXT NOT NULL,
     description     TEXT,
     vote_interval   INTERVAL NOT NULL DEFAULT '1 week',
-    votes_for_interval    INTEGER NOT NULL DEFAULT 1
+    votes_for_interval    INTEGER NOT NULL DEFAULT 1,
+    voting_period_start TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS project_rights
