@@ -30,6 +30,7 @@ public class InviteController {
             @RequestParam("user_email") String userEmail) {
         try {
             inviteService.inviteUserToProject(projectId, userEmail, "senderNickname");
+            inviteService.sendInvite(userEmail);
             return ResponseEntity.status(201).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();

@@ -27,12 +27,12 @@ public class AuthController {
     private final UserService userService;
     private final OAuth2AuthorizedClientService authorizedClientService;
 
-    @GetMapping("/auth")
+    @GetMapping("/login-start")
     public String auth() {
-        return "redirect:/oauth2/authorization/google";
+        return "redirect:/api/oauth2/authorization/google";
     }
 
-    @GetMapping("/auth/success")
+    @GetMapping("/login-confirm")
     public String authSuccess(@AuthenticationPrincipal OAuth2User principal) {
         if (principal == null || principal.getAttribute("email") == null) {
             log.error("OAuth2 principal is null or missing email");

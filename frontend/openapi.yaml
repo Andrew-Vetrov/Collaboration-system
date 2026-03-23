@@ -549,7 +549,7 @@ paths:
       tags:
         - Comments
       security:
-        - sessionAuth: []
+        - BearerAuth: []
       parameters:
         - name: comment_id
           in: path
