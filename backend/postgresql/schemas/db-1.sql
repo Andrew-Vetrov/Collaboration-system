@@ -67,11 +67,23 @@ CREATE TABLE IF NOT EXISTS comments
 );
 
 
-CREATE TABLE IF NOT EXISTS project_invites
-(
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    project_id      UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
-    mail            VARCHAR(255) NOT NULL UNIQUE,
-    invited_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (project_id, mail)
+CREATE TABLE IF NOT EXISTS project_invites (
+    invite_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    project_id UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
+    email VARCHAR(255) NOT NULL,
+    invited_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    sender_nickname VARCHAR(100) NOT NULL,
+    project_name VARCHAR(255),
+    receiver_nickname VARCHAR(100) NOT NULL,
+    receiver_avatar VARCHAR(255),
+    UNIQUE (project_id, email)
 );
+
+ALTER TABLE comments
+DROP CONSTRAINT IF EXISTS comments_comment_reply_to_id_fkey;
+
+ALTER TABLE comments
+ADD CONSTRAINT comments_comment_reply_to_id_fkey
+FOREIGN KEY (comment_reply_to_id)
+REFERENCES comments (id)
+ON DELETE CASCADE;

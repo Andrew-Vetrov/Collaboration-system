@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.UUID;
 
+//@RestController
 @Controller
 @RequiredArgsConstructor
 @Slf4j
@@ -38,9 +39,10 @@ public class AuthController {
         }
 
         String email = principal.getAttribute("email");
+        String name = principal.getAttribute("name");
 
         //Взаимодействуем с бд
-        User user = userService.findOrCreateByEmail(email);
+        User user = userService.findOrCreateByEmail(email, name);
         UUID userUuid = user.getId();
 
         String myJwt = jwtService.generateToken(userUuid);

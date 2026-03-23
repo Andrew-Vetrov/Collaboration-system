@@ -17,9 +17,9 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User findOrCreateByEmail(String email) {
+    public User findOrCreateByEmail(String email, String name) {
         return userRepository.findByMail(email)
-                .orElseGet(() -> createNewUserFromEmail(email));
+                .orElseGet(() -> createNewUserFromEmail(email, name));
     }
 
     public User findById(UUID userId){
@@ -27,8 +27,10 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User " + userId + " not found"));
     }
 
-    private User createNewUserFromEmail(String email) {
-        String nickname = "nick name";
+    private User createNewUserFromEmail(String email, String nickname) {
+        if (nickname == null) {
+            nickname = "nick name";
+        }
 
         User newUser = User.builder()
                 .mail(email)
