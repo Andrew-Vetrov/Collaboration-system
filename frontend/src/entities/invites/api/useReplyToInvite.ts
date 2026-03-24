@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getInvitesQueryKey } from '../lib/getInviteQueryKey';
 import type { Invite } from '../model/types';
 import { getProjectInvitesQueryKey } from '../lib/getProjectInvitesQueryKey';
+import { getProjectsQueryKey } from '@/entities/project/lib/getProjectsQueryKey';
 
 interface ReplyToInviteVariables {
   inviteId: string;
@@ -47,6 +48,7 @@ export function useReplyToInvite() {
           queryKey: getProjectInvitesQueryKey(variables.projectId),
         });
       }
+      queryClient.invalidateQueries({ queryKey: getProjectsQueryKey() });
     },
   });
 }

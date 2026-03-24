@@ -5,6 +5,7 @@ import { STATUS_LABELS } from '../lib/status';
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { routes } from '@/shared/route';
+import { parseDateTime } from '@/shared/lib/utils';
 
 interface SuggestionsListProps {
   projectId: string;
@@ -57,7 +58,22 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
                   <div className="flex gap-1 text-sm ">
                     <Heart className="" /> {suggestion.likes_amount}
                   </div>
-                  <div>{suggestion.placed_at}</div>
+                  <div>
+                    {(() => {
+                      const parsedTime = parseDateTime(
+                        suggestion.placed_at || ''
+                      );
+                      console.log(parsedTime);
+                      return (
+                        <>
+                          <span>
+                            {parsedTime?.time} {parsedTime?.date.day}-
+                            {parsedTime?.date.month}-{parsedTime?.date.year}
+                          </span>
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
               </Link>
             </Card>

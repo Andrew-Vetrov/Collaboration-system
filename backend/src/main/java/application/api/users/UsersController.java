@@ -30,6 +30,6 @@ public class UsersController {
     public GetUsersMeResponse getUsersMe() throws AuthException {
         UUID userId = jwtService.getCurrentUserId();
         User user = userService.findById(userId);
-        return new GetUsersMeResponse(user.getId(), user.getMail(), user.getNickname(), "");
+        return new GetUsersMeResponse(user.getId(), user.getMail(), user.getNickname(), user.getPicture());
     }
 }

@@ -22,6 +22,7 @@ import {
   commentContext,
   CommentContextProviter,
 } from '../model/CommentsContext';
+import { parseDateTime } from '@/shared/lib/utils';
 
 interface CommentsListProps {
   userList: Array<ProjectUser> | undefined;
@@ -137,8 +138,26 @@ const RecursiveCommentHelper = memo(
                   <AvatarFallback className="bg-black text-white font-medium hover:bg-zinc-800 transition-colors" />
                 </Avatar>
                 <div className="flex flex-col items-start gap-1 w-full relative">
-                  <div className="font-bold max-w-[30vw] truncate">
-                    {usersMap.get(comment.user_id)?.nickname}
+                  <div className="flex flex-row w-full justify-between">
+                    <div className="font-bold max-w-[30vw] truncate">
+                      {usersMap.get(comment.user_id)?.nickname}
+                    </div>
+                    <div className="mr-7">
+                      {(() => {
+                        const parsedTime = parseDateTime(
+                          comment.placed_at || ''
+                        );
+                        return (
+                          <div className="flex gap-4">
+                            <div>{parsedTime?.time}</div>
+                            <div>
+                              {parsedTime?.date.day}-{parsedTime?.date.month}-
+                              {parsedTime?.date.year}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
                   <div className="flex justify-between item-start w-full">
                     <div className="flex-1 text-start min-w-0 wrap-anywhere whitespace-normal ">

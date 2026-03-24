@@ -8,7 +8,6 @@ export function useInvites() {
     queryKey: getInvitesQueryKey(),
     queryFn: async () => {
       const response = await invitesApi.invitesGet();
-      // console.log(response.data);
       return response.data ?? [];
     },
   });

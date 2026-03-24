@@ -1,5 +1,6 @@
 package application.api.invites;
 
+import application.database.services.ProjectService;
 import application.database.services.UserService;
 import application.dtos.requests.InviteRequestDto;
 import application.dtos.responses.InviteResponseDto;
@@ -24,13 +25,15 @@ public class InviteController {
 
     private final UserService userService;
 
+    private final ProjectService projectService;
+
     @PostMapping("/projects/{project_id}/invites")
     public ResponseEntity<Void> inviteUser(
             @PathVariable("project_id") UUID projectId,
-            @RequestParam("user_email") String userEmail) {
+            @RequestParam("user_email") String userEmail) throws AuthException {
         try {
-            inviteService.inviteUserToProject(projectId, userEmail, "senderNickname");
-            inviteService.sendInvite(userEmail);
+            inviteService.inviteUserToProject(projectId, userEmail, userService.findById(jwtService.getCurrentUserId()).getNickname());
+            inviteService.sendInvite(userEmail, projectService.getProjectById(projectId).getName());
             return ResponseEntity.status(201).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();

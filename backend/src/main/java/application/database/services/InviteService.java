@@ -4,6 +4,7 @@ import application.database.entities.ProjectRights;
 import application.database.repositories.ProjectRepository;
 import application.database.repositories.ProjectRightsRepository;
 import application.database.repositories.UserRepository;
+import application.dtos.ProjectUserDto;
 import application.dtos.requests.InviteRequestDto;
 import application.dtos.responses.InviteResponseDto;
 import application.database.entities.Invite;
@@ -45,6 +46,7 @@ public class InviteService {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
     private final ProjectRightsRepository projectRightsRepository;
+    private final UserService userService;
 
     private final JwtService jwtService;
 
@@ -56,55 +58,55 @@ public class InviteService {
 
     private final InternalResourceViewResolver internalResourceViewResolver;
 
+    @Autowired
+    private ProjectService projectService;
+
     @Value("${spring.mail.unisender}") // Добавь в .env/properties
     private String API_KEY;
 
     @Async
-    public void sendInvite(String recipientEmail) {
+    public void sendInvite(String recipientEmail, String projectName) {
         try {
-            // MailerSend требует объекты для 'from' и список объектов для 'to'
             String jsonBody = """
         {
-            "from": {
-                "email": "invites@test-vz9dlem9ovn4kj50.mlsender.net",
-                "name": "Collaboration System"
-            },
-            "to": [
-                {
+            "mail": {
+                "to": {
                     "email": "%s"
-                }
-            ],
-            "subject": "[Collaboration System] Новое приглашение",
-            "html": "<h1>Привет!</h1><p>Тебя пригласили в проект. Присоединяйся: <a href='https://collabsystem.ru'>Перейти</a></p>",
-            "text": "Привет! Тебя пригласили в проект: https://collabsystem.ru"
+                },
+                "from": {
+                    "email": "invites@collabsystem.ru",
+                    "name": "Collaboration System"
+                },
+                "subject": "[Collaboration System] Новое приглашение",
+                "html": "<h2>Привет!</h2><p>Тебя пригласили в проект '%s'. Смотри раздел 'Приглашения' на <a href='https://collabsystem.ru'>сайте</a></p>",
+                "text": "Привет! Тебя пригласили в проект: https://collabsystem.ru"
+            },
+            "idempotencyKey": "%s"
         }
-        """.formatted(recipientEmail);
+        """.formatted(recipientEmail, projectName, java.util.UUID.randomUUID().toString());
 
             HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
                     .build();
 
-            // Важно: URL меняется на api.mailersend.com
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.mailersend.com/v1/email"))
+                    .uri(URI.create("https://api.rusender.ru/api/v1/external-mails/send"))
                     .header("Content-Type", "application/json")
-                    .header("X-Requested-With", "XMLHttpRequest")
-                    .header("Authorization", "Bearer " + API_KEY)
+                    .header("X-Api-Key", API_KEY)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(res -> {
-                        System.out.println("MailerSend Status: " + res.statusCode());
-                        if (res.statusCode() == 202) {
-                            System.out.println("Письмо успешно поставлено в очередь. Message ID: " +
-                                    res.headers().firstValue("x-message-id").orElse("none"));
+                        System.out.println("RuSender Status: " + res.statusCode());
+                        if (res.statusCode() == 200 || res.statusCode() == 201) {
+                            System.out.println("Письмо принято. Ответ: " + res.body());
                         } else {
-                            System.out.println("MailerSend Error Response: " + res.body());
+                            System.err.println("RuSender Error Response: " + res.body());
                         }
                     })
                     .exceptionally(ex -> {
-                        System.err.println("Ошибка сети MailerSend: " + ex.getMessage());
+                        System.err.println("Ошибка сети RuSender: " + ex.getMessage());
                         return null;
                     });
 
@@ -153,18 +155,27 @@ public class InviteService {
     }
 
     @Transactional
-    public void inviteUserToProject(UUID projectId, String userEmail, String senderNickname) {
+    public void inviteUserToProject(UUID projectId, String userEmail, String senderNickname) throws AuthException {
         if (!projectRepository.existsById(projectId)) {
             throw new EntityNotFoundException("Project with ID " + projectId + " does not exist.");
         }
 
-        var user = userRepository.findByMail(userEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User with email " + userEmail + " does not exist."));
+//        var user = userRepository.findOrCreateByEmail(userEmail)
+//                .orElseThrow(() -> new EntityNotFoundException("User with email " + userEmail + " does not exist."));
+        var user = userService.findOrCreateByEmail(userEmail, "User is not registered", "");
+        var userId = user.getId();
+        var currentUserId = jwtService.getCurrentUserId();
 
-        boolean inviteExists = inviteRepository.findAllByProjectId(projectId).stream()
+        var rights = projectRightsRepository.findByUserIdAndProjectId(currentUserId, projectId);
+
+        var inviteExists = inviteRepository.findAllByProjectId(projectId).stream()
                 .anyMatch(invite -> invite.getEmail().equalsIgnoreCase(userEmail));
 
-        if (inviteExists) {
+        var hasUser = projectService.getProjectUsers(projectId, currentUserId)
+                .stream()
+                .anyMatch(elem -> elem.getUserId().equals(userId));
+
+        if (rights.isEmpty() || !rights.get().getIsAdmin() || hasUser || inviteExists) {
             throw new IllegalStateException("User has already been invited to this project.");
         }
 
@@ -175,7 +186,7 @@ public class InviteService {
                 .senderNickname(senderNickname)
                 .projectName(projectRepository.findById(projectId).get().getName())
                 .receiverNickname(user.getNickname())
-                .receiverAvatar("")
+                .receiverAvatar(user.getPicture())
                 .build();
         inviteRepository.save(invite);
     }
