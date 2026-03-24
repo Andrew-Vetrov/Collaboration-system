@@ -21,6 +21,6 @@ public class CollaborationSystem {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:http://collabsystem.ru/";
+        return "redirect:http://localhost:5173";
     }
 }
