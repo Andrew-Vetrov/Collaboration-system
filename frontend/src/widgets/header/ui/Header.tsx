@@ -40,7 +40,12 @@ export const Header = (): JSX.Element => {
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center">
           {showBackButton && (
-            <Button variant="ghost" size="icon" onClick={handleBack}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="cursor-pointer"
+            >
               <ArrowLeft className="h-6 w-6" />
             </Button>
           )}

@@ -12,7 +12,9 @@ export function InvitesMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>Приглашения</DropdownMenuTrigger>
+      <DropdownMenuTrigger className="cursor-pointer p-1 transition rounded-sm hover:bg-accent">
+        Приглашения
+      </DropdownMenuTrigger>
 
       <DropdownMenuContent
         side="bottom"

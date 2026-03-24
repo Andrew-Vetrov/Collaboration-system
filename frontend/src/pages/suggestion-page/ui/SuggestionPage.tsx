@@ -15,6 +15,7 @@ import { useCommentDelete } from '@/entities/comment/api/useCommentDelete';
 import { LikesSection } from './LikesSection';
 import { useSuggestionDelete } from '@/features/suggestion-delete/api/useSuggestionDelete';
 import { routes } from '@/shared/route';
+import { useProjects } from '@/entities/project';
 
 const SuggestionPage = () => {
   const { projectId, suggestionId } = useParams<{
@@ -29,6 +30,7 @@ const SuggestionPage = () => {
 
   const navigate = useNavigate();
 
+  const { data: projects } = useProjects();
   const { data: permissions } = useProjectPermissions(projectId);
   const { data: currentUser } = useAuthMe();
   const { data: suggestion, isLoading, isError } = useSuggestion(suggestionId);
@@ -83,12 +85,15 @@ const SuggestionPage = () => {
     );
   }
 
+  const projectName =
+    projects?.find(project => project.project_id === projectId)?.name ?? '';
   const canEdit =
     permissions?.is_admin ||
     (currentUser && suggestion.user_id === currentUser.user_id);
 
   return (
-    <main className="relative min-h-screen flex flex-col">
+    <main className="relative min-h-screen flex flex-col gap-2 sm:gap-4 py-4">
+      <div className="text-4xl text-center">{projectName}</div>
       <div className="flex-1 flex items-start justify-center py-4">
         <div className="w-full max-w-5xl flex flex-col md:flex-row gap-6 px-2 md:px-4">
           <div className="shrink-0 md:w-32 md:min-w-32 flex items-start">
@@ -109,12 +114,12 @@ const SuggestionPage = () => {
           </div>
 
           <div className="flex-1 flex flex-col items-center md:text-center text-left">
-            <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6">
+            <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-center">
               {suggestion.name}
             </h1>
-            <Card className="w-full max-w-3xl p-4 md:p-8 bg-card shadow-lg border">
+            <Card className="w-full max-w-[673px] p-4 md:p-8 bg-card shadow-lg border">
               <CardContent className="p-0">
-                <p className="text-base md:text-lg whitespace-pre-line leading-relaxed">
+                <p className="text-base md:text-lg whitespace-pre-wrap break-words leading-relaxed text-left">
                   {suggestion.description}
                 </p>
               </CardContent>

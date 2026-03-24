@@ -63,7 +63,7 @@ export const SuggestionsList = (props: SuggestionsListProps): JSX.Element => {
                       const parsedTime = parseDateTime(
                         suggestion.placed_at || ''
                       );
-                      console.log(parsedTime);
+                      // console.log(parsedTime);
                       return (
                         <>
                           <span>

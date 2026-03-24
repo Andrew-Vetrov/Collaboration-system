@@ -13,6 +13,7 @@ import {
 import { useProjectPermissions } from '@/entities/project/api/useProjectPermissions';
 import { useAuthMe } from '@/entities/main-user/api/useAuthMe';
 import { useProjectDeleteUser } from '@/entities/project/api/useProjectDeleteUser';
+import { useProjects } from '@/entities/project';
 
 const ProjectPage = (): JSX.Element => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -20,6 +21,7 @@ const ProjectPage = (): JSX.Element => {
     return <Navigate to="/not-found" replace />;
   }
 
+  const { data: projects } = useProjects();
   const { data: permissions } = useProjectPermissions(projectId);
   const { data: currentUser } = useAuthMe();
 
@@ -41,11 +43,13 @@ const ProjectPage = (): JSX.Element => {
       }
     );
   };
-
+  const projectName =
+    projects?.find(project => project.project_id === projectId)?.name ?? '';
   const isAdmin = permissions?.is_admin || false;
 
   return (
-    <main className="min-h-screen flex justify-center py-4">
+    <main className="min-h-screen flex flex-col gap-2 sm:gap-4 items-center py-4">
+      <div className="text-4xl text-center">{projectName}</div>
       <div className="w-full grid grid-cols-[auto_auto] grid-rows-[auto_1fr] sm:grid-cols-[auto_1fr_auto] max-w-5xl sm:gap-x-8 px-4">
         <div className="sm:order-1">
           <Link to={routes.createSuggestionRoute(projectId)}>
