@@ -1,5 +1,7 @@
 package application.database.services;
 
+import application.database.repositories.ProjectRepository;
+import application.database.repositories.ProjectRightsRepository;
 import application.dtos.requests.CommentRequestDto;
 import application.dtos.responses.CommentResponseDto;
 import application.database.entities.Comment;
@@ -20,6 +22,12 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final SuggestionService suggestionService;
+
+    private final ProjectRepository projectRepository;
+
+    private final ProjectRightsRepository projectRightsRepository;
+
+    private final ProjectService projectService;
 
     @Transactional
     public List<CommentResponseDto> getCommentsBySuggestionId(UUID suggestionId, UUID currentUserId) {
@@ -66,8 +74,8 @@ public class CommentService {
     public void deleteCommentById(UUID commentId, UUID currentUserId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found."));
-
-        if (!comment.getUserId().equals(currentUserId)) {
+        var rights = projectRightsRepository.findByUserIdAndProjectId(currentUserId, suggestionService.getSuggestionDetail(comment.getSuggestionId(), currentUserId).getProjectId());
+        if (rights.isEmpty() || !(currentUserId == comment.getUserId() || rights.get().getIsAdmin())) {
             throw new AccessDeniedException("User " + currentUserId + " has no rights to delete a comment " + commentId);
         }
 

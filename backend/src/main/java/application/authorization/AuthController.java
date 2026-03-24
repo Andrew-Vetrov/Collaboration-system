@@ -40,9 +40,10 @@ public class AuthController {
 
         String email = principal.getAttribute("email");
         String name = principal.getAttribute("name");
+        String picture = principal.getAttribute("picture");
 
         //Взаимодействуем с бд
-        User user = userService.findOrCreateByEmail(email, name);
+        User user = userService.findOrCreateByEmail(email, name, picture);
         UUID userUuid = user.getId();
 
         String myJwt = jwtService.generateToken(userUuid);

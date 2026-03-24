@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 @AllArgsConstructor
 public class ProjectUserDto {
     @JsonProperty("user_id")
@@ -15,6 +16,8 @@ public class ProjectUserDto {
     private final String email;
     @JsonProperty("nickname")
     private final String nickname;
+    @JsonProperty("avatar_url")
+    private final String picture;
     @JsonProperty("is_admin")
     private final boolean isAdmin;
 
@@ -22,6 +25,7 @@ public class ProjectUserDto {
         userId = user.getId();
         email = user.getMail();
         nickname = user.getNickname();
+        picture = user.getPicture();
         this.isAdmin = is_admin;
     }
 }

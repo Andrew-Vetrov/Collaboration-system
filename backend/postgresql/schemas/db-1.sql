@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users
 (
     id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     mail        VARCHAR(255) NOT NULL UNIQUE,
-    nickname    VARCHAR(255) NOT NULL
+    nickname    VARCHAR(255) NOT NULL,
+    picture     TEXT
 );
 
 CREATE TABLE IF NOT EXISTS projects
