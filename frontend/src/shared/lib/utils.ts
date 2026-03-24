@@ -14,8 +14,9 @@ export function parseDateTime(time: string) {
     return;
   }
   const splittedDate = splitted[0].split('-');
+  const splittedTime = splitted[1].split('.');
   return {
-    time: splitted[1],
+    time: splittedTime[0],
     date: {
       year: splittedDate[0],
       month: splittedDate[1],
