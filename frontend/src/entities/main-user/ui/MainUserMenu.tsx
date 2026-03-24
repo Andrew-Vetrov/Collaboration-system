@@ -29,7 +29,7 @@ export function MainUserMenu({
     return (
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 cursor-pointer">
             <Avatar className="h-6 w-6">
               <AvatarFallback>
                 <img
@@ -53,7 +53,7 @@ export function MainUserMenu({
             <DropdownMenuItem className="pointer-events-none">
               <span>{user?.email}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Выйти</span>
             </DropdownMenuItem>
@@ -66,7 +66,10 @@ export function MainUserMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full p-0 cursor-pointer"
+        >
           <Avatar className="h-9 w-9">
             <AvatarFallback className="bg-black text-white font-medium hover:bg-zinc-800 transition-colors">
               <img
@@ -85,7 +88,7 @@ export function MainUserMenu({
         <DropdownMenuItem className="pointer-events-none">
           <span>{user?.email}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Выйти</span>
         </DropdownMenuItem>

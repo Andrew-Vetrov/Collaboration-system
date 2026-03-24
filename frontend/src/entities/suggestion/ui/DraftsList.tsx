@@ -1,6 +1,8 @@
 import { Navigate, useParams } from 'react-router-dom';
 import { useSuggestions } from '../api/useSuggestions';
 import type { Suggestion } from '../model/types';
+import { useState } from 'react';
+import { cn } from '@/shared/lib/utils';
 
 type DraftsListProps = {
   className?: string;
@@ -9,6 +11,9 @@ type DraftsListProps = {
 
 export function DraftsList({ clickSuggestion }: DraftsListProps) {
   const { projectId: id } = useParams<{ projectId: string }>();
+
+  const [clickedDraft, setClickedDraft] = useState<string | null>(null);
+
   if (!id) {
     return <Navigate to="/not-found" replace />;
   }
@@ -29,8 +34,13 @@ export function DraftsList({ clickSuggestion }: DraftsListProps) {
         .map(suggestion => (
           <div
             key={suggestion.suggestion_id}
-            onClick={() => clickSuggestion(suggestion)}
-            className="cursor-pointer hover:bg-accent hover:text-accent-foreground border p-3 transition outline rounded-xl text-left w-full "
+            onClick={() => {
+              setClickedDraft(suggestion.suggestion_id);
+              clickSuggestion(suggestion);
+            }}
+            className={`cursor-pointer hover:bg-accent hover:text-accent-foreground border
+               p-3 transition outline rounded-xl text-left w-full 
+               ${clickedDraft === suggestion.suggestion_id ? 'border-white' : ''}`}
           >
             {suggestion.name}
           </div>
