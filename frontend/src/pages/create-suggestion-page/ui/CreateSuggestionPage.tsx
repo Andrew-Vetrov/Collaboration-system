@@ -6,6 +6,7 @@ import { useCreateSuggestionFeature } from '@/features/suggestion-create/model/u
 import { DraftsList } from '@/entities/suggestion/ui/DraftsList';
 import { useEditSuggestionFeature } from '@/pages/create-suggestion-page/model/useEditSuggestionFeature';
 import { useSuggestionUpdate } from '@/features/suggestion-update/api/useSuggestionUpdate';
+import { useState } from 'react';
 
 export default function CreateSuggestionPage() {
   const { projectId: id } = useParams<{ projectId: string }>();
@@ -40,7 +41,10 @@ export default function CreateSuggestionPage() {
           <h2 className="text-2xl font-bold text-center">Список черновиков</h2>
 
           <div className="flex-1 overflow-auto">
-            <DraftsList clickSuggestion={setCurrentSuggestion} />
+            <DraftsList
+              clickSuggestion={setCurrentSuggestion}
+              currentSuggestion={currentSuggestion}
+            />
           </div>
 
           <Button onClick={handleCreate}>+ Создать черновик</Button>
