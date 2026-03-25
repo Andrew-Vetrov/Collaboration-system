@@ -1,11 +1,14 @@
 package application.api.suggestions;
 
+import application.database.entities.ProjectRights;
 import application.database.entities.Suggestion;
 import application.database.entities.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
@@ -54,6 +57,41 @@ public class GetProjectSuggestionsTest extends SuggestionBaseClassTest{
                 .jsonPath("$.data.length()").isEqualTo(2)
                 .jsonPath("$.data[*].status").value(everyItem(is("new")))
                 .jsonPath("$.data[*].name").value(containsInAnyOrder("New 1", "New 2"));
+    }
+
+    @Test
+    void getProjectSuggestions_filteredByStatus_withForeignDraft() {
+        User otherUser = createBlankUser("otheruser@mail.com");
+        ProjectRights rights = ProjectRights.builder()
+                .userId(otherUser.getId())
+                .project(testProject)
+                .isAdmin(false)
+                .votesLeft(10)
+                .build();
+        projectRightsRepository.save(rights);
+
+        createSuggestion("Draft 1", Suggestion.SuggestionStatus.DRAFT);
+        createSuggestion("New 1", Suggestion.SuggestionStatus.NEW);
+        createSuggestion("New 2", Suggestion.SuggestionStatus.NEW);
+        createSuggestion("Rejected", Suggestion.SuggestionStatus.REJECTED);
+
+
+        Suggestion s = Suggestion.builder()
+                .userId(otherUser.getId())
+                .projectId(testProject.getId())
+                .name("other draft")
+                .description("Test description")
+                .status(Suggestion.SuggestionStatus.DRAFT)
+                .placedAt(ZonedDateTime.now(ZoneOffset.UTC))
+                .lastEdit(ZonedDateTime.now(ZoneOffset.UTC))
+                .build();
+
+        makeGetProjectSuggestionsRequest(testProject.getId(), "draft", validJwt)
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.data.length()").isEqualTo(1)
+                .jsonPath("$.data[*].status").value(everyItem(is("draft")))
+                .jsonPath("$.data[*].name").value(containsInAnyOrder("Draft 1"));
     }
 
     @Test

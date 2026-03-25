@@ -10,20 +10,15 @@ import application.dtos.responses.InviteResponseDto;
 import application.database.entities.Invite;
 import application.database.repositories.InviteRepository;
 import application.security.JwtService;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -49,12 +44,6 @@ public class InviteService {
     private final UserService userService;
 
     private final JwtService jwtService;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String senderEmail;
 
     private final InternalResourceViewResolver internalResourceViewResolver;
 
