@@ -54,7 +54,7 @@ public class InviteService {
     private String API_KEY;
 
     @Async
-    public void sendInvite(String recipientEmail, String projectName) {
+    public void sendInvite(String recipientEmail, String projectName, String projectId) {
         try {
             String jsonBody = """
         {
@@ -66,13 +66,13 @@ public class InviteService {
                     "email": "invites@collabsystem.ru",
                     "name": "Collaboration System"
                 },
-                "subject": "[Collaboration System] Новое приглашение",
+                "subject": "[Collaboration System] Приглашение в проект [%s] (ID проекта: %s)",
                 "html": "<h2>Привет!</h2><p>Тебя пригласили в проект '%s'. Смотри раздел 'Приглашения' на <a href='https://collabsystem.ru'>сайте</a></p>",
                 "text": "Привет! Тебя пригласили в проект: https://collabsystem.ru"
             },
             "idempotencyKey": "%s"
         }
-        """.formatted(recipientEmail, projectName, java.util.UUID.randomUUID().toString());
+        """.formatted(recipientEmail, projectName, projectId, projectName, java.util.UUID.randomUUID().toString());
 
             HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(10))

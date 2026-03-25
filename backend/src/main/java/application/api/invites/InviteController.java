@@ -33,7 +33,7 @@ public class InviteController {
             @RequestParam("user_email") String userEmail) throws AuthException {
         try {
             inviteService.inviteUserToProject(projectId, userEmail, userService.findById(jwtService.getCurrentUserId()).getNickname());
-            inviteService.sendInvite(userEmail, projectService.getProjectById(projectId).getName());
+            inviteService.sendInvite(userEmail, projectService.getProjectById(projectId).getName(), projectId.toString());
             return ResponseEntity.status(201).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).build();
