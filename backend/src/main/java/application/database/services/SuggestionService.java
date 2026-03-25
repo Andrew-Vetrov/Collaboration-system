@@ -33,11 +33,24 @@ public class SuggestionService {
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to project " + projectId));
         List<Suggestion> suggestions;
         if (statusStr == null || statusStr.isBlank()) {
-            suggestions = suggestionRepository.findAllByProjectId(projectId);
+            List<Suggestion> tempSuggestions = suggestionRepository.findAllByProjectId(projectId);
+            suggestions = new ArrayList<>();
+            for (Suggestion suggestion : tempSuggestions){
+                if(suggestion.getStatus() != Suggestion.SuggestionStatus.DRAFT || suggestion.getUserId().equals(currentUserId)){
+                    suggestions.add(suggestion);
+                }
+            }
         }
         else {
-            suggestions = suggestionRepository
-                    .findAllByProjectIdAndStatus(projectId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
+            Suggestion.SuggestionStatus status = Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase());
+            if(status != Suggestion.SuggestionStatus.DRAFT) {
+                suggestions = suggestionRepository
+                        .findAllByProjectIdAndStatus(projectId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
+            }
+            else{
+                suggestions = suggestionRepository
+                        .findAllByProjectIdAndUserIdAndStatus(projectId, currentUserId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
+            }
         }
 
         List<SuggestionDetailDto> dtos = new ArrayList<>();
@@ -55,6 +68,11 @@ public class SuggestionService {
         // Проверка доступа: пользователь должен быть в проекте предложения
         projectService.getUserProjectRights(currentUserId, suggestion.getProjectId())
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to suggestion " + suggestionId));
+        //А также, если это черновик, то быть его создателем
+        if(suggestion.getStatus() == Suggestion.SuggestionStatus.DRAFT
+                && !suggestion.getUserId().equals(currentUserId)){
+            throw new AccessDeniedException("Suggestion " + currentUserId + " is another user's draft");
+        }
 
         return makeSuggestionDetailDto(suggestion, currentUserId);
     }

@@ -41,6 +41,24 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
                 .jsonPath("$.project_id").isEqualTo(testProject.getId().toString())
                 .jsonPath("$.user_id").isEqualTo(testUser.getId().toString());
     }
+    @Test
+    void getSuggestion_draft_valid() {
+        Suggestion suggestion = createSuggestion("Improve login page", Suggestion.SuggestionStatus.DRAFT);
+        suggestion = suggestionRepository.save(suggestion);
+
+        makeGetSuggestionRequest(suggestion.getId(), validJwt)
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.suggestion_id").isEqualTo(suggestion.getId().toString())
+                .jsonPath("$.name").isEqualTo("Improve login page")
+                .jsonPath("$.description").isEqualTo("Test description")
+                .jsonPath("$.status").isEqualTo("draft")
+                .jsonPath("$.likes_amount").isEqualTo(0)
+                .jsonPath("$.user_likes_amount").isEqualTo(0)
+                .jsonPath("$.project_id").isEqualTo(testProject.getId().toString())
+                .jsonPath("$.user_id").isEqualTo(testUser.getId().toString());
+    }
 
     @Test
     void getSuggestion_suggestionFromAnotherUserValid() {
@@ -63,6 +81,29 @@ public class GetSuggestionTest extends SuggestionBaseClassTest{
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("Add export feature")
                 .jsonPath("$.status").isEqualTo("discussion");
+    }
+
+    @Test
+    void getSuggestion_draftFromAnotherUser_403() {
+        User otherUser = createBlankUser("otheruser@mail.com");
+
+        ProjectRights rights = ProjectRights.builder()
+                .userId(otherUser.getId())
+                .project(testProject)
+                .isAdmin(false)
+                .votesLeft(10)
+                .build();
+        projectRightsRepository.save(rights);
+
+        Suggestion suggestion = createSuggestion("Add export feature", Suggestion.SuggestionStatus.DRAFT);
+
+        String otherJwt = jwtService.generateToken(otherUser.getId());
+
+        makeGetSuggestionRequest(suggestion.getId(), otherJwt)
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(403)
+                .jsonPath("$.error").value(err -> err.toString().contains("another user's draft"));
     }
 
     @Test

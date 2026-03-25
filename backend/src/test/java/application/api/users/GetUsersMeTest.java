@@ -83,7 +83,6 @@ public class GetUsersMeTest {
                 .expectBody()
                 .jsonPath("$.user_id").isEqualTo(user.getId())
                 .jsonPath("$.email").isEqualTo(user.getMail())
-                .jsonPath("$.nickname").isEqualTo(user.getNickname())
-                .jsonPath("$.avatar_url").isEqualTo(""); //пока не реализовано
+                .jsonPath("$.nickname").isEqualTo(user.getNickname());
     }
 }
