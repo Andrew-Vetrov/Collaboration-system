@@ -84,7 +84,7 @@ export function EditSuggestionDialog(props: EditSuggestionDialogProps) {
                 {...register('name', {
                   required: 'Необходимо задать имя предложению',
                   minLength: { value: 1, message: 'Имя не может быть пустым' },
-                  maxLength: { value: 30, message: 'Максимум 30 символов' },
+                  maxLength: { value: 150, message: 'Максимум 150 символов' },
                 })}
               />
               {errors.name && (
@@ -94,7 +94,7 @@ export function EditSuggestionDialog(props: EditSuggestionDialogProps) {
               )}
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="description-1">Описание проекта</Label>
+              <Label htmlFor="description-1">Описание предложения</Label>
               <Textarea
                 {...register('description', {
                   required: 'Необходимо задать описание предложению',
