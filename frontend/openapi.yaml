@@ -724,8 +724,221 @@ paths:
           description: Недостаточно прав для изменения приглашения
         '404':
           description: Приглашение не найдено
+          
+  
+  /projects/{project_id}/roles:
+    post:
+      summary: Создание новой роли в проекте
+      tags:
+        - Roles
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: Название роли (например, "Designer", "Reviewer")
+                color: 
+                  type: string
+                  description: Цвет роли
+                likes_amount:
+                  type: integer
+                  description: Начальное количество лайков, которое даёт эта роль
+                  default: 0
+      responses:
+        '201':
+          description: Роль успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          description: Некорректные данные (например, роль с таким именем уже существует)
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав (только админ проекта)
+        '404':
+          description: Проект не найден
 
+    get:
+      summary: Получить список всех ролей проекта
+      tags:
+        - Roles
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      responses:
+        '200':
+          description: Список ролей успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Role'
+        '401':
+          description: Не авторизован
+        '403':
+          description: Нет доступа к проекту
+        '404':
+          description: Проект не найден
 
+  /projects/{project_id}/roles/{role_id}:
+    delete:
+      summary: Удаление существующей роли
+      tags:
+        - Roles
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - name: role_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Роль успешно удалена
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав (только админ)
+        '404':
+          description: Роль или проект не найдены
+        '409':
+          description: Нельзя удалить роль, если она присвоена пользователям
+
+  /projects/{project_id}/users/{user_id}/roles:
+    post:
+      summary: Добавить роль пользователю
+      tags:
+        - Roles
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role_id
+              properties:
+                role_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Роль успешно добавлена пользователю
+        '400':
+          description: Пользователь не в проекте или роль уже присвоена
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Проект, пользователь или роль не найдены
+
+  /projects/{project_id}/users/{user_id}/roles/{role_id}:
+    delete:
+      summary: Удалить роль у пользователя
+      tags:
+        - Roles
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: role_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Роль успешно удалена у пользователя
+        '400':
+          description: У пользователя нет этой роли
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Проект, пользователь или роль не найдены
+
+  /projects/{project_id}/roles/{role_id}/likes:
+    put:
+      summary: Задать количество лайков для роли
+      tags:
+        - Roles
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - name: role_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - likes_amount
+              properties:
+                likes_amount:
+                  type: integer
+                  minimum: 0
+                  description: Новое количество лайков, которое даёт эта роль
+      responses:
+        '200':
+          description: Количество лайков успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          description: Некорректное значение likes_amount
+        '401':
+          description: Не авторизован
+        '403':
+          description: Недостаточно прав
+        '404':
+          description: Роль или проект не найдены
 
 components:
   parameters:
@@ -792,7 +1005,8 @@ components:
         votes_for_interval:
           type: integer
         voting_period_start:
-          type: date-time
+          type: string
+          format: date-time
         owner_id:
           type: string
           format: uuid
@@ -813,6 +1027,28 @@ components:
         avatar_url:
           type: string
       required: [user_id, email, nickname, avatar_url]
+      
+    Role:
+      type: object
+      properties:
+        role_id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+        likes_amount:
+          type: integer
+          description: Количество лайков, которое даёт эта роль
+      required:
+        - role_id
+        - project_id
+        - name
+        - likes_amount
 
     ProjectUser:
       type: object
@@ -829,7 +1065,17 @@ components:
           type: boolean
         avatar_url:
           type: string
-      required: [user_id, email, nickname, is_admin, avatar_url]
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+          description: Список ролей пользователя в этом проекте
+      required:
+        - user_id
+        - email
+        - nickname
+        - is_admin
+        - avatar_url
 
     ProjectUserList:
       type: object
@@ -986,7 +1232,6 @@ components:
         - sender_nickname
         - receiver_nickname
       additionalProperties: false
-
 
 
 
