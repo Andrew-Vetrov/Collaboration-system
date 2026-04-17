@@ -25,10 +25,16 @@ docs/ProjectsGet200Response.md
 docs/ProjectsPost201Response.md
 docs/ProjectsPostRequest.md
 docs/ProjectsProjectIdInvitesGet200Response.md
+docs/ProjectsProjectIdRolesGet200Response.md
+docs/ProjectsProjectIdRolesPostRequest.md
+docs/ProjectsProjectIdRolesRoleIdLikesPutRequest.md
 docs/ProjectsProjectIdSettingsGet200Response.md
 docs/ProjectsProjectIdSettingsPutRequest.md
 docs/ProjectsProjectIdUsersGet200Response.md
 docs/ProjectsProjectIdUsersUserIdPutRequest.md
+docs/ProjectsProjectIdUsersUserIdRolesPostRequest.md
+docs/Role.md
+docs/RolesApi.md
 docs/Suggestion.md
 docs/SuggestionsApi.md
 docs/SuggestionsSuggestionIdCommentsPostRequest.md

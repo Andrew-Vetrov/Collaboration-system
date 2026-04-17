@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **nickname** | **string** |  | [default to undefined]
 **is_admin** | **boolean** |  | [default to undefined]
 **avatar_url** | **string** |  | [default to undefined]
+**roles** | [**Array&lt;Role&gt;**](Role.md) | Список ролей пользователя в этом проекте | [optional] [default to undefined]
 
 ## Example
 
@@ -22,6 +23,7 @@ const instance: ProjectUser = {
     nickname,
     is_admin,
     avatar_url,
+    roles,
 };
 ```
 
