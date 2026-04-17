@@ -108,6 +108,7 @@ export interface ProjectSettings {
     'description': string;
     'vote_interval': string;
     'votes_for_interval': number;
+    'voting_period_start'?: string;
     'owner_id': string;
 }
 export interface ProjectUser {
@@ -116,6 +117,10 @@ export interface ProjectUser {
     'nickname': string;
     'is_admin': boolean;
     'avatar_url': string;
+    /**
+     * Список ролей пользователя в этом проекте
+     */
+    'roles'?: Array<Role>;
 }
 export interface ProjectUserList {
     /**
@@ -143,6 +148,29 @@ export interface ProjectsPostRequest {
 export interface ProjectsProjectIdInvitesGet200Response {
     'data': Array<Invite>;
 }
+export interface ProjectsProjectIdRolesGet200Response {
+    'data'?: Array<Role>;
+}
+export interface ProjectsProjectIdRolesPostRequest {
+    /**
+     * Название роли (например, \"Designer\", \"Reviewer\")
+     */
+    'name': string;
+    /**
+     * Цвет роли
+     */
+    'color'?: string;
+    /**
+     * Начальное количество лайков, которое даёт эта роль
+     */
+    'likes_amount'?: number;
+}
+export interface ProjectsProjectIdRolesRoleIdLikesPutRequest {
+    /**
+     * Новое количество лайков, которое даёт эта роль
+     */
+    'likes_amount': number;
+}
 export interface ProjectsProjectIdSettingsGet200Response {
     'data'?: ProjectSettings;
 }
@@ -157,6 +185,19 @@ export interface ProjectsProjectIdUsersGet200Response {
 }
 export interface ProjectsProjectIdUsersUserIdPutRequest {
     'is_admin'?: boolean;
+}
+export interface ProjectsProjectIdUsersUserIdRolesPostRequest {
+    'role_id': string;
+}
+export interface Role {
+    'role_id': string;
+    'project_id': string;
+    'name': string;
+    'color'?: string;
+    /**
+     * Количество лайков, которое даёт эта роль
+     */
+    'likes_amount': number;
 }
 export interface Suggestion {
     'suggestion_id': string;
@@ -498,7 +539,9 @@ export const CommentsApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication sessionAuth required
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -1731,6 +1774,533 @@ export class ProjectsApi extends BaseAPI {
      */
     public projectsProjectIdUsersUserIdPut(projectId: string, userId: string, projectsProjectIdUsersUserIdPutRequest: ProjectsProjectIdUsersUserIdPutRequest, options?: RawAxiosRequestConfig) {
         return ProjectsApiFp(this.configuration).projectsProjectIdUsersUserIdPut(projectId, userId, projectsProjectIdUsersUserIdPutRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * RolesApi - axios parameter creator
+ */
+export const RolesApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Получить список всех ролей проекта
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesGet: async (projectId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdRolesGet', 'projectId', projectId)
+            const localVarPath = `/projects/{project_id}/roles`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Создание новой роли в проекте
+         * @param {string} projectId 
+         * @param {ProjectsProjectIdRolesPostRequest} projectsProjectIdRolesPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesPost: async (projectId: string, projectsProjectIdRolesPostRequest: ProjectsProjectIdRolesPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdRolesPost', 'projectId', projectId)
+            // verify required parameter 'projectsProjectIdRolesPostRequest' is not null or undefined
+            assertParamExists('projectsProjectIdRolesPost', 'projectsProjectIdRolesPostRequest', projectsProjectIdRolesPostRequest)
+            const localVarPath = `/projects/{project_id}/roles`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(projectsProjectIdRolesPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Удаление существующей роли
+         * @param {string} projectId 
+         * @param {string} roleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesRoleIdDelete: async (projectId: string, roleId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdRolesRoleIdDelete', 'projectId', projectId)
+            // verify required parameter 'roleId' is not null or undefined
+            assertParamExists('projectsProjectIdRolesRoleIdDelete', 'roleId', roleId)
+            const localVarPath = `/projects/{project_id}/roles/{role_id}`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"role_id"}}`, encodeURIComponent(String(roleId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Задать количество лайков для роли
+         * @param {string} projectId 
+         * @param {string} roleId 
+         * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesRoleIdLikesPut: async (projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdRolesRoleIdLikesPut', 'projectId', projectId)
+            // verify required parameter 'roleId' is not null or undefined
+            assertParamExists('projectsProjectIdRolesRoleIdLikesPut', 'roleId', roleId)
+            // verify required parameter 'projectsProjectIdRolesRoleIdLikesPutRequest' is not null or undefined
+            assertParamExists('projectsProjectIdRolesRoleIdLikesPut', 'projectsProjectIdRolesRoleIdLikesPutRequest', projectsProjectIdRolesRoleIdLikesPutRequest)
+            const localVarPath = `/projects/{project_id}/roles/{role_id}/likes`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"role_id"}}`, encodeURIComponent(String(roleId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(projectsProjectIdRolesRoleIdLikesPutRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Добавить роль пользователю
+         * @param {string} projectId 
+         * @param {string} userId 
+         * @param {ProjectsProjectIdUsersUserIdRolesPostRequest} projectsProjectIdUsersUserIdRolesPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdUsersUserIdRolesPost: async (projectId: string, userId: string, projectsProjectIdUsersUserIdRolesPostRequest: ProjectsProjectIdUsersUserIdRolesPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdUsersUserIdRolesPost', 'projectId', projectId)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('projectsProjectIdUsersUserIdRolesPost', 'userId', userId)
+            // verify required parameter 'projectsProjectIdUsersUserIdRolesPostRequest' is not null or undefined
+            assertParamExists('projectsProjectIdUsersUserIdRolesPost', 'projectsProjectIdUsersUserIdRolesPostRequest', projectsProjectIdUsersUserIdRolesPostRequest)
+            const localVarPath = `/projects/{project_id}/users/{user_id}/roles`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(projectsProjectIdUsersUserIdRolesPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Удалить роль у пользователя
+         * @param {string} projectId 
+         * @param {string} userId 
+         * @param {string} roleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdUsersUserIdRolesRoleIdDelete: async (projectId: string, userId: string, roleId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdUsersUserIdRolesRoleIdDelete', 'projectId', projectId)
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('projectsProjectIdUsersUserIdRolesRoleIdDelete', 'userId', userId)
+            // verify required parameter 'roleId' is not null or undefined
+            assertParamExists('projectsProjectIdUsersUserIdRolesRoleIdDelete', 'roleId', roleId)
+            const localVarPath = `/projects/{project_id}/users/{user_id}/roles/{role_id}`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"user_id"}}`, encodeURIComponent(String(userId)))
+                .replace(`{${"role_id"}}`, encodeURIComponent(String(roleId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * RolesApi - functional programming interface
+ */
+export const RolesApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = RolesApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Получить список всех ролей проекта
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdRolesGet(projectId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectsProjectIdRolesGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdRolesGet(projectId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdRolesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Создание новой роли в проекте
+         * @param {string} projectId 
+         * @param {ProjectsProjectIdRolesPostRequest} projectsProjectIdRolesPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdRolesPost(projectId: string, projectsProjectIdRolesPostRequest: ProjectsProjectIdRolesPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Role>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdRolesPost(projectId, projectsProjectIdRolesPostRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdRolesPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Удаление существующей роли
+         * @param {string} projectId 
+         * @param {string} roleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdRolesRoleIdDelete(projectId: string, roleId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdRolesRoleIdDelete(projectId, roleId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdRolesRoleIdDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Задать количество лайков для роли
+         * @param {string} projectId 
+         * @param {string} roleId 
+         * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdRolesRoleIdLikesPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Role>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdRolesRoleIdLikesPut(projectId, roleId, projectsProjectIdRolesRoleIdLikesPutRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdRolesRoleIdLikesPut']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Добавить роль пользователю
+         * @param {string} projectId 
+         * @param {string} userId 
+         * @param {ProjectsProjectIdUsersUserIdRolesPostRequest} projectsProjectIdUsersUserIdRolesPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdUsersUserIdRolesPost(projectId: string, userId: string, projectsProjectIdUsersUserIdRolesPostRequest: ProjectsProjectIdUsersUserIdRolesPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdUsersUserIdRolesPost(projectId, userId, projectsProjectIdUsersUserIdRolesPostRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdUsersUserIdRolesPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Удалить роль у пользователя
+         * @param {string} projectId 
+         * @param {string} userId 
+         * @param {string} roleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdUsersUserIdRolesRoleIdDelete(projectId: string, userId: string, roleId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdUsersUserIdRolesRoleIdDelete(projectId, userId, roleId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdUsersUserIdRolesRoleIdDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * RolesApi - factory interface
+ */
+export const RolesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = RolesApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Получить список всех ролей проекта
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesGet(projectId: string, options?: RawAxiosRequestConfig): AxiosPromise<ProjectsProjectIdRolesGet200Response> {
+            return localVarFp.projectsProjectIdRolesGet(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Создание новой роли в проекте
+         * @param {string} projectId 
+         * @param {ProjectsProjectIdRolesPostRequest} projectsProjectIdRolesPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesPost(projectId: string, projectsProjectIdRolesPostRequest: ProjectsProjectIdRolesPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<Role> {
+            return localVarFp.projectsProjectIdRolesPost(projectId, projectsProjectIdRolesPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Удаление существующей роли
+         * @param {string} projectId 
+         * @param {string} roleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesRoleIdDelete(projectId: string, roleId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.projectsProjectIdRolesRoleIdDelete(projectId, roleId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Задать количество лайков для роли
+         * @param {string} projectId 
+         * @param {string} roleId 
+         * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdRolesRoleIdLikesPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<Role> {
+            return localVarFp.projectsProjectIdRolesRoleIdLikesPut(projectId, roleId, projectsProjectIdRolesRoleIdLikesPutRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Добавить роль пользователю
+         * @param {string} projectId 
+         * @param {string} userId 
+         * @param {ProjectsProjectIdUsersUserIdRolesPostRequest} projectsProjectIdUsersUserIdRolesPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdUsersUserIdRolesPost(projectId: string, userId: string, projectsProjectIdUsersUserIdRolesPostRequest: ProjectsProjectIdUsersUserIdRolesPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.projectsProjectIdUsersUserIdRolesPost(projectId, userId, projectsProjectIdUsersUserIdRolesPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Удалить роль у пользователя
+         * @param {string} projectId 
+         * @param {string} userId 
+         * @param {string} roleId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdUsersUserIdRolesRoleIdDelete(projectId: string, userId: string, roleId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.projectsProjectIdUsersUserIdRolesRoleIdDelete(projectId, userId, roleId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * RolesApi - object-oriented interface
+ */
+export class RolesApi extends BaseAPI {
+    /**
+     * 
+     * @summary Получить список всех ролей проекта
+     * @param {string} projectId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdRolesGet(projectId: string, options?: RawAxiosRequestConfig) {
+        return RolesApiFp(this.configuration).projectsProjectIdRolesGet(projectId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Создание новой роли в проекте
+     * @param {string} projectId 
+     * @param {ProjectsProjectIdRolesPostRequest} projectsProjectIdRolesPostRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdRolesPost(projectId: string, projectsProjectIdRolesPostRequest: ProjectsProjectIdRolesPostRequest, options?: RawAxiosRequestConfig) {
+        return RolesApiFp(this.configuration).projectsProjectIdRolesPost(projectId, projectsProjectIdRolesPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Удаление существующей роли
+     * @param {string} projectId 
+     * @param {string} roleId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdRolesRoleIdDelete(projectId: string, roleId: string, options?: RawAxiosRequestConfig) {
+        return RolesApiFp(this.configuration).projectsProjectIdRolesRoleIdDelete(projectId, roleId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Задать количество лайков для роли
+     * @param {string} projectId 
+     * @param {string} roleId 
+     * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdRolesRoleIdLikesPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options?: RawAxiosRequestConfig) {
+        return RolesApiFp(this.configuration).projectsProjectIdRolesRoleIdLikesPut(projectId, roleId, projectsProjectIdRolesRoleIdLikesPutRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Добавить роль пользователю
+     * @param {string} projectId 
+     * @param {string} userId 
+     * @param {ProjectsProjectIdUsersUserIdRolesPostRequest} projectsProjectIdUsersUserIdRolesPostRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdUsersUserIdRolesPost(projectId: string, userId: string, projectsProjectIdUsersUserIdRolesPostRequest: ProjectsProjectIdUsersUserIdRolesPostRequest, options?: RawAxiosRequestConfig) {
+        return RolesApiFp(this.configuration).projectsProjectIdUsersUserIdRolesPost(projectId, userId, projectsProjectIdUsersUserIdRolesPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Удалить роль у пользователя
+     * @param {string} projectId 
+     * @param {string} userId 
+     * @param {string} roleId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdUsersUserIdRolesRoleIdDelete(projectId: string, userId: string, roleId: string, options?: RawAxiosRequestConfig) {
+        return RolesApiFp(this.configuration).projectsProjectIdUsersUserIdRolesRoleIdDelete(projectId, userId, roleId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

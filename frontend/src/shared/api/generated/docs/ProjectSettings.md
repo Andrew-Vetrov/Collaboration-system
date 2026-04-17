@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **description** | **string** |  | [default to undefined]
 **vote_interval** | **string** |  | [default to undefined]
 **votes_for_interval** | **number** |  | [default to undefined]
+**voting_period_start** | **string** |  | [optional] [default to undefined]
 **owner_id** | **string** |  | [default to undefined]
 
 ## Example
@@ -23,6 +24,7 @@ const instance: ProjectSettings = {
     description,
     vote_interval,
     votes_for_interval,
+    voting_period_start,
     owner_id,
 };
 ```

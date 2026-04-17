@@ -101,7 +101,7 @@ const { status, data } = await apiInstance.commentsCommentIdReplyPost(
 
 ### Authorization
 
-[sessionAuth](../README.md#sessionAuth)
+[BearerAuth](../README.md#BearerAuth)
 
 ### HTTP request headers
 
