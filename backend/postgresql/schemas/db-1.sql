@@ -95,7 +95,8 @@ CREATE TABLE IF NOT EXISTS project_roles
     project_id      UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
     name            TEXT NOT NULL,
     color           TEXT NOT NULL,
-    likes_amount    INTEGER
+    likes_amount    INTEGER,
+    UNIQUE (project_id, name)
 );
 
 
