@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 public class DurationHelper {
 
     // Для преобразования из установленного формата длительности (число-слово) в Duration
-    // Возможно, стоит всё же поменять этот формат
     public Duration parseDuration(String input) {
         if (input == null || input.trim().isEmpty()) {
             throw new IllegalArgumentException("Duration string cannot be empty");
@@ -16,7 +15,7 @@ public class DurationHelper {
         // Убираем лишние пробелы, приводим к нижнему регистру
         String s = input.trim().toLowerCase();
 
-        // Ожидаемый формат: число + пробел + единица (week, day, hour, minute, etc.)
+        // Ожидаемый формат: число + пробел + единица (week, day, hour, minute)
         Pattern pattern = Pattern.compile("^(\\d+)\\s*([a-z]+)$");
         Matcher matcher = pattern.matcher(s);
 

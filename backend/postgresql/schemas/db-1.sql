@@ -88,3 +88,23 @@ ADD CONSTRAINT comments_comment_reply_to_id_fkey
 FOREIGN KEY (comment_reply_to_id)
 REFERENCES comments (id)
 ON DELETE CASCADE;
+
+CREATE TABLE IF NOT EXISTS project_roles
+(
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    project_id      UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
+    name            TEXT NOT NULL,
+    color           TEXT NOT NULL,
+    likes_amount    INTEGER,
+    UNIQUE (project_id, name)
+);
+
+
+CREATE TABLE IF NOT EXISTS user_roles
+(
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id         UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    project_id      UUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
+    role_id         UUID NOT NULL REFERENCES project_roles (id) ON DELETE CASCADE,
+    UNIQUE (user_id, role_id)
+);
