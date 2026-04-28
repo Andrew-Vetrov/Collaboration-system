@@ -1,5 +1,6 @@
 package application.database.services;
 
+import application.database.entities.ProjectRights;
 import application.database.entities.ProjectRole;
 import application.database.entities.UserRole;
 import application.database.repositories.ProjectRoleRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -89,6 +91,11 @@ public class RoleService {
         if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
             throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
         }
+        Optional<ProjectRights> userRights = projectService.getUserProjectRights(targetUserId, projectId);
+        if (userRights.isEmpty()) {
+            throw new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId);
+        }
+
 
         ProjectRole role = projectRoleRepository.findById(roleId)
                 .orElseThrow(() -> new EntityNotFoundException("Role not found: " + roleId));
@@ -114,6 +121,10 @@ public class RoleService {
     public void removeRoleFromUser(UUID projectId, UUID targetUserId, UUID roleId, UUID currentUserId) {
         if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
             throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
+        }
+        Optional<ProjectRights> userRights = projectService.getUserProjectRights(targetUserId, projectId);
+        if (userRights.isEmpty()) {
+            throw new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId);
         }
 
         UserRole userRole = userRoleRepository.findByUserIdAndRoleId(targetUserId, roleId)
