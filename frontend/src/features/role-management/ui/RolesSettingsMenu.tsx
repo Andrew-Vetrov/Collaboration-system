@@ -26,12 +26,12 @@ export const RolesSettingsMenu = ({
 }: RolesSettingsMenuProps) => {
   const { mutate: updateRole, isPending } = useUpdateRoleSettings(projectId);
 
-  const [values, setValues] = useState<Record<string, number>>(() =>
+  const [votes, setVotes] = useState<Record<string, number>>(() =>
     Object.fromEntries(roles.map(r => [r.role_id, r.likes_amount]))
   );
 
   const handleChange = (roleId: string, value: string) => {
-    setValues(prev => ({
+    setVotes(prev => ({
       ...prev,
       [roleId]: Number(value),
     }));
@@ -40,7 +40,7 @@ export const RolesSettingsMenu = ({
   const handleSave = (roleId: string) => {
     updateRole({
       roleId,
-      likesAmount: String(values[roleId]),
+      likesAmount: String(votes[roleId]),
     });
   };
 
@@ -60,7 +60,7 @@ export const RolesSettingsMenu = ({
                     <Input
                       type="number"
                       className="flex-0 min-w-30"
-                      value={values[role.role_id] ?? 0}
+                      value={votes[role.role_id] ?? 0}
                       onChange={e => handleChange(role.role_id, e.target.value)}
                     />
                     <Button
