@@ -13,6 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,10 +24,10 @@ public class RoleService {
 
     private final ProjectRoleRepository projectRoleRepository;
     private final UserRoleRepository userRoleRepository;
-    private final ProjectService projectService;
+    private final ProjectAccessService projectAccessService;
 
-    public ProjectRole createRole(UUID projectId, SetRoleRequest request, UUID userId) {
-        if (!projectService.isUserProjectAdmin(userId, projectId)) {
+    public RoleDto createRole(UUID projectId, SetRoleRequest request, UUID userId) {
+        if (!projectAccessService.isUserProjectAdmin(userId, projectId)) {
             throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
         }
 
@@ -43,21 +44,21 @@ public class RoleService {
                 .likesAmount(request.getLikesAmount())
                 .build();
 
-        return projectRoleRepository.save(role);
+        return makeRoleDto(projectRoleRepository.save(role));
     }
 
     public List<RoleDto> getProjectRoles(UUID projectId, UUID currentUserId) {
-        projectService.validateAndGetUserProjectAccess(currentUserId, projectId);
+        projectAccessService.validateAndGetUserProjectAccess(currentUserId, projectId);
 
         List<ProjectRole> roles = projectRoleRepository.findAllByProjectId(projectId);
         return roles.stream()
-                .map(RoleDto::new)
+                .map(this::makeRoleDto)
                 .toList();
     }
 
     @Transactional
     public void deleteRole(UUID projectId, UUID roleId, UUID currentUserId) {
-        if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
+        if (!projectAccessService.isUserProjectAdmin(currentUserId, projectId)) {
             throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
         }
 
@@ -68,7 +69,7 @@ public class RoleService {
             throw new EntityNotFoundException("Role " + roleId + " does not belong to project " + projectId);
         }
 
-        long assignedCount = userRoleRepository.countByRoleId(roleId);
+        long assignedCount = userRoleRepository.countByProjectRole_Id(roleId);
         if (assignedCount > 0) {
             throw new IllegalArgumentException("Cannot delete role assigned to users");
         }
@@ -78,10 +79,10 @@ public class RoleService {
 
     @Transactional
     public void assignRoleToUser(UUID projectId, UUID targetUserId, UUID roleId, UUID currentUserId) {
-        if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
+        if (!projectAccessService.isUserProjectAdmin(currentUserId, projectId)) {
             throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
         }
-        Optional<ProjectRights> userRights = projectService.getUserProjectRights(targetUserId, projectId);
+        Optional<ProjectRights> userRights = projectAccessService.getUserProjectRights(targetUserId, projectId);
         if (userRights.isEmpty()) {
             throw new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId);
         }
@@ -94,14 +95,14 @@ public class RoleService {
             throw new IllegalArgumentException("Role does not belong to project");
         }
 
-        if (userRoleRepository.existsByUserIdAndRoleId(targetUserId, roleId)) {
+        if (userRoleRepository.existsByUserIdAndProjectRole_Id(targetUserId, roleId)) {
             throw new IllegalArgumentException("User already has this role");
         }
 
         UserRole userRole = UserRole.builder()
                 .userId(targetUserId)
                 .projectId(projectId)
-                .roleId(roleId)
+                .projectRole(role)
                 .build();
 
         userRoleRepository.save(userRole);
@@ -109,15 +110,15 @@ public class RoleService {
 
     @Transactional
     public void removeRoleFromUser(UUID projectId, UUID targetUserId, UUID roleId, UUID currentUserId) {
-        if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
+        if (!projectAccessService.isUserProjectAdmin(currentUserId, projectId)) {
             throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
         }
-        Optional<ProjectRights> userRights = projectService.getUserProjectRights(targetUserId, projectId);
+        Optional<ProjectRights> userRights = projectAccessService.getUserProjectRights(targetUserId, projectId);
         if (userRights.isEmpty()) {
             throw new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId);
         }
 
-        UserRole userRole = userRoleRepository.findByUserIdAndRoleId(targetUserId, roleId)
+        UserRole userRole = userRoleRepository.findByUserIdAndProjectRole_Id(targetUserId, roleId)
                 .orElseThrow(() -> new IllegalArgumentException("User does not have this role"));
 
         if (!userRole.getProjectId().equals(projectId)) {
@@ -128,8 +129,8 @@ public class RoleService {
     }
 
     @Transactional
-    public ProjectRole updateRole(UUID projectId, UUID roleId, SetRoleRequest request, UUID userId) {
-        if (!projectService.isUserProjectAdmin(userId, projectId)) {
+    public RoleDto updateRole(UUID projectId, UUID roleId, SetRoleRequest request, UUID userId) {
+        if (!projectAccessService.isUserProjectAdmin(userId, projectId)) {
             throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
         }
         validateSetRoleRequest(request);
@@ -148,9 +149,9 @@ public class RoleService {
         role.setName(request.getName());
         role.setColor(request.getColor());
         role.setLikesAmount(request.getLikesAmount());
-        return projectRoleRepository.save(role);
+        return makeRoleDto(projectRoleRepository.save(role));
     }
-    private boolean validateSetRoleRequest(SetRoleRequest request){
+    private void validateSetRoleRequest(SetRoleRequest request){
         if (request.getName() == null || request.getName().isBlank()) {
             throw new IllegalArgumentException("Name is not specified");
         }
@@ -163,6 +164,22 @@ public class RoleService {
         if (request.getLikesAmount() < 0) {
             throw new IllegalArgumentException("Likes amount cannot be negative");
         }
-        return true;
+    }
+
+    public List<RoleDto> getUserProjectRoles(UUID userId, UUID projectId){
+        List<UserRole> roles = userRoleRepository.findAllByUserIdAndProjectId(userId, projectId);
+        List<RoleDto> ans = new ArrayList<>();
+        for(UserRole role : roles){
+            ans.add(makeRoleDto(role.getProjectRole()));
+        }
+        return ans;
+    }
+
+    private RoleDto makeRoleDto(ProjectRole role){
+        return new RoleDto(role.getId(),
+                role.getProjectId(),
+                role.getName(),
+                role.getColor(),
+                role.getLikesAmount());
     }
 }

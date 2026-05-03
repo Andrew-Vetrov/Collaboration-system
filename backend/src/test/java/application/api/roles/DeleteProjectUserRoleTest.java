@@ -78,7 +78,7 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
         UserRole userRole = UserRole.builder()
                 .userId(otherUser.getId())
                 .projectId(testProjectId)
-                .roleId(role.getId())
+                .projectRole(role)
                 .build();
         userRoleRepository.save(userRole);
 
@@ -108,7 +108,7 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
         UserRole userRole = UserRole.builder()
                 .userId(otherUser.getId())
                 .projectId(testProjectId)
-                .roleId(role.getId())
+                .projectRole(role)
                 .build();
         userRoleRepository.save(userRole);
 
@@ -117,7 +117,7 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
                 .expectBody(String.class).isEqualTo("Роль успешно удалена у пользователя");
 
         // Проверяем, что связь удалена
-        boolean exists = userRoleRepository.existsByUserIdAndRoleId(otherUser.getId(), role.getId());
+        boolean exists = userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId());
         assert !exists;
     }
 }

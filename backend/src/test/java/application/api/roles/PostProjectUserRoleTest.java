@@ -202,7 +202,7 @@ public class PostProjectUserRoleTest extends RolesBaseClassTest {
                 .expectBody(String.class).isEqualTo("Роль успешно добавлена пользователю");
 
         // Проверяем, что связь создалась
-        boolean exists = userRoleRepository.existsByUserIdAndRoleId(otherUser.getId(), role.getId());
+        boolean exists = userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId());
         assert exists;
     }
 }

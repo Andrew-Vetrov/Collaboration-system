@@ -1,15 +1,22 @@
 package application.api.projects;
 
-import application.database.entities.Project;
-import application.database.entities.ProjectRights;
-import application.database.entities.User;
+import application.database.entities.*;
+import application.database.repositories.ProjectRoleRepository;
+import application.database.repositories.UserRoleRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class GetProjectUsersTest extends ProjectBaseClassTest{
+
+    @Autowired
+    protected ProjectRoleRepository projectRoleRepository;
+    @Autowired
+    protected UserRoleRepository userRoleRepository;
 
     private WebTestClient.ResponseSpec makeGetProjectUsersRequest(UUID projectId, String jwt){
         return webClient.get().uri("/projects/{projectId}/users", projectId)
@@ -100,7 +107,7 @@ public class GetProjectUsersTest extends ProjectBaseClassTest{
     }
 
     @Test
-    void apiGetProjectUsers_ValidRequest() {
+    void apiGetProjectUsers_ValidRequest_NoRoles() {
         Project project = Project.builder()
                 .ownerId(testUser.getId())
                 .name("Test Project")
@@ -125,7 +132,63 @@ public class GetProjectUsersTest extends ProjectBaseClassTest{
                 .jsonPath("$.data.users.length()").isEqualTo(1)
                 .jsonPath("$.data.users[0].user_id").isEqualTo(testUser.getId().toString())
                 .jsonPath("$.data.users[0].nickname").isEqualTo("testuser")
-                .jsonPath("$.data.users[0].is_admin").isEqualTo(true);
+                .jsonPath("$.data.users[0].is_admin").isEqualTo(true)
+                .jsonPath("$.data.users[0].roles").isArray()
+                .jsonPath("$.data.users[0].roles.length()").isEqualTo(0);
+    }
+
+    @Test
+    void apiGetProjectUsers_ValidRequest_WithRoles() {
+        Project project = Project.builder()
+                .ownerId(testUser.getId())
+                .name("Test Project")
+                .description("Description")
+                .votePeriodStart(ZonedDateTime.now())
+                .build();
+        Project savedProject = projectRepository.save(project);
+
+        ProjectRights rights = ProjectRights.builder()
+                .userId(testUser.getId())
+                .project(savedProject)
+                .isAdmin(true)
+                .votesLeft(5)
+                .build();
+        projectRightsRepository.save(rights);
+
+        ProjectRole role1 = ProjectRole.builder()
+                .projectId(savedProject.getId())
+                .name("role1")
+                .color("#00FF00")
+                .likesAmount(1)
+                .build();
+        ProjectRole role2 = ProjectRole.builder()
+                .projectId(savedProject.getId())
+                .name("role2")
+                .color("#00FF00")
+                .likesAmount(2)
+                .build();
+        projectRoleRepository.save(role1);
+        projectRoleRepository.save(role2);
+
+        UserRole userRole = UserRole.builder()
+                .userId(testUser.getId())
+                .projectId(savedProject.getId())
+                .projectRole(role2).build();
+        userRoleRepository.save(userRole);
+//        List<UserRole> roles = userRoleRepository.findAllByUserIdAndProjectId(testUser.getId(), savedProject.getId());
+        makeGetProjectUsersRequest(savedProject.getId(), validJwt)
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.data.project_id").isEqualTo(savedProject.getId().toString())
+                .jsonPath("$.data.users").isArray()
+                .jsonPath("$.data.users.length()").isEqualTo(1)
+                .jsonPath("$.data.users[0].user_id").isEqualTo(testUser.getId())
+                .jsonPath("$.data.users[0].nickname").isEqualTo("testuser")
+                .jsonPath("$.data.users[0].is_admin").isEqualTo(true)
+                .jsonPath("$.data.users[0].roles").isArray()
+                .jsonPath("$.data.users[0].roles.length()").isEqualTo(1)
+                .jsonPath("$.data.users[0].roles[0].project_id").isEqualTo(savedProject.getId())
+                .jsonPath("$.data.users[0].roles[0].likes_amount").isEqualTo(2);
     }
 
 }

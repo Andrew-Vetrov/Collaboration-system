@@ -116,7 +116,7 @@ public class DeleteProjectRoleTest extends RolesBaseClassTest {
         UserRole userRole = UserRole.builder()
                 .userId(otherUser.getId())
                 .projectId(testProjectId)
-                .roleId(role.getId())
+                .projectRole(role)
                 .build();
         userRoleRepository.save(userRole);
 

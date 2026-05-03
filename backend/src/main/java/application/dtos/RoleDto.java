@@ -23,12 +23,4 @@ public class RoleDto {
 
     @JsonProperty("likes_amount")
     private final Integer likesAmount;
-
-    public RoleDto(ProjectRole role) {
-        this.roleId = role.getId();
-        this.projectId = role.getProjectId();
-        this.name = role.getName();
-        this.color = role.getColor();
-        this.likesAmount = role.getLikesAmount();
-    }
 }

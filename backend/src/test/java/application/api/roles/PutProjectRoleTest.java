@@ -190,7 +190,7 @@ public class PutProjectRoleTest extends RolesBaseClassTest {
                 .jsonPath("$.role_id").isEqualTo(role.getId())
                 .jsonPath("$.project_id").isEqualTo(testProject.getId())
                 .jsonPath("$.name").isEqualTo("Test")
-                .jsonPath("$.color").isEqualTo("#00FF00 ")
+                .jsonPath("$.color").isEqualTo("#00FF00")
                 .jsonPath("$.likes_amount").isEqualTo(42);
 
         // Дополнительная проверка, что значение обновилось в БД

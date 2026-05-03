@@ -24,6 +24,7 @@ public class UserRole {
     @Column(name = "project_id", nullable = false)
     private UUID projectId;
 
-    @Column(name = "role_id", nullable = false)
-    private UUID roleId;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private ProjectRole projectRole;
 }

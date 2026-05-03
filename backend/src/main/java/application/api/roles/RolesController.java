@@ -28,9 +28,9 @@ public class RolesController {
             @Valid @RequestBody SetRoleRequest request) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        ProjectRole createdRole = roleService.createRole(projectId, request, userId);
+        RoleDto createdRole = roleService.createRole(projectId, request, userId);
 
-        return new RoleDto(createdRole);
+        return createdRole;
     }
 
     @GetMapping("/projects/{projectId}/roles")
@@ -50,9 +50,9 @@ public class RolesController {
             @Valid @RequestBody SetRoleRequest request) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        ProjectRole updatedRole = roleService.updateRole(projectId, roleId, request, userId);
+        RoleDto updatedRole = roleService.updateRole(projectId, roleId, request, userId);
 
-        return new RoleDto(updatedRole);
+        return updatedRole;
     }
 
     @DeleteMapping("/projects/{projectId}/roles/{roleId}")

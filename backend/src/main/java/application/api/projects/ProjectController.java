@@ -2,6 +2,7 @@ package application.api.projects;
 
 import application.database.entities.Project;
 import application.database.entities.ProjectRights;
+import application.database.services.ProjectAccessService;
 import application.database.services.ProjectService;
 import application.dtos.*;
 import application.dtos.requests.CreateProjectRequest;
@@ -29,6 +30,7 @@ public class ProjectController {
 
     private final JwtService jwtService;
     private final ProjectService projectService;
+    private final ProjectAccessService projectAccessService;
 
     @PostMapping("/projects")
     public PostProjectResponse createProject(
@@ -57,7 +59,7 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        ProjectRights permissions = projectService.validateAndGetUserProjectAccess(userId, projectId);
+        ProjectRights permissions = projectAccessService.validateAndGetUserProjectAccess(userId, projectId);
 
         log.debug("User {} retrieved permissions for project {}: isAdmin={}, votesLeft={}",
                 userId, projectId, permissions.getIsAdmin(), permissions.getVotesLeft());
