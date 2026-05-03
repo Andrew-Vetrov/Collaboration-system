@@ -6,7 +6,7 @@ import application.database.entities.UserRole;
 import application.database.repositories.ProjectRoleRepository;
 import application.database.repositories.UserRoleRepository;
 import application.dtos.RoleDto;
-import application.dtos.requests.CreateRoleRequest;
+import application.dtos.requests.SetRoleRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,32 +25,22 @@ public class RoleService {
     private final UserRoleRepository userRoleRepository;
     private final ProjectService projectService;
 
-    public ProjectRole createRole(UUID projectId, CreateRoleRequest request, UUID userId) {
+    public ProjectRole createRole(UUID projectId, SetRoleRequest request, UUID userId) {
         if (!projectService.isUserProjectAdmin(userId, projectId)) {
             throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
         }
 
-        if (request.getName() == null || request.getName().isBlank()) {
-            throw new IllegalArgumentException("Name is not specified");
-        }
-        if (request.getColor() == null || request.getColor().isBlank()) {
-            throw new IllegalArgumentException("Color is not specified");
-        }
+        validateSetRoleRequest(request);
 
         if (projectRoleRepository.existsByProjectIdAndName(projectId, request.getName())) {
             throw new IllegalArgumentException("Role with such name already exists in project");
-        }
-
-        int likesAmount = (request.getLikesAmount() != null) ? request.getLikesAmount() : 0;
-        if (likesAmount < 0) {
-            throw new IllegalArgumentException("Likes amount cannot be negative");
         }
 
         ProjectRole role = ProjectRole.builder()
                 .projectId(projectId)
                 .name(request.getName())
                 .color(request.getColor())
-                .likesAmount(likesAmount)
+                .likesAmount(request.getLikesAmount())
                 .build();
 
         return projectRoleRepository.save(role);
@@ -138,13 +128,14 @@ public class RoleService {
     }
 
     @Transactional
-    public ProjectRole updateRoleLikes(UUID projectId, UUID roleId, Integer likesAmount, UUID currentUserId) {
-        if (!projectService.isUserProjectAdmin(currentUserId, projectId)) {
-            throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
+    public ProjectRole updateRole(UUID projectId, UUID roleId, SetRoleRequest request, UUID userId) {
+        if (!projectService.isUserProjectAdmin(userId, projectId)) {
+            throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
         }
+        validateSetRoleRequest(request);
 
-        if (likesAmount == null || likesAmount < 0) {
-            throw new IllegalArgumentException("Invalid likes_amount value");
+        if (projectRoleRepository.existsByProjectIdAndName(projectId, request.getName())) {
+            throw new IllegalArgumentException("Role with such name already exists in project");
         }
 
         ProjectRole role = projectRoleRepository.findById(roleId)
@@ -154,7 +145,24 @@ public class RoleService {
             throw new EntityNotFoundException("Role " + roleId + " does not belong to project " + projectId);
         }
 
-        role.setLikesAmount(likesAmount);
+        role.setName(request.getName());
+        role.setColor(request.getColor());
+        role.setLikesAmount(request.getLikesAmount());
         return projectRoleRepository.save(role);
+    }
+    private boolean validateSetRoleRequest(SetRoleRequest request){
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new IllegalArgumentException("Name is not specified");
+        }
+        if (request.getColor() == null || request.getColor().isBlank()) {
+            throw new IllegalArgumentException("Color is not specified");
+        }
+        if(request.getLikesAmount() == null){
+            throw new IllegalArgumentException("Likes amount is not specified");
+        }
+        if (request.getLikesAmount() < 0) {
+            throw new IllegalArgumentException("Likes amount cannot be negative");
+        }
+        return true;
     }
 }

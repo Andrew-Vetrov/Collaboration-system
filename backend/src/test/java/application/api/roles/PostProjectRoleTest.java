@@ -174,24 +174,6 @@ public class PostProjectRoleTest extends RolesBaseClassTest {
     }
 
     @Test
-    void apiCreateRole_ValidRequest_WithoutLikes() {
-        String body = """
-                {
-                    "name": "Manager",
-                    "color": "#0000FF"
-                }
-                """;
-        makeCreateRoleRequest(testProjectId, validJwt, body)
-                .expectStatus().isOk()
-                .expectBody()
-                .jsonPath("$.role_id").exists()
-                .jsonPath("$.project_id").isEqualTo(testProjectId)
-                .jsonPath("$.name").isEqualTo("Manager")
-                .jsonPath("$.color").isEqualTo("#0000FF")
-                .jsonPath("$.likes_amount").isEqualTo(0);
-    }
-
-    @Test
     void apiCreateRole_ValidRequest() {
         String body = """
                 {

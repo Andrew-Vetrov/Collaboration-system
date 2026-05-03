@@ -7,11 +7,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.UUID;
 
-public class PurProjectRoleLikesTest extends RolesBaseClassTest {
+public class PutProjectRoleTest extends RolesBaseClassTest {
 
     private WebTestClient.ResponseSpec makeUpdateLikesRequest(UUID projectId, UUID roleId, String jwt, String body) {
         return webClient.put()
-                .uri("/projects/{projectId}/roles/{roleId}/likes", projectId, roleId)
+                .uri("/projects/{projectId}/roles/{roleId}", projectId, roleId)
                 .header("Authorization", "Bearer " + jwt)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
@@ -21,7 +21,7 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
     @Test
     void apiUpdateLikes_NoToken() {
         webClient.put()
-                .uri("/projects/{projectId}/roles/{roleId}/likes", testProjectId, UUID.randomUUID())
+                .uri("/projects/{projectId}/roles/{roleId}", testProjectId, UUID.randomUUID())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue("{}")
                 .exchange()
@@ -33,6 +33,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
         String premadeJwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiSm9obiBEb2UiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjM5MDIyfQ.VvqE9VXHDpg3ZLHyemjkqlHHqFvPOUWi6O_kPFQ9bcU";
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": 10
                 }
                 """;
@@ -49,6 +51,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
         String jwt = jwtService.generateToken(nonExistentId);
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": 5
                 }
                 """;
@@ -64,6 +68,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
         UUID fakeProjectId = UUID.randomUUID();
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": 5
                 }
                 """;
@@ -80,6 +86,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
         ProjectRole role = createTestRole("RoleToUpdate", "#FF00FF", 0);
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": 100
                 }
                 """;
@@ -88,7 +96,7 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(403)
                 .jsonPath("$.error").isEqualTo("User " + otherUser.getId() + " is not an admin of project: " + testProjectId)
-                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + role.getId() + "/likes");
+                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + role.getId());
     }
 
     @Test
@@ -96,6 +104,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
         UUID nonExistentRoleId = UUID.randomUUID();
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": 5
                 }
                 """;
@@ -104,7 +114,7 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(404)
                 .jsonPath("$.error").isEqualTo("Role not found: " + nonExistentRoleId)
-                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + nonExistentRoleId + "/likes");
+                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + nonExistentRoleId);
     }
 
     @Test
@@ -133,6 +143,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
 
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": 50
                 }
                 """;
@@ -141,7 +153,7 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(404)
                 .jsonPath("$.error").isEqualTo("Role " + foreignRole.getId() + " does not belong to project " + testProjectId)
-                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + foreignRole.getId() + "/likes");
+                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + foreignRole.getId());
     }
 
     @Test
@@ -149,6 +161,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
         ProjectRole role = createTestRole("NegativeRole", "#111111", 0);
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": -5
                 }
                 """;
@@ -156,8 +170,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
                 .expectStatus().isBadRequest()
                 .expectBody()
                 .jsonPath("$.status").isEqualTo(400)
-                .jsonPath("$.error").isEqualTo("Invalid likes_amount value")
-                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + role.getId() + "/likes");
+                .jsonPath("$.error").isEqualTo("Likes amount cannot be negative")
+                .jsonPath("$.path").isEqualTo("/projects/" + testProjectId + "/roles/" + role.getId());
     }
 
     @Test
@@ -165,6 +179,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
         ProjectRole role = createTestRole("UpdatableRole", "#00AA00", 5);
         String body = """
                 {
+                    "name": "Test",
+                    "color": "#00FF00",
                     "likes_amount": 42
                 }
                 """;
@@ -173,8 +189,8 @@ public class PurProjectRoleLikesTest extends RolesBaseClassTest {
                 .expectBody()
                 .jsonPath("$.role_id").isEqualTo(role.getId())
                 .jsonPath("$.project_id").isEqualTo(testProject.getId())
-                .jsonPath("$.name").isEqualTo("UpdatableRole")
-                .jsonPath("$.color").isEqualTo("#00AA00")
+                .jsonPath("$.name").isEqualTo("Test")
+                .jsonPath("$.color").isEqualTo("#00FF00 ")
                 .jsonPath("$.likes_amount").isEqualTo(42);
 
         // Дополнительная проверка, что значение обновилось в БД

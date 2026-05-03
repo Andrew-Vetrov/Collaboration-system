@@ -4,18 +4,14 @@ import application.database.entities.ProjectRole;
 import application.database.services.RoleService;
 import application.dtos.RoleDto;
 import application.dtos.requests.AssignRoleRequest;
-import application.dtos.requests.CreateRoleRequest;
-import application.dtos.requests.UpdateRoleLikesRequest;
+import application.dtos.requests.SetRoleRequest;
 import application.dtos.responses.GetProjectRolesResponse;
 import application.security.JwtService;
-import application.database.services.ProjectService;
 import jakarta.security.auth.message.AuthException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +25,7 @@ public class RolesController {
     @PostMapping("/projects/{projectId}/roles")
     public RoleDto createRole(
             @PathVariable("projectId") UUID projectId,
-            @Valid @RequestBody CreateRoleRequest request) throws AuthException {
+            @Valid @RequestBody SetRoleRequest request) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
         ProjectRole createdRole = roleService.createRole(projectId, request, userId);
@@ -45,6 +41,18 @@ public class RolesController {
         List<RoleDto> roles = roleService.getProjectRoles(projectId, userId);
 
         return new GetProjectRolesResponse(roles);
+    }
+
+    @PutMapping("/projects/{projectId}/roles/{roleId}")
+    public RoleDto updateRole(
+            @PathVariable("projectId") UUID projectId,
+            @PathVariable("roleId") UUID roleId,
+            @Valid @RequestBody SetRoleRequest request) throws AuthException {
+
+        UUID userId = jwtService.getCurrentUserId();
+        ProjectRole updatedRole = roleService.updateRole(projectId, roleId, request, userId);
+
+        return new RoleDto(updatedRole);
     }
 
     @DeleteMapping("/projects/{projectId}/roles/{roleId}")
@@ -80,17 +88,5 @@ public class RolesController {
         roleService.removeRoleFromUser(projectId, userId, roleId, currentUserId);
 
         return "Роль успешно удалена у пользователя";
-    }
-
-    @PutMapping("/projects/{projectId}/roles/{roleId}/likes")
-    public RoleDto updateRoleLikes(
-            @PathVariable("projectId") UUID projectId,
-            @PathVariable("roleId") UUID roleId,
-            @Valid @RequestBody UpdateRoleLikesRequest request) throws AuthException {
-
-        UUID userId = jwtService.getCurrentUserId();
-        ProjectRole updatedRole = roleService.updateRoleLikes(projectId, roleId, request.getLikesAmount(), userId);
-
-        return new RoleDto(updatedRole);
     }
 }
