@@ -1,8 +1,18 @@
 import { useAuthMe } from '@/entities/main-user/api/useAuthMe';
-import { useProjectDeleteUser } from '@/entities/project/api/useProjectDeleteUser';
-import { useProjectSetUserPermissions } from '@/entities/project/api/useProjectSetUserPermissions';
 import { useProjectUsers } from '@/entities/project/api/useProjectUsers';
-import { Avatar, AvatarFallback, AvatarImage, Button } from '@/shared/ui';
+import { RoleBadge } from '@/entities/role/ui/RoleBadge';
+import {
+  RoleDropdownMenu,
+  useRoleDeletion,
+  useSetUserPermissions,
+  DeleteRoleButton,
+  PermissionButton,
+} from '@/features/role-management';
+import {
+  useDeleteUserFromProject,
+  DeleteUserButton,
+} from '@/features/project-delete-user';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui';
 import { Loader2 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 
@@ -17,18 +27,18 @@ export function ProjectUsersContent({ projectId }: ProjectUsersContentProps) {
     isError: usersError,
   } = useProjectUsers(projectId);
 
+  const { handleDeleteRole, isRoleRemovalPending } = useRoleDeletion(projectId);
+  const { handleDeleteUser, isDeleteUserPending } =
+    useDeleteUserFromProject(projectId);
+  const { handlePermissionChange, isPermissionChangePending } =
+    useSetUserPermissions(projectId);
+
   const {
     data: currentUser,
     isLoading: meLoading,
     isError: meError,
   } = useAuthMe();
   const users = data?.users;
-
-  const { mutate: chagePermissions, isPending: changePermissionPending } =
-    useProjectSetUserPermissions(projectId);
-
-  const { mutate: deleteUser, isPending: deleteUserPending } =
-    useProjectDeleteUser(projectId);
 
   if (usersLoading || meLoading) {
     return (
@@ -45,12 +55,21 @@ export function ProjectUsersContent({ projectId }: ProjectUsersContentProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="ml-4 text-xl">Список пользователей проекта:</div>
-      <ul className="flex flex-col gap-3">
-        {users
-          .filter(p => p.user_id != currentUser?.user_id)
-          .map((user, index) => (
-            <li key={user.user_id}>
-              <div className="flex flex-col sm:flex-row gap-2 rounded-lg border bg-card p-2">
+      <ul className="flex flex-col gap-3 max-w-full">
+        {users.map(user => (
+          <li key={user.user_id}>
+            <div className="flex flex-col rounded-lg border bg-card p-2 max-w-full gap-2">
+              <div className="flex flex-wrap gap-2 min-w-0">
+                {user.roles?.map((role, index) => (
+                  <RoleBadge
+                    key={`${user.user_id}-${role.role_id}-${index}`}
+                    role={role}
+                    onRemove={roleId => handleDeleteRole(roleId, user.user_id)}
+                    disable={isRoleRemovalPending(user.user_id, role.role_id)}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
                 <div className="flex w-full gap-2">
                   <div className="pt-2">
                     <Avatar className="h-9 w-9 min-w-9 shrink-0 ">
@@ -66,49 +85,27 @@ export function ProjectUsersContent({ projectId }: ProjectUsersContentProps) {
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Button
-                    variant="outline"
-                    className="w-full h-7"
-                    disabled={deleteUserPending}
-                    onClick={() =>
-                      deleteUser({ userId: user.user_id, isCurrentUser: false })
-                    }
-                  >
-                    Удалить из проекта
-                  </Button>
-                  {user.is_admin ? (
-                    <Button
-                      variant="outline"
-                      className="w-full h-7"
-                      onClick={() =>
-                        chagePermissions({
-                          userId: user.user_id,
-                          setIsAdmin: false,
-                        })
-                      }
-                      disabled={changePermissionPending}
-                    >
-                      Убрать админку
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="w-full h-7"
-                      onClick={() =>
-                        chagePermissions({
-                          userId: user.user_id,
-                          setIsAdmin: true,
-                        })
-                      }
-                      disabled={changePermissionPending}
-                    >
-                      Назначить админом
-                    </Button>
+                  <RoleDropdownMenu projectId={projectId} user={user} />
+                  {user.user_id !== currentUser?.user_id && (
+                    <>
+                      <DeleteUserButton
+                        userId={user.user_id}
+                        isLoading={isDeleteUserPending(user.user_id)}
+                        onDelete={handleDeleteUser}
+                      />
+                      <PermissionButton
+                        userId={user.user_id}
+                        isAdmin={user.is_admin}
+                        isLoading={isPermissionChangePending(user.user_id)}
+                        onPermissionChange={handlePermissionChange}
+                      />
+                    </>
                   )}
                 </div>
               </div>
-            </li>
-          ))}
+            </div>
+          </li>
+        ))}
       </ul>
     </div>
   );

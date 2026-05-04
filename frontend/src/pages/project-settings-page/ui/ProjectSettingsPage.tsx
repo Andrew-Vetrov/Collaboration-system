@@ -66,7 +66,7 @@ const ProjectSettingsPage = () => {
         <TabsContent value="settings">
           <ProjectSettingsContent projectId={projectId} />
         </TabsContent>
-        <TabsContent value="users">
+        <TabsContent value="users" className="w-full">
           <ProjectUsersContent projectId={projectId} />
         </TabsContent>
         <TabsContent value="invites">
