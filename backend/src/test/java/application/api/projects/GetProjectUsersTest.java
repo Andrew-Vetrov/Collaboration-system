@@ -171,8 +171,7 @@ public class GetProjectUsersTest extends ProjectBaseClassTest{
         projectRoleRepository.save(role2);
 
         UserRole userRole = UserRole.builder()
-                .userId(testUser.getId())
-                .projectId(savedProject.getId())
+                .user(testUser)
                 .projectRole(role2).build();
         userRoleRepository.save(userRole);
 //        List<UserRole> roles = userRoleRepository.findAllByUserIdAndProjectId(testUser.getId(), savedProject.getId());

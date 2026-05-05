@@ -204,6 +204,6 @@ public class PostProjectUserRoleTest extends RolesBaseClassTest {
                 .expectBody(String.class).isEqualTo("Роль успешно добавлена пользователю");
 
         // Проверяем, что связь создалась
-        assertThat(userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId())).isTrue();
+        assertThat(userRoleRepository.existsByUser_IdAndProjectRole_Id(otherUser.getId(), role.getId())).isTrue();
     }
 }

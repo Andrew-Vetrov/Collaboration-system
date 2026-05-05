@@ -9,11 +9,11 @@ import java.util.UUID;
 
 public interface UserRoleRepository extends JpaRepository<UserRole, UUID> {
 
-    boolean existsByUserIdAndProjectRole_Id(UUID userId, UUID roleId);
+    boolean existsByUser_IdAndProjectRole_Id(UUID userId, UUID roleId);
 
-    Optional<UserRole> findByUserIdAndProjectRole_Id(UUID userId, UUID roleId);
+    Optional<UserRole> findByUser_IdAndProjectRole_Id(UUID userId, UUID roleId);
 
     long countByProjectRole_Id(UUID roleId);
 
-    List<UserRole> findAllByUserIdAndProjectId(UUID userId, UUID projectId);
+    List<UserRole> findAllByUser_IdAndProjectRole_ProjectId(UUID userId, UUID projectId);
 }

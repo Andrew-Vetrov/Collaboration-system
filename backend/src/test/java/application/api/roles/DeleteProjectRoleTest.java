@@ -116,8 +116,7 @@ public class DeleteProjectRoleTest extends RolesBaseClassTest {
         ProjectRole role = createTestRole("AssignedRole", "#00FF00", 0);
         // Назначаем роль другому пользователю
         UserRole userRole = UserRole.builder()
-                .userId(otherUser.getId())
-                .projectId(testProjectId)
+                .user(otherUser)
                 .projectRole(role)
                 .build();
         userRoleRepository.save(userRole);

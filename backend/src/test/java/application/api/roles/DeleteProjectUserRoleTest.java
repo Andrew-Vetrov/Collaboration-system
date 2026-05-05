@@ -78,8 +78,7 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
         String otherJwt = jwtService.generateToken(otherUser.getId());
         ProjectRole role = createTestRole("AdminRole", "#FF0000", 0);
         UserRole userRole = UserRole.builder()
-                .userId(otherUser.getId())
-                .projectId(testProjectId)
+                .user(otherUser)
                 .projectRole(role)
                 .build();
         userRoleRepository.save(userRole);
@@ -108,8 +107,7 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
         ProjectRole role = createTestRole("RemovableRole", "#123456", 0);
         // Назначаем роль
         UserRole userRole = UserRole.builder()
-                .userId(otherUser.getId())
-                .projectId(testProjectId)
+                .user(otherUser)
                 .projectRole(role)
                 .build();
         userRoleRepository.save(userRole);
@@ -119,6 +117,6 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
                 .expectBody(String.class).isEqualTo("Роль успешно удалена у пользователя");
 
         // Проверяем, что связь удалена
-        assertThat(userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId())).isFalse();
+        assertThat(userRoleRepository.existsByUser_IdAndProjectRole_Id(otherUser.getId(), role.getId())).isFalse();
     }
 }

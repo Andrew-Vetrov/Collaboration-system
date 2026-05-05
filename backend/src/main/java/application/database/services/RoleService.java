@@ -2,8 +2,10 @@ package application.database.services;
 
 import application.database.entities.ProjectRights;
 import application.database.entities.ProjectRole;
+import application.database.entities.User;
 import application.database.entities.UserRole;
 import application.database.repositories.ProjectRoleRepository;
+import application.database.repositories.UserRepository;
 import application.database.repositories.UserRoleRepository;
 import application.dtos.RoleDto;
 import application.dtos.requests.SetRoleRequest;
@@ -23,6 +25,7 @@ import java.util.UUID;
 public class RoleService {
 
     private final ProjectRoleRepository projectRoleRepository;
+    private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final ProjectAccessService projectAccessService;
 
@@ -82,6 +85,10 @@ public class RoleService {
         if (!projectAccessService.isUserProjectAdmin(currentUserId, projectId)) {
             throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
         }
+        Optional<User> targetUser = userRepository.findById(targetUserId);
+        if (targetUser.isEmpty()) {
+            throw new EntityNotFoundException("User " + targetUserId + " is not found");
+        }
         Optional<ProjectRights> userRights = projectAccessService.getUserProjectRights(targetUserId, projectId);
         if (userRights.isEmpty()) {
             throw new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId);
@@ -95,13 +102,12 @@ public class RoleService {
             throw new IllegalArgumentException("Role does not belong to project");
         }
 
-        if (userRoleRepository.existsByUserIdAndProjectRole_Id(targetUserId, roleId)) {
+        if (userRoleRepository.existsByUser_IdAndProjectRole_Id(targetUserId, roleId)) {
             throw new IllegalArgumentException("User already has this role");
         }
 
         UserRole userRole = UserRole.builder()
-                .userId(targetUserId)
-                .projectId(projectId)
+                .user(targetUser.get())
                 .projectRole(role)
                 .build();
 
@@ -118,10 +124,10 @@ public class RoleService {
             throw new EntityNotFoundException("User " + targetUserId + " is not a member of project " + projectId);
         }
 
-        UserRole userRole = userRoleRepository.findByUserIdAndProjectRole_Id(targetUserId, roleId)
+        UserRole userRole = userRoleRepository.findByUser_IdAndProjectRole_Id(targetUserId, roleId)
                 .orElseThrow(() -> new IllegalArgumentException("User does not have this role"));
 
-        if (!userRole.getProjectId().equals(projectId)) {
+        if (!userRole.getProjectRole().getProjectId().equals(projectId)) {
             throw new IllegalArgumentException("Role does not belong to project");
         }
 
@@ -167,7 +173,7 @@ public class RoleService {
     }
 
     public List<RoleDto> getUserProjectRoles(UUID userId, UUID projectId){
-        List<UserRole> roles = userRoleRepository.findAllByUserIdAndProjectId(userId, projectId);
+        List<UserRole> roles = userRoleRepository.findAllByUser_IdAndProjectRole_ProjectId(userId, projectId);
         List<RoleDto> ans = new ArrayList<>();
         for(UserRole role : roles){
             ans.add(makeRoleDto(role.getProjectRole()));
