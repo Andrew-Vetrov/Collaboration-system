@@ -54,7 +54,6 @@ public class DeleteProjectSuggestionTest extends SuggestionBaseClassTest {
         Suggestion s = createSuggestion("To delete", Suggestion.SuggestionStatus.NEW);
 
         deleteProjectSuggestionRequest(s.getId(), validJwt)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Предложение или черновик успешно удалено");
+                .expectStatus().isNoContent();
     }
 }

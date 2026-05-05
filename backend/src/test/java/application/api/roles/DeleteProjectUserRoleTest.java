@@ -113,8 +113,7 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
         userRoleRepository.save(userRole);
 
         makeRemoveRoleRequest(testProjectId, otherUser.getId(), role.getId(), validJwt)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Роль успешно удалена у пользователя");
+                .expectStatus().isNoContent();
 
         // Проверяем, что связь удалена
         assertThat(userRoleRepository.existsByUser_IdAndProjectRole_Id(otherUser.getId(), role.getId())).isFalse();

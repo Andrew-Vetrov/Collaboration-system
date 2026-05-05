@@ -183,7 +183,7 @@ public class PostProjectRoleTest extends RolesBaseClassTest {
                 }
                 """;
         makeCreateRoleRequest(testProjectId, validJwt, body)
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
                 .jsonPath("$.role_id").exists()
                 .jsonPath("$.project_id").isEqualTo(testProjectId)

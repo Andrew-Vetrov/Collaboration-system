@@ -76,8 +76,7 @@ public class DeleteProjectUserTest extends ProjectBaseClassTest{
         projectRightsRepository.save(userRights);
 
         makeDeleteProjectUserRequest(savedProject.getId(), testUser.getId(), validJwt)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Пользователь успешно удален из проекта");
+                .expectStatus().isOk();
     }
 
     @Test
@@ -210,8 +209,7 @@ public class DeleteProjectUserTest extends ProjectBaseClassTest{
         projectRightsRepository.save(otherRights);
 
         makeDeleteProjectUserRequest(savedProject.getId(), otherUser.getId(), validJwt)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Пользователь успешно удален из проекта");
+                .expectStatus().isOk();
     }
 
 }

@@ -54,7 +54,6 @@ public class DeleteSuggestionLikeTest extends SuggestionBaseClassTest {
         saveLike(testUser.getId(), suggestion.getId());
 
         deleteSuggestionLikeRequest(suggestion.getId(), validJwt)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Реакция удалена");
+                .expectStatus().isNoContent();
     }
 }

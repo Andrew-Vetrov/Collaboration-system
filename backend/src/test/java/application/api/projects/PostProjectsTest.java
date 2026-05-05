@@ -89,7 +89,7 @@ public class PostProjectsTest extends ProjectBaseClassTest{
                 """;
 
         makePostProjectsRequest(validJwt, body)
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
                 .jsonPath("$.project.project_id").exists()
                 .jsonPath("$.project.name").isEqualTo("New project")

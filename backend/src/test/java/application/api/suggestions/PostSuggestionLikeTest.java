@@ -68,7 +68,6 @@ public class PostSuggestionLikeTest extends SuggestionBaseClassTest {
         Suggestion suggestion = createSuggestion("Like test", Suggestion.SuggestionStatus.NEW);
 
         postSuggestionLikeRequest(suggestion.getId(), validJwt)
-                .expectStatus().isCreated()
-                .expectBody(String.class).isEqualTo("Реакция добавлена");
+                .expectStatus().isCreated();
     }
 }

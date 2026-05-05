@@ -133,8 +133,7 @@ public class DeleteProjectRoleTest extends RolesBaseClassTest {
     void apiDeleteRole_ValidRequest() {
         ProjectRole role = createTestRole("DeletableRole", "#123456", 0);
         makeDeleteRoleRequest(testProjectId, role.getId(), validJwt)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Роль успешно удалена");
+                .expectStatus().isNoContent();
 
         // Проверяем удаление роли
         assertThat(projectRoleRepository.findById(role.getId())).isEmpty();

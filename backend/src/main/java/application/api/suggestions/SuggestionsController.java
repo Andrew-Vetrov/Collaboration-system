@@ -6,6 +6,7 @@ import application.database.services.ProjectService;
 import application.database.services.SuggestionService;
 import application.dtos.SuggestionDetailDto;
 import application.dtos.requests.CreateAndUpdateSuggestionRequest;
+import application.dtos.responses.BasicSuccessResponse;
 import application.dtos.responses.ErrorResponse;
 import application.dtos.responses.GetProjectSuggestionsResponse;
 import application.security.JwtService;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.UUID;
@@ -55,25 +57,30 @@ public class SuggestionsController {
 
     @PostMapping("/suggestions/{suggestionId}/likes")
     @ResponseStatus(HttpStatus.CREATED)
-    public String addLike(
+    public BasicSuccessResponse addLike(
             @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
         suggestionService.addLike(suggestionId, userId);
 
         log.debug("User {} added like to suggestion {}", userId, suggestionId);
-        return "Реакция добавлена";
+
+        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUriString();
+        return new BasicSuccessResponse(HttpStatus.CREATED.value(), currentUri);
     }
 
     @DeleteMapping("/suggestions/{suggestionId}/likes")
-    public String removeLike(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public BasicSuccessResponse removeLike(
             @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
         suggestionService.removeLike(suggestionId, userId);
 
         log.debug("User {} removed like from suggestion {}", userId, suggestionId);
-        return "Реакция удалена";
+
+        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUriString();
+        return new BasicSuccessResponse(HttpStatus.NO_CONTENT.value(), currentUri);
     }
 
     @PostMapping("/project/{projectId}/suggestions")
@@ -102,13 +109,16 @@ public class SuggestionsController {
     }
 
     @DeleteMapping("/suggestions/{suggestionId}")
-    public String deleteSuggestion(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public BasicSuccessResponse deleteSuggestion(
             @PathVariable("suggestionId") UUID suggestionId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
         suggestionService.deleteSuggestion(suggestionId, userId);
 
         log.debug("User {} deleted suggestion {}", userId, suggestionId);
-        return "Предложение или черновик успешно удалено";
+
+        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUriString();
+        return new BasicSuccessResponse(HttpStatus.NO_CONTENT.value(), currentUri);
     }
 }
