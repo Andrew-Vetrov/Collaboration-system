@@ -7,6 +7,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class PostProjectUserRoleTest extends RolesBaseClassTest {
 
     private WebTestClient.ResponseSpec makeAssignRoleRequest(UUID projectId, UUID userId, String jwt, String body) {
@@ -202,7 +204,6 @@ public class PostProjectUserRoleTest extends RolesBaseClassTest {
                 .expectBody(String.class).isEqualTo("Роль успешно добавлена пользователю");
 
         // Проверяем, что связь создалась
-        boolean exists = userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId());
-        assert exists;
+        assertThat(userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId())).isTrue();
     }
 }

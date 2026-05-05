@@ -6,6 +6,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
 
     private WebTestClient.ResponseSpec makeRemoveRoleRequest(UUID projectId, UUID userId, UUID roleId, String jwt) {
@@ -117,7 +119,6 @@ public class DeleteProjectUserRoleTest extends RolesBaseClassTest {
                 .expectBody(String.class).isEqualTo("Роль успешно удалена у пользователя");
 
         // Проверяем, что связь удалена
-        boolean exists = userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId());
-        assert !exists;
+        assertThat(userRoleRepository.existsByUserIdAndProjectRole_Id(otherUser.getId(), role.getId())).isFalse();
     }
 }

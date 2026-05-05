@@ -7,6 +7,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class PutProjectRoleTest extends RolesBaseClassTest {
 
     private WebTestClient.ResponseSpec makeUpdateLikesRequest(UUID projectId, UUID roleId, String jwt, String body) {
@@ -195,6 +197,6 @@ public class PutProjectRoleTest extends RolesBaseClassTest {
 
         // Дополнительная проверка, что значение обновилось в БД
         ProjectRole updated = projectRoleRepository.findById(role.getId()).orElseThrow();
-        assert updated.getLikesAmount() == 42;
+        assertThat(updated.getLikesAmount()).isEqualTo(42);
     }
 }
