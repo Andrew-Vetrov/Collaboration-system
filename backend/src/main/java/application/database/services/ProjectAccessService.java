@@ -2,9 +2,12 @@ package application.database.services;
 
 import application.database.entities.Project;
 import application.database.entities.ProjectRights;
+import application.database.entities.ProjectRole;
+import application.database.entities.UserRole;
 import application.database.repositories.ProjectRepository;
 import application.database.repositories.ProjectRightsRepository;
 import application.database.repositories.UserRepository;
+import application.database.repositories.UserRoleRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ public class ProjectAccessService {
     private final ProjectRepository projectRepository;
     private final ProjectRightsRepository projectRightsRepository;
     private final UserRepository userRepository;
+    private final UserRoleRepository roleRepository;
 
     public Project getProjectById(UUID projectId) {
         return projectRepository.findById(projectId)
@@ -88,8 +92,22 @@ public class ProjectAccessService {
     public void resetProjectVotes(Project project){
         List<ProjectRights> allRights = projectRightsRepository.findAllByProjectId(project.getId());
         for (ProjectRights rights : allRights) {
-            rights.setVotesLeft(project.getVotesForInterval());
+            rights.setVotesLeft(calculateVotesForPerson(rights));
         }
         projectRightsRepository.saveAll(allRights);
+    }
+
+    private int calculateVotesForPerson(ProjectRights rights){
+        List<ProjectRole> roles = roleRepository.findAllByUser_IdAndProjectRole_ProjectId(rights.getUserId(),
+                rights.getProject().getId()).stream().map(UserRole::getProjectRole).toList();
+
+        if(roles.isEmpty()){
+            return rights.getProject().getVotesForInterval();
+        }
+        int maxVotes = 0;
+        for(ProjectRole role : roles){
+            maxVotes = (maxVotes > role.getLikesAmount() ? maxVotes : role.getLikesAmount());
+        }
+        return maxVotes;
     }
 }
