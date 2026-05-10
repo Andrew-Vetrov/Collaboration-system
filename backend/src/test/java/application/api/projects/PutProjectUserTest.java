@@ -157,7 +157,6 @@ public class PutProjectUserTest extends ProjectBaseClassTest{
                 """;
 
         makePutProjectUserRequest(savedProject.getId(), testUser.getId(), validJwt, body)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Права пользователя успешно изменены");
+                .expectStatus().isOk();
     }
 }

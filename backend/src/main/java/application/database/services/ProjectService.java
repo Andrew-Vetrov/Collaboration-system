@@ -4,6 +4,7 @@ import application.database.entities.User;
 import application.database.repositories.UserRepository;
 import application.dtos.ProjectFullDto;
 import application.dtos.ProjectUserDto;
+import application.dtos.RoleDto;
 import application.dtos.requests.CreateProjectRequest;
 import application.database.entities.Project;
 import application.database.entities.ProjectRights;
@@ -33,7 +34,9 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectRightsRepository projectRightsRepository;
     private final UserRepository userRepository;
+    private final RoleService roleService;
     private final DurationHelper durationHelper = new DurationHelper();
+    private final ProjectAccessService projectAccessService;
 
     @Transactional
     public Project createProject(CreateProjectRequest request, UUID ownerId) throws EntityNotFoundException {
@@ -76,49 +79,19 @@ public class ProjectService {
                 .toList();
     }
 
-    public Optional<ProjectRights> getUserProjectRights(UUID userId, UUID projectId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new EntityNotFoundException("User not found: " + userId);
-        }
-
-        if (!projectRepository.existsById(projectId)) {
-            throw new EntityNotFoundException("Project not found: " + projectId);
-        }
-        return projectRightsRepository.findByUserIdAndProjectId(userId, projectId);
-    }
-
-    public ProjectRights validateAndGetUserProjectAccess(UUID userId, UUID projectId) {
-        Optional<ProjectRights> userRights = getUserProjectRights(userId, projectId);
-        if (userRights.isEmpty()) {
-            throw new AccessDeniedException("User " + userId + " has no access to project " + projectId);
-        }
-
-        Project project = getProjectById(projectId);
-        restartProjectVotingPeriodIfNeeded(project);
-
-        return userRights.get();
-
-    }
 
     public Project getProjectById(UUID projectId) {
         return projectRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found: " + projectId));
     }
 
-    public boolean isUserProjectAdmin(UUID userId, UUID projectId) {
-        Optional<ProjectRights> rights = getUserProjectRights(userId, projectId);
-        if (rights.isEmpty()) {
-            throw new AccessDeniedException("User " + userId + " has no access to project " + projectId);
-        }
-        return rights.get().getIsAdmin();
-    }
 
 
     @Transactional
     public void updateProjectSettings(UUID projectId, UpdateProjectSettingsRequest request, UUID userId) {
         Project project = getProjectById(projectId);
 
-        if (!isUserProjectAdmin(userId, projectId)) {
+        if (!projectAccessService.isUserProjectAdmin(userId, projectId)) {
             throw new AccessDeniedException("User " + userId + " is not an admin of project: " + projectId);
         }
 
@@ -145,7 +118,7 @@ public class ProjectService {
 
 
         projectRepository.save(project);
-        resetProjectVotes(project);
+        projectAccessService.resetProjectVotes(project);
     }
 
     public List<ProjectUserDto> getProjectUsers(UUID projectId, UUID currentUserId) {
@@ -153,7 +126,7 @@ public class ProjectService {
             throw new EntityNotFoundException("Project not found: " + projectId);
         }
 
-        validateAndGetUserProjectAccess(currentUserId, projectId);
+        projectAccessService.validateAndGetUserProjectAccess(currentUserId, projectId);
 
         List<ProjectRights> rights = projectRightsRepository.findAllByProjectId(projectId);
         List<ProjectUserDto> ans = new ArrayList<>();
@@ -163,26 +136,27 @@ public class ProjectService {
                 log.error("User {} is not found during GET from project {}", right.getUserId(), projectId);
                 throw new RuntimeException("User " + right.getUserId() + " is not found");
             }
-            ans.add(new ProjectUserDto(user.get(), right.getIsAdmin()));
+            ans.add(makeProjectUserDto(user.get(), right.getIsAdmin(),
+                    roleService.getUserProjectRoles(user.get().getId(), projectId)));
         }
         return ans;
     }
 
     @Transactional
     public void removeUserFromProject(UUID projectId, UUID targetUserId, UUID currentUserId) {
-        validateAndGetUserProjectAccess(currentUserId, projectId);
+        projectAccessService.validateAndGetUserProjectAccess(currentUserId, projectId);
 
         if(targetUserId.equals(currentUserId)
                 && getProjectById(projectId).getOwnerId().equals(targetUserId)) { // Владелец проекта не может выйти из него
             throw new AccessDeniedException("Cannot exit project being an owner");
         }
         else if (!targetUserId.equals(currentUserId)){
-            if (!isUserProjectAdmin(currentUserId, projectId)) {
+            if (!projectAccessService.isUserProjectAdmin(currentUserId, projectId)) {
                 throw new AccessDeniedException("User " + currentUserId + " is not an admin of project: " + projectId);
             }
 
             //Нельзя удалить администратора и владельца
-            if (isUserProjectAdmin(targetUserId, projectId)) {
+            if (projectAccessService.isUserProjectAdmin(targetUserId, projectId)) {
                 throw new AccessDeniedException("Cannot remove admin user from the project");
             }
             if (getProjectById(projectId).getOwnerId().equals(targetUserId)) {
@@ -211,7 +185,7 @@ public class ProjectService {
 
     @Transactional
     public void consumeVote(UUID userId, UUID projectId) {
-        ProjectRights rights = validateAndGetUserProjectAccess(userId, projectId);
+        ProjectRights rights = projectAccessService.validateAndGetUserProjectAccess(userId, projectId);
         if (rights.getVotesLeft() < 1) {
             throw new IllegalArgumentException("User " + userId + " has no votes left in project " + projectId);
         }
@@ -221,13 +195,13 @@ public class ProjectService {
 
     @Transactional
     public void restoreVote(UUID userId, UUID projectId) {
-        ProjectRights rights = validateAndGetUserProjectAccess(userId, projectId);
+        ProjectRights rights = projectAccessService.validateAndGetUserProjectAccess(userId, projectId);
         rights.setVotesLeft(rights.getVotesLeft() + 1);
         projectRightsRepository.save(rights);
     }
 
     public ProjectFullDto getProjectSettings(UUID projectId, UUID currentUserId){
-        validateAndGetUserProjectAccess(currentUserId, projectId);
+        projectAccessService.validateAndGetUserProjectAccess(currentUserId, projectId);
 
         Project project = getProjectById(projectId);
         return new ProjectFullDto(
@@ -240,33 +214,14 @@ public class ProjectService {
                 project.getOwnerId());
     }
 
-    private void restartProjectVotingPeriodIfNeeded(Project project) {
-        ZonedDateTime now = ZonedDateTime.now();
-        Duration interval = project.getVoteInterval();
 
-        Duration elapsed = Duration.between(project.getVotePeriodStart(), now);
-        if (elapsed.compareTo(interval) < 0) {
-            return; //Обновлять голоса рано
-        }
 
-        // Сколько полных периодов прошло
-        long periodsPassed = elapsed.dividedBy(interval);
-        ZonedDateTime newStart = project.getVotePeriodStart()
-                .plus(interval.multipliedBy(periodsPassed));
-
-        project.setVotePeriodStart(newStart);
-        projectRepository.save(project);
-
-        resetProjectVotes(project);
-
-        log.debug("Project {} votes reset. New period start: {}", project.getId(), newStart);
-    }
-
-    private void resetProjectVotes(Project project){
-        List<ProjectRights> allRights = projectRightsRepository.findAllByProjectId(project.getId());
-        for (ProjectRights rights : allRights) {
-            rights.setVotesLeft(project.getVotesForInterval());
-        }
-        projectRightsRepository.saveAll(allRights);
+    private ProjectUserDto makeProjectUserDto(User user, boolean isAdmin, List<RoleDto> roleDtos){
+        return new ProjectUserDto(user.getId(),
+                user.getMail(),
+                user.getNickname(),
+                user.getPicture(),
+                isAdmin,
+                roleDtos);
     }
 }

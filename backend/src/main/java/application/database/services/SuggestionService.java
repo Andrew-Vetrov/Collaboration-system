@@ -26,10 +26,11 @@ public class SuggestionService {
     private final SuggestionRepository suggestionRepository;
     private final LikeRepository likeRepository;
     private final ProjectService projectService;
+    private final ProjectAccessService projectAccessService;
 
     public List<SuggestionDetailDto> getSuggestionDetails(UUID projectId, UUID currentUserId, String statusStr) {
         projectService.getProjectById(projectId); // Проверка существования проекта
-        projectService.getUserProjectRights(currentUserId, projectId) // Проверка прав
+        projectAccessService.getUserProjectRights(currentUserId, projectId) // Проверка прав
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to project " + projectId));
         List<Suggestion> suggestions;
         if (statusStr == null || statusStr.isBlank()) {
@@ -66,7 +67,7 @@ public class SuggestionService {
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
 
         // Проверка доступа: пользователь должен быть в проекте предложения
-        projectService.getUserProjectRights(currentUserId, suggestion.getProjectId())
+        projectAccessService.getUserProjectRights(currentUserId, suggestion.getProjectId())
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to suggestion " + suggestionId));
         //А также, если это черновик, то быть его создателем
         if(suggestion.getStatus() == Suggestion.SuggestionStatus.DRAFT
@@ -98,7 +99,7 @@ public class SuggestionService {
         Suggestion suggestion = suggestionRepository.findById(suggestionId)
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
         UUID projectId = suggestion.getProjectId();
-        projectService.validateAndGetUserProjectAccess(userId, projectId);
+        projectAccessService.validateAndGetUserProjectAccess(userId, projectId);
         Project project = projectService.getProjectById(projectId);
 
         ZonedDateTime currentPeriodStart = project.getVotePeriodStart();
@@ -126,7 +127,7 @@ public class SuggestionService {
 
     @Transactional
     public SuggestionDetailDto createSuggestion(UUID projectId, CreateAndUpdateSuggestionRequest request, UUID currentUserId) {
-        projectService.validateAndGetUserProjectAccess(currentUserId, projectId);
+        projectAccessService.validateAndGetUserProjectAccess(currentUserId, projectId);
 
         if (request.getName() == null || request.getName().isBlank()) {
             throw new IllegalArgumentException("Name is required");
@@ -159,7 +160,7 @@ public class SuggestionService {
         Suggestion suggestion = suggestionRepository.findById(suggestionId)
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
 
-        projectService.validateAndGetUserProjectAccess(currentUserId, suggestion.getProjectId());
+        projectAccessService.validateAndGetUserProjectAccess(currentUserId, suggestion.getProjectId());
 
         if (!suggestion.getUserId().equals(currentUserId)) {
             throw new AccessDeniedException("Only the author can update the suggestion");
@@ -198,7 +199,7 @@ public class SuggestionService {
         Suggestion suggestion = suggestionRepository.findById(suggestionId)
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
 
-        if (!projectService.isUserProjectAdmin(currentUserId, suggestion.getProjectId())) {
+        if (!projectAccessService.isUserProjectAdmin(currentUserId, suggestion.getProjectId())) {
             throw new AccessDeniedException("Only project admins can delete suggestions");
         }
 

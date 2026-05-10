@@ -2,6 +2,7 @@ package application.api.projects;
 
 import application.database.entities.Project;
 import application.database.entities.ProjectRights;
+import application.database.services.ProjectAccessService;
 import application.database.services.ProjectService;
 import application.dtos.*;
 import application.dtos.requests.CreateProjectRequest;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,8 +31,10 @@ public class ProjectController {
 
     private final JwtService jwtService;
     private final ProjectService projectService;
+    private final ProjectAccessService projectAccessService;
 
     @PostMapping("/projects")
+    @ResponseStatus(HttpStatus.CREATED)
     public PostProjectResponse createProject(
             @Valid @RequestBody CreateProjectRequest request) throws AuthException {
         UUID userId = jwtService.getCurrentUserId();
@@ -57,7 +61,7 @@ public class ProjectController {
             @PathVariable("projectId") UUID projectId) throws AuthException {
 
         UUID userId = jwtService.getCurrentUserId();
-        ProjectRights permissions = projectService.validateAndGetUserProjectAccess(userId, projectId);
+        ProjectRights permissions = projectAccessService.validateAndGetUserProjectAccess(userId, projectId);
 
         log.debug("User {} retrieved permissions for project {}: isAdmin={}, votesLeft={}",
                 userId, projectId, permissions.getIsAdmin(), permissions.getVotesLeft());
@@ -79,7 +83,7 @@ public class ProjectController {
 
 
     @PutMapping("/projects/{projectId}/settings")
-    public String updateProjectSettings(
+    public BasicSuccessResponse updateProjectSettings(
             @PathVariable("projectId") UUID projectId,
             @Valid @RequestBody UpdateProjectSettingsRequest request) throws AuthException {
 
@@ -89,7 +93,9 @@ public class ProjectController {
         projectService.updateProjectSettings(projectId, request, userId);
         log.debug("User {} updated settings for project {}", userId, projectId);
 
-        return "Настройки проекта успешно обновлены";
+
+        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUriString();
+        return new BasicSuccessResponse(HttpStatus.OK.value(), currentUri);
     }
 
     @GetMapping("/projects/{projectId}/users")
@@ -107,7 +113,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("/projects/{projectId}/users/{userId}")
-    public String removeUserFromProject(
+    public BasicSuccessResponse removeUserFromProject(
             @PathVariable("projectId") UUID projectId,
             @PathVariable("userId") UUID userId) throws AuthException {
 
@@ -117,11 +123,12 @@ public class ProjectController {
         log.debug("User {}  removed user {} from project {}",
                 currentUserId, userId, projectId);
 
-        return "Пользователь успешно удален из проекта";
+        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUriString();
+        return new BasicSuccessResponse(HttpStatus.OK.value(), currentUri);
     }
 
     @PutMapping("/projects/{projectId}/users/{userId}")
-    public String updateUserPermissions(
+    public BasicSuccessResponse updateUserPermissions(
             @PathVariable("projectId") UUID projectId,
             @PathVariable("userId") UUID userId,
             @Valid @RequestBody UpdateUserPermissionsRequest request) throws AuthException {
@@ -132,6 +139,7 @@ public class ProjectController {
         log.debug("User {} (admin) updated permissions for user {} in project {}: isAdmin={}",
                 currentUserId, userId, projectId, request.isAdmin());
 
-        return "Права пользователя успешно изменены";
+        String currentUri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUriString();
+        return new BasicSuccessResponse(HttpStatus.OK.value(), currentUri);
     }
 }

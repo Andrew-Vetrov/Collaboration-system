@@ -212,8 +212,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
 
 
         makePostProjectSettingsRequest(savedProject.getId(), validJwt, body)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Настройки проекта успешно обновлены");
+                .expectStatus().isOk();
     }
 
     @Test
@@ -246,8 +245,7 @@ public class PutProjectSettingsTest extends ProjectBaseClassTest{
 
 
         makePostProjectSettingsRequest(savedProject.getId(), validJwt, body)
-                .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("Настройки проекта успешно обновлены");
+                .expectStatus().isOk();
     }
 
 }
