@@ -27,7 +27,7 @@ docs/ProjectsPostRequest.md
 docs/ProjectsProjectIdInvitesGet200Response.md
 docs/ProjectsProjectIdRolesGet200Response.md
 docs/ProjectsProjectIdRolesPostRequest.md
-docs/ProjectsProjectIdRolesRoleIdLikesPutRequest.md
+docs/ProjectsProjectIdRolesRoleIdPutRequest.md
 docs/ProjectsProjectIdSettingsGet200Response.md
 docs/ProjectsProjectIdSettingsPutRequest.md
 docs/ProjectsProjectIdUsersGet200Response.md

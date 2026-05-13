@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import type { SettingsFormInput } from '../model/types';
 import { useProjectSettingsUpdate } from '@/entities/project/api/useProjectSettingsUpdate';
+import { parseDateTime } from '@/shared/lib/utils';
 
 interface ProjectSettingsContentProps {
   projectId: string;
@@ -162,6 +163,24 @@ export function ProjectSettingsContent({
             {errors.vote_interval.value.message}
           </p>
         )}
+      </div>
+      <div className='text-[12px] text-gray-500'>
+        Период голосования начался: {' '}
+        <span>
+          {(() => {
+            const parsedTime = parseDateTime(
+              settings.voting_period_start || ''
+            );
+            return (
+              <>
+                <span>
+                  {parsedTime?.time} {parsedTime?.date.day}-
+                  {parsedTime?.date.month}-{parsedTime?.date.year}
+                </span>
+              </>
+            );
+          })()}{' '}
+        </span>
       </div>
       <div className="flex sm:flex-row flex-col gap-2">
         <Label htmlFor="votes_for_interval-id">

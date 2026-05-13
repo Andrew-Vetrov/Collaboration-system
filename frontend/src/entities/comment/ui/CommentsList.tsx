@@ -23,6 +23,7 @@ import {
   CommentContextProviter,
 } from '../model/CommentsContext';
 import { parseDateTime } from '@/shared/lib/utils';
+import { RoleBadge } from '@/entities/role';
 
 interface CommentsListProps {
   userList: Array<ProjectUser> | undefined;
@@ -129,8 +130,24 @@ const RecursiveCommentHelper = memo(
           const isReplying = replyCommentId === comment.comment_id;
 
           return (
-            <div key={comment.comment_id} className="flex flex-col gap-4">
-              <div className="flex gap-3">
+            <div
+              key={comment.comment_id}
+              className="flex flex-col rounded-lg bg-card p-2 max-w-full gap-2"
+            >
+              {usersMap.get(comment.user_id) &&
+                usersMap.get(comment.user_id)?.roles && (
+                  <div className="flex flex-wrap max-w-full gap-2 min-w-0">
+                    {usersMap
+                      .get(comment.user_id)!
+                      .roles?.map((role, index) => (
+                        <RoleBadge
+                          key={`${comment.user_id}-${role.role_id}-${index}`}
+                          role={role}
+                        />
+                      ))}
+                  </div>
+                )}
+              <div className="flex gap-3 min-w-0">
                 <Avatar className="h-9 w-9 shrink-0">
                   <AvatarImage
                     src={usersMap.get(comment.user_id)?.avatar_url}
@@ -166,7 +183,7 @@ const RecursiveCommentHelper = memo(
                     {isAdmin && (
                       <div className="absolute top-0 right-0">
                         <DropdownMenu>
-                          <DropdownMenuTrigger className="shrink-0">
+                          <DropdownMenuTrigger className="shrink-0 cursor-pointer">
                             <EllipsisVertical />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent

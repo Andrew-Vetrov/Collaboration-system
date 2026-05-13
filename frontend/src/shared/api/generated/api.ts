@@ -165,7 +165,9 @@ export interface ProjectsProjectIdRolesPostRequest {
      */
     'likes_amount'?: number;
 }
-export interface ProjectsProjectIdRolesRoleIdLikesPutRequest {
+export interface ProjectsProjectIdRolesRoleIdPutRequest {
+    'name': string;
+    'color': string;
     /**
      * Новое количество лайков, которое даёт эта роль
      */
@@ -1910,21 +1912,21 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Задать количество лайков для роли
+         * @summary Задать параметры роли
          * @param {string} projectId 
          * @param {string} roleId 
-         * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+         * @param {ProjectsProjectIdRolesRoleIdPutRequest} projectsProjectIdRolesRoleIdPutRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        projectsProjectIdRolesRoleIdLikesPut: async (projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        projectsProjectIdRolesRoleIdPut: async (projectId: string, roleId: string, projectsProjectIdRolesRoleIdPutRequest: ProjectsProjectIdRolesRoleIdPutRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'projectId' is not null or undefined
-            assertParamExists('projectsProjectIdRolesRoleIdLikesPut', 'projectId', projectId)
+            assertParamExists('projectsProjectIdRolesRoleIdPut', 'projectId', projectId)
             // verify required parameter 'roleId' is not null or undefined
-            assertParamExists('projectsProjectIdRolesRoleIdLikesPut', 'roleId', roleId)
-            // verify required parameter 'projectsProjectIdRolesRoleIdLikesPutRequest' is not null or undefined
-            assertParamExists('projectsProjectIdRolesRoleIdLikesPut', 'projectsProjectIdRolesRoleIdLikesPutRequest', projectsProjectIdRolesRoleIdLikesPutRequest)
-            const localVarPath = `/projects/{project_id}/roles/{role_id}/likes`
+            assertParamExists('projectsProjectIdRolesRoleIdPut', 'roleId', roleId)
+            // verify required parameter 'projectsProjectIdRolesRoleIdPutRequest' is not null or undefined
+            assertParamExists('projectsProjectIdRolesRoleIdPut', 'projectsProjectIdRolesRoleIdPutRequest', projectsProjectIdRolesRoleIdPutRequest)
+            const localVarPath = `/projects/{project_id}/roles/{role_id}`
                 .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)))
                 .replace(`{${"role_id"}}`, encodeURIComponent(String(roleId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1949,7 +1951,7 @@ export const RolesApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(projectsProjectIdRolesRoleIdLikesPutRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(projectsProjectIdRolesRoleIdPutRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2102,17 +2104,17 @@ export const RolesApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Задать количество лайков для роли
+         * @summary Задать параметры роли
          * @param {string} projectId 
          * @param {string} roleId 
-         * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+         * @param {ProjectsProjectIdRolesRoleIdPutRequest} projectsProjectIdRolesRoleIdPutRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async projectsProjectIdRolesRoleIdLikesPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Role>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdRolesRoleIdLikesPut(projectId, roleId, projectsProjectIdRolesRoleIdLikesPutRequest, options);
+        async projectsProjectIdRolesRoleIdPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdPutRequest: ProjectsProjectIdRolesRoleIdPutRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Role>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdRolesRoleIdPut(projectId, roleId, projectsProjectIdRolesRoleIdPutRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdRolesRoleIdLikesPut']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['RolesApi.projectsProjectIdRolesRoleIdPut']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2188,15 +2190,15 @@ export const RolesApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @summary Задать количество лайков для роли
+         * @summary Задать параметры роли
          * @param {string} projectId 
          * @param {string} roleId 
-         * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+         * @param {ProjectsProjectIdRolesRoleIdPutRequest} projectsProjectIdRolesRoleIdPutRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        projectsProjectIdRolesRoleIdLikesPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<Role> {
-            return localVarFp.projectsProjectIdRolesRoleIdLikesPut(projectId, roleId, projectsProjectIdRolesRoleIdLikesPutRequest, options).then((request) => request(axios, basePath));
+        projectsProjectIdRolesRoleIdPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdPutRequest: ProjectsProjectIdRolesRoleIdPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<Role> {
+            return localVarFp.projectsProjectIdRolesRoleIdPut(projectId, roleId, projectsProjectIdRolesRoleIdPutRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2266,15 +2268,15 @@ export class RolesApi extends BaseAPI {
 
     /**
      * 
-     * @summary Задать количество лайков для роли
+     * @summary Задать параметры роли
      * @param {string} projectId 
      * @param {string} roleId 
-     * @param {ProjectsProjectIdRolesRoleIdLikesPutRequest} projectsProjectIdRolesRoleIdLikesPutRequest 
+     * @param {ProjectsProjectIdRolesRoleIdPutRequest} projectsProjectIdRolesRoleIdPutRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public projectsProjectIdRolesRoleIdLikesPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest, options?: RawAxiosRequestConfig) {
-        return RolesApiFp(this.configuration).projectsProjectIdRolesRoleIdLikesPut(projectId, roleId, projectsProjectIdRolesRoleIdLikesPutRequest, options).then((request) => request(this.axios, this.basePath));
+    public projectsProjectIdRolesRoleIdPut(projectId: string, roleId: string, projectsProjectIdRolesRoleIdPutRequest: ProjectsProjectIdRolesRoleIdPutRequest, options?: RawAxiosRequestConfig) {
+        return RolesApiFp(this.configuration).projectsProjectIdRolesRoleIdPut(projectId, roleId, projectsProjectIdRolesRoleIdPutRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

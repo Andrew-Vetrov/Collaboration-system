@@ -1,6 +1,6 @@
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useSuggestion } from '@/entities/suggestion';
-import { Button, Card, CardContent } from '@/shared/ui';
+import { Avatar, AvatarImage, Button, Card, CardContent } from '@/shared/ui';
 import { useCallback, useState } from 'react';
 import { EditSuggestionDialog } from './EditSuggestionDialog';
 import { useProjectPermissions } from '@/entities/project/api/useProjectPermissions';
@@ -16,6 +16,7 @@ import { LikesSection } from './LikesSection';
 import { useSuggestionDelete } from '@/features/suggestion-delete/api/useSuggestionDelete';
 import { routes } from '@/shared/route';
 import { useProjects } from '@/entities/project';
+import type { ProjectUser } from '@/shared/api/generated';
 
 const SuggestionPage = () => {
   const { projectId, suggestionId } = useParams<{
@@ -91,6 +92,10 @@ const SuggestionPage = () => {
     permissions?.is_admin ||
     (currentUser && suggestion.user_id === currentUser.user_id);
 
+  const suggestionCreator: ProjectUser | undefined = userList?.users.filter(
+    user => user.user_id === suggestion.user_id
+  )[0];
+
   return (
     <main className="relative min-h-screen flex flex-col gap-2 sm:gap-4 py-4">
       <div className="text-4xl text-center">{projectName}</div>
@@ -113,7 +118,7 @@ const SuggestionPage = () => {
             )}
           </div>
 
-          <div className="flex-1 flex flex-col items-center md:text-center text-left">
+          <div className="flex-1 flex flex-col items-center md:text-center text-left gap-2">
             <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-center">
               {suggestion.name}
             </h1>
@@ -128,12 +133,27 @@ const SuggestionPage = () => {
             <LikesSection
               suggestion={suggestion}
               className="flex md:hidden md:mt-0 mt-3"
+              projectId={projectId}
             />
 
-            <div className="order-1 md:order-2 mt-8 w-full flex flex-col gap-4">
+            {suggestionCreator && (
+              <div className="flex gap-2 items-center mt-2 w-full min-w-0">
+                <Avatar className="h-9 w-9 shrink-0">
+                  <AvatarImage
+                    src={suggestionCreator.avatar_url}
+                    alt="Аватар пользователя"
+                  />
+                </Avatar>
+                <div className="min-w-0 max-w-full break-all text-left">
+                  {suggestionCreator.nickname}
+                </div>
+              </div>
+            )}
+
+            <div className="order-1 md:order-2 mt-4 w-full flex flex-col gap-4">
               <CommentForm
                 suggestionId={suggestionId}
-                formOptions={formOption}
+                formOptions={formOption}justify-self-center
               />
               <CommentsList
                 userList={userList?.users}

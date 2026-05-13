@@ -7,7 +7,7 @@ All URIs are relative to *http://localhost*
 |[**projectsProjectIdRolesGet**](#projectsprojectidrolesget) | **GET** /projects/{project_id}/roles | Получить список всех ролей проекта|
 |[**projectsProjectIdRolesPost**](#projectsprojectidrolespost) | **POST** /projects/{project_id}/roles | Создание новой роли в проекте|
 |[**projectsProjectIdRolesRoleIdDelete**](#projectsprojectidrolesroleiddelete) | **DELETE** /projects/{project_id}/roles/{role_id} | Удаление существующей роли|
-|[**projectsProjectIdRolesRoleIdLikesPut**](#projectsprojectidrolesroleidlikesput) | **PUT** /projects/{project_id}/roles/{role_id}/likes | Задать количество лайков для роли|
+|[**projectsProjectIdRolesRoleIdPut**](#projectsprojectidrolesroleidput) | **PUT** /projects/{project_id}/roles/{role_id} | Задать параметры роли|
 |[**projectsProjectIdUsersUserIdRolesPost**](#projectsprojectidusersuseridrolespost) | **POST** /projects/{project_id}/users/{user_id}/roles | Добавить роль пользователю|
 |[**projectsProjectIdUsersUserIdRolesRoleIdDelete**](#projectsprojectidusersuseridrolesroleiddelete) | **DELETE** /projects/{project_id}/users/{user_id}/roles/{role_id} | Удалить роль у пользователя|
 
@@ -179,8 +179,8 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **projectsProjectIdRolesRoleIdLikesPut**
-> Role projectsProjectIdRolesRoleIdLikesPut(projectsProjectIdRolesRoleIdLikesPutRequest)
+# **projectsProjectIdRolesRoleIdPut**
+> Role projectsProjectIdRolesRoleIdPut(projectsProjectIdRolesRoleIdPutRequest)
 
 
 ### Example
@@ -189,7 +189,7 @@ void (empty response body)
 import {
     RolesApi,
     Configuration,
-    ProjectsProjectIdRolesRoleIdLikesPutRequest
+    ProjectsProjectIdRolesRoleIdPutRequest
 } from './api';
 
 const configuration = new Configuration();
@@ -197,12 +197,12 @@ const apiInstance = new RolesApi(configuration);
 
 let projectId: string; // (default to undefined)
 let roleId: string; // (default to undefined)
-let projectsProjectIdRolesRoleIdLikesPutRequest: ProjectsProjectIdRolesRoleIdLikesPutRequest; //
+let projectsProjectIdRolesRoleIdPutRequest: ProjectsProjectIdRolesRoleIdPutRequest; //
 
-const { status, data } = await apiInstance.projectsProjectIdRolesRoleIdLikesPut(
+const { status, data } = await apiInstance.projectsProjectIdRolesRoleIdPut(
     projectId,
     roleId,
-    projectsProjectIdRolesRoleIdLikesPutRequest
+    projectsProjectIdRolesRoleIdPutRequest
 );
 ```
 
@@ -210,7 +210,7 @@ const { status, data } = await apiInstance.projectsProjectIdRolesRoleIdLikesPut(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **projectsProjectIdRolesRoleIdLikesPutRequest** | **ProjectsProjectIdRolesRoleIdLikesPutRequest**|  | |
+| **projectsProjectIdRolesRoleIdPutRequest** | **ProjectsProjectIdRolesRoleIdPutRequest**|  | |
 | **projectId** | [**string**] |  | defaults to undefined|
 | **roleId** | [**string**] |  | defaults to undefined|
 

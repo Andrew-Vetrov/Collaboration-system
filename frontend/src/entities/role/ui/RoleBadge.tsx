@@ -3,7 +3,7 @@ import type { Role } from '../model/types';
 
 interface RoleBadgeProps {
   role: Role;
-  onRemove: (roleId: string) => void;
+  onRemove?: (roleId: string) => void;
   onClick?: () => void;
   disable?: boolean;
 }
@@ -29,17 +29,18 @@ export const RoleBadge = ({
         <Heart className="w-3.5 h-3.5" />
         <span>{role.likes_amount}</span>
       </div>
-      {!disable ? (
-        <X
-          className="h-4 w-4 hover:cursor-pointer self-center"
-          onClick={e => {
-            e.stopPropagation();
-            onRemove(role.role_id);
-          }}
-        />
-      ) : (
-        <Loader className="h-4 w-4 self-center" />
-      )}
+      {onRemove &&
+        (!disable ? (
+          <X
+            className="h-4 w-4 hover:cursor-pointer self-center"
+            onClick={e => {
+              e.stopPropagation();
+              onRemove(role.role_id);
+            }}
+          />
+        ) : (
+          <Loader className="h-4 w-4 self-center" />
+        ))}
     </div>
   );
 };
