@@ -160,9 +160,9 @@ public class SuggestionService {
         Suggestion suggestion = suggestionRepository.findById(suggestionId)
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
 
-        projectAccessService.validateAndGetUserProjectAccess(currentUserId, suggestion.getProjectId());
+        var userRights = projectService.validateAndGetUserProjectAccess(currentUserId, suggestion.getProjectId());
 
-        if (!suggestion.getUserId().equals(currentUserId)) {
+        if (!suggestion.getUserId().equals(currentUserId) && !userRights.getIsAdmin()) {
             throw new AccessDeniedException("Only the author can update the suggestion");
         }
 
