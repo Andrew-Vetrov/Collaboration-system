@@ -10,6 +10,7 @@ import application.dtos.responses.InviteResponseDto;
 import application.database.entities.Invite;
 import application.database.repositories.InviteRepository;
 import application.security.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
@@ -50,29 +51,49 @@ public class InviteService {
     @Autowired
     private ProjectService projectService;
 
-    @Value("${spring.mail.unisender}") // Добавь в .env/properties
+    @Value("${spring.mail.unisender}")
     private String API_KEY;
 
     @Async
     public void sendInvite(String recipientEmail, String projectName, String projectId) {
         try {
-            String jsonBody = """
-        {
-            "mail": {
-                "to": {
-                    "email": "%s"
-                },
-                "from": {
-                    "email": "invites@collabsystem.ru",
-                    "name": "Collaboration System"
-                },
-                "subject": "[Collaboration System] Приглашение в проект [%s] (ID проекта: %s)",
-                "html": "<h2>Привет!</h2><p>Тебя пригласили в проект '%s'. Смотри раздел 'Приглашения' на <a href='https://collabsystem.ru'>сайте</a></p>",
-                "text": "Привет! Тебя пригласили в проект: https://collabsystem.ru"
-            },
-            "idempotencyKey": "%s"
-        }
-        """.formatted(recipientEmail, projectName, projectId, projectName, java.util.UUID.randomUUID().toString());
+            String htmlTemplate = """
+    <body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #f4f7f9;">
+        <table width="100%%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td align="center" style="padding: 40px 0;">
+                    <div style="background-color: #ffffff; border-radius: 8px; width: 600px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">
+                        <div style="background-color: #3b82f6; padding: 20px; color: #ffffff; text-align: center;">
+                            <h1 style="margin: 0; font-size: 24px;">Collaboration System</h1>
+                        </div>
+                        <div style="padding: 40px 30px;">
+                            <h2 style="color: #1f2937;">Привет!</h2>
+                            <p style="color: #4b5563;">Тебя пригласили присоединиться к команде проекта <strong>'%s'</strong>.</p>
+                            <a href="https://collabsystem.ru" style="background-color: #3b82f6; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; margin-top: 20px;">
+                                Посмотреть приглашение
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+    """.formatted(projectName);
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            Map<String, Object> body = Map.of(
+                    "mail", Map.of(
+                            "to", Map.of("email", recipientEmail),
+                            "from", Map.of("email", "invites@collabsystem.ru", "name", "Collaboration System"),
+                            "subject", String.format("[Collaboration System] Приглашение в проект [%s] (ID проекта: %s)", projectName, projectId),
+                            "html", htmlTemplate,
+                            "text", "Тебя пригласили в проект: https://collabsystem.ru"
+                    ),
+                    "idempotencyKey", UUID.randomUUID().toString()
+            );
+
+            String jsonBody = mapper.writeValueAsString(body);
 
             HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
