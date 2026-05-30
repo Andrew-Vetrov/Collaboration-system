@@ -15,6 +15,7 @@ Name | Type | Description | Notes
 **name** | **string** |  | [default to undefined]
 **description** | **string** |  | [default to undefined]
 **status** | **string** |  | [default to undefined]
+**tags** | [**Array&lt;Tag&gt;**](Tag.md) |  | [optional] [default to undefined]
 
 ## Example
 
@@ -32,6 +33,7 @@ const instance: Suggestion = {
     name,
     description,
     status,
+    tags,
 };
 ```
 

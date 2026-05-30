@@ -6,6 +6,7 @@ import {
   AuthorizeApi,
   InvitesApi,
   RolesApi,
+  TagsApi,
 } from './generated';
 
 const config = new Configuration({
@@ -19,3 +20,4 @@ export const commentsApi = new CommentsApi(config);
 export const authApi = new AuthorizeApi(config);
 export const invitesApi = new InvitesApi(config);
 export const rolesApi = new RolesApi(config);
+export const tagsApi = new TagsApi(config);

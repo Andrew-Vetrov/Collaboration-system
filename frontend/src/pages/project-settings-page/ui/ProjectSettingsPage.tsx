@@ -8,6 +8,7 @@ import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { cn } from '@/shared/lib/utils';
 import { ProjectUsersContent } from './ProjectUsersContent';
 import { ProjectInvitesContent } from './ProjectInvitesContent';
+import { ProjectTagsSettingsPage } from './ProjectTagsSettingsPage';
 
 const ProjectSettingsPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -61,6 +62,7 @@ const ProjectSettingsPage = () => {
             <TabsTrigger value="settings">Настройки проекта</TabsTrigger>
             <TabsTrigger value="users">Пользователи проекта</TabsTrigger>
             <TabsTrigger value="invites">Приглашения</TabsTrigger>
+            <TabsTrigger value="tags">Теги</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="settings">
@@ -71,6 +73,9 @@ const ProjectSettingsPage = () => {
         </TabsContent>
         <TabsContent value="invites">
           <ProjectInvitesContent projectId={projectId} />
+        </TabsContent>
+        <TabsContent value="tags">
+          <ProjectTagsSettingsPage projectId={projectId} />
         </TabsContent>
       </Tabs>
     </main>

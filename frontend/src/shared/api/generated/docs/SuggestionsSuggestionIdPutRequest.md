@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **name** | **string** |  | [optional] [default to undefined]
 **description** | **string** |  | [optional] [default to undefined]
 **status** | **string** |  | [optional] [default to undefined]
+**tag_ids** | **Array&lt;string&gt;** | Список тегов, привязанных к предложению | [optional] [default to undefined]
 
 ## Example
 
@@ -18,6 +19,7 @@ const instance: SuggestionsSuggestionIdPutRequest = {
     name,
     description,
     status,
+    tag_ids,
 };
 ```
 

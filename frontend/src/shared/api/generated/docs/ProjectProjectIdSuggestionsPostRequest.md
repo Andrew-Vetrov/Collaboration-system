@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **description** | **string** |  | [default to undefined]
 **user_id** | **string** |  | [default to undefined]
 **status** | **string** |  | [optional] [default to undefined]
+**tag_ids** | **Array&lt;string&gt;** | Список тегов, привязанных к предложению | [optional] [default to undefined]
 
 ## Example
 
@@ -20,6 +21,7 @@ const instance: ProjectProjectIdSuggestionsPostRequest = {
     description,
     user_id,
     status,
+    tag_ids,
 };
 ```
 

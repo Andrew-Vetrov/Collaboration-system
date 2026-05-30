@@ -37,12 +37,13 @@ const ProjectPage = (): JSX.Element => {
           // console.log('oker');
           navigate(routes.projectsRoute());
         },
-        onError: e => {
+        onError: () => {
           // console.log(e.message);
         },
       }
     );
   };
+
   const projectName =
     projects?.find(project => project.project_id === projectId)?.name ?? '';
   const isAdmin = permissions?.is_admin || false;
