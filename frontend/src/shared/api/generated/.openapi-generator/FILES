@@ -30,6 +30,9 @@ docs/ProjectsProjectIdRolesPostRequest.md
 docs/ProjectsProjectIdRolesRoleIdPutRequest.md
 docs/ProjectsProjectIdSettingsGet200Response.md
 docs/ProjectsProjectIdSettingsPutRequest.md
+docs/ProjectsProjectIdTagsGet200Response.md
+docs/ProjectsProjectIdTagsPostRequest.md
+docs/ProjectsProjectIdTagsTagIdPutRequest.md
 docs/ProjectsProjectIdUsersGet200Response.md
 docs/ProjectsProjectIdUsersUserIdPutRequest.md
 docs/ProjectsProjectIdUsersUserIdRolesPostRequest.md
@@ -39,5 +42,8 @@ docs/Suggestion.md
 docs/SuggestionsApi.md
 docs/SuggestionsSuggestionIdCommentsPostRequest.md
 docs/SuggestionsSuggestionIdPutRequest.md
+docs/SuggestionsSuggestionIdTagsPostRequest.md
+docs/Tag.md
+docs/TagsApi.md
 git_push.sh
 index.ts

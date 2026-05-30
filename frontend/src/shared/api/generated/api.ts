@@ -91,6 +91,10 @@ export interface ProjectProjectIdSuggestionsPostRequest {
     'description': string;
     'user_id': string;
     'status'?: ProjectProjectIdSuggestionsPostRequestStatusEnum;
+    /**
+     * Список тегов, привязанных к предложению
+     */
+    'tag_ids'?: Array<string>;
 }
 
 export const ProjectProjectIdSuggestionsPostRequestStatusEnum = {
@@ -182,6 +186,17 @@ export interface ProjectsProjectIdSettingsPutRequest {
     'vote_interval'?: string;
     'votes_for_interval'?: number;
 }
+export interface ProjectsProjectIdTagsGet200Response {
+    'data'?: Array<Tag>;
+}
+export interface ProjectsProjectIdTagsPostRequest {
+    'name': string;
+    'color'?: string;
+}
+export interface ProjectsProjectIdTagsTagIdPutRequest {
+    'name'?: string;
+    'color'?: string;
+}
 export interface ProjectsProjectIdUsersGet200Response {
     'data'?: ProjectUserList;
 }
@@ -212,6 +227,7 @@ export interface Suggestion {
     'name': string;
     'description': string;
     'status': SuggestionStatusEnum;
+    'tags'?: Array<Tag>;
 }
 
 export const SuggestionStatusEnum = {
@@ -230,6 +246,10 @@ export interface SuggestionsSuggestionIdPutRequest {
     'name'?: string;
     'description'?: string;
     'status'?: SuggestionsSuggestionIdPutRequestStatusEnum;
+    /**
+     * Список тегов, привязанных к предложению
+     */
+    'tag_ids'?: Array<string>;
 }
 
 export const SuggestionsSuggestionIdPutRequestStatusEnum = {
@@ -241,6 +261,14 @@ export const SuggestionsSuggestionIdPutRequestStatusEnum = {
 
 export type SuggestionsSuggestionIdPutRequestStatusEnum = typeof SuggestionsSuggestionIdPutRequestStatusEnum[keyof typeof SuggestionsSuggestionIdPutRequestStatusEnum];
 
+export interface SuggestionsSuggestionIdTagsPostRequest {
+    'tag_id': string;
+}
+export interface Tag {
+    'tag_id': string;
+    'name': string;
+    'color'?: string;
+}
 
 /**
  * AuthorizeApi - axios parameter creator
@@ -2318,10 +2346,11 @@ export const SuggestionsApiAxiosParamCreator = function (configuration?: Configu
          * @summary Получить список предложений проекта
          * @param {string} projectId 
          * @param {ProjectProjectIdSuggestionsGetStatusEnum} [status] 
+         * @param {Array<string>} [tags] Фильтр по тегам
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        projectProjectIdSuggestionsGet: async (projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        projectProjectIdSuggestionsGet: async (projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, tags?: Array<string>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'projectId' is not null or undefined
             assertParamExists('projectProjectIdSuggestionsGet', 'projectId', projectId)
             const localVarPath = `/project/{project_id}/suggestions`
@@ -2343,6 +2372,10 @@ export const SuggestionsApiAxiosParamCreator = function (configuration?: Configu
 
             if (status !== undefined) {
                 localVarQueryParameter['status'] = status;
+            }
+
+            if (tags) {
+                localVarQueryParameter['tags'] = tags.join(COLLECTION_FORMATS.csv);
             }
 
 
@@ -2610,11 +2643,12 @@ export const SuggestionsApiFp = function(configuration?: Configuration) {
          * @summary Получить список предложений проекта
          * @param {string} projectId 
          * @param {ProjectProjectIdSuggestionsGetStatusEnum} [status] 
+         * @param {Array<string>} [tags] Фильтр по тегам
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async projectProjectIdSuggestionsGet(projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectProjectIdSuggestionsGet200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.projectProjectIdSuggestionsGet(projectId, status, options);
+        async projectProjectIdSuggestionsGet(projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, tags?: Array<string>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectProjectIdSuggestionsGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectProjectIdSuggestionsGet(projectId, status, tags, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['SuggestionsApi.projectProjectIdSuggestionsGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -2713,11 +2747,12 @@ export const SuggestionsApiFactory = function (configuration?: Configuration, ba
          * @summary Получить список предложений проекта
          * @param {string} projectId 
          * @param {ProjectProjectIdSuggestionsGetStatusEnum} [status] 
+         * @param {Array<string>} [tags] Фильтр по тегам
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        projectProjectIdSuggestionsGet(projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, options?: RawAxiosRequestConfig): AxiosPromise<ProjectProjectIdSuggestionsGet200Response> {
-            return localVarFp.projectProjectIdSuggestionsGet(projectId, status, options).then((request) => request(axios, basePath));
+        projectProjectIdSuggestionsGet(projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, tags?: Array<string>, options?: RawAxiosRequestConfig): AxiosPromise<ProjectProjectIdSuggestionsGet200Response> {
+            return localVarFp.projectProjectIdSuggestionsGet(projectId, status, tags, options).then((request) => request(axios, basePath));
         },
         /**
          * Если status не указан или равен \"draft\", создаётся черновик. Если status=\"new\" и заполнены все поля, создаётся опубликованное предложение. 
@@ -2793,11 +2828,12 @@ export class SuggestionsApi extends BaseAPI {
      * @summary Получить список предложений проекта
      * @param {string} projectId 
      * @param {ProjectProjectIdSuggestionsGetStatusEnum} [status] 
+     * @param {Array<string>} [tags] Фильтр по тегам
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public projectProjectIdSuggestionsGet(projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, options?: RawAxiosRequestConfig) {
-        return SuggestionsApiFp(this.configuration).projectProjectIdSuggestionsGet(projectId, status, options).then((request) => request(this.axios, this.basePath));
+    public projectProjectIdSuggestionsGet(projectId: string, status?: ProjectProjectIdSuggestionsGetStatusEnum, tags?: Array<string>, options?: RawAxiosRequestConfig) {
+        return SuggestionsApiFp(this.configuration).projectProjectIdSuggestionsGet(projectId, status, tags, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2876,5 +2912,518 @@ export const ProjectProjectIdSuggestionsGetStatusEnum = {
     Rejected: 'rejected'
 } as const;
 export type ProjectProjectIdSuggestionsGetStatusEnum = typeof ProjectProjectIdSuggestionsGetStatusEnum[keyof typeof ProjectProjectIdSuggestionsGetStatusEnum];
+
+
+/**
+ * TagsApi - axios parameter creator
+ */
+export const TagsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Получить список тегов проекта
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsGet: async (projectId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdTagsGet', 'projectId', projectId)
+            const localVarPath = `/projects/{project_id}/tags`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Создать новый тег
+         * @param {string} projectId 
+         * @param {ProjectsProjectIdTagsPostRequest} projectsProjectIdTagsPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsPost: async (projectId: string, projectsProjectIdTagsPostRequest: ProjectsProjectIdTagsPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdTagsPost', 'projectId', projectId)
+            // verify required parameter 'projectsProjectIdTagsPostRequest' is not null or undefined
+            assertParamExists('projectsProjectIdTagsPost', 'projectsProjectIdTagsPostRequest', projectsProjectIdTagsPostRequest)
+            const localVarPath = `/projects/{project_id}/tags`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(projectsProjectIdTagsPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Удалить тег проекта
+         * @param {string} projectId 
+         * @param {string} tagId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsTagIdDelete: async (projectId: string, tagId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdTagsTagIdDelete', 'projectId', projectId)
+            // verify required parameter 'tagId' is not null or undefined
+            assertParamExists('projectsProjectIdTagsTagIdDelete', 'tagId', tagId)
+            const localVarPath = `/projects/{project_id}/tags/{tag_id}`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"tag_id"}}`, encodeURIComponent(String(tagId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Обновить тег проекта
+         * @param {string} projectId 
+         * @param {string} tagId 
+         * @param {ProjectsProjectIdTagsTagIdPutRequest} projectsProjectIdTagsTagIdPutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsTagIdPut: async (projectId: string, tagId: string, projectsProjectIdTagsTagIdPutRequest: ProjectsProjectIdTagsTagIdPutRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'projectId' is not null or undefined
+            assertParamExists('projectsProjectIdTagsTagIdPut', 'projectId', projectId)
+            // verify required parameter 'tagId' is not null or undefined
+            assertParamExists('projectsProjectIdTagsTagIdPut', 'tagId', tagId)
+            // verify required parameter 'projectsProjectIdTagsTagIdPutRequest' is not null or undefined
+            assertParamExists('projectsProjectIdTagsTagIdPut', 'projectsProjectIdTagsTagIdPutRequest', projectsProjectIdTagsTagIdPutRequest)
+            const localVarPath = `/projects/{project_id}/tags/{tag_id}`
+                .replace(`{${"project_id"}}`, encodeURIComponent(String(projectId)))
+                .replace(`{${"tag_id"}}`, encodeURIComponent(String(tagId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(projectsProjectIdTagsTagIdPutRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Добавить тег к предложению
+         * @param {string} suggestionId 
+         * @param {SuggestionsSuggestionIdTagsPostRequest} suggestionsSuggestionIdTagsPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        suggestionsSuggestionIdTagsPost: async (suggestionId: string, suggestionsSuggestionIdTagsPostRequest: SuggestionsSuggestionIdTagsPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'suggestionId' is not null or undefined
+            assertParamExists('suggestionsSuggestionIdTagsPost', 'suggestionId', suggestionId)
+            // verify required parameter 'suggestionsSuggestionIdTagsPostRequest' is not null or undefined
+            assertParamExists('suggestionsSuggestionIdTagsPost', 'suggestionsSuggestionIdTagsPostRequest', suggestionsSuggestionIdTagsPostRequest)
+            const localVarPath = `/suggestions/{suggestion_id}/tags`
+                .replace(`{${"suggestion_id"}}`, encodeURIComponent(String(suggestionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(suggestionsSuggestionIdTagsPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Удалить тег у предложения
+         * @param {string} suggestionId 
+         * @param {string} tagId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        suggestionsSuggestionIdTagsTagIdDelete: async (suggestionId: string, tagId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'suggestionId' is not null or undefined
+            assertParamExists('suggestionsSuggestionIdTagsTagIdDelete', 'suggestionId', suggestionId)
+            // verify required parameter 'tagId' is not null or undefined
+            assertParamExists('suggestionsSuggestionIdTagsTagIdDelete', 'tagId', tagId)
+            const localVarPath = `/suggestions/{suggestion_id}/tags/{tag_id}`
+                .replace(`{${"suggestion_id"}}`, encodeURIComponent(String(suggestionId)))
+                .replace(`{${"tag_id"}}`, encodeURIComponent(String(tagId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * TagsApi - functional programming interface
+ */
+export const TagsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = TagsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Получить список тегов проекта
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdTagsGet(projectId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectsProjectIdTagsGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdTagsGet(projectId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TagsApi.projectsProjectIdTagsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Создать новый тег
+         * @param {string} projectId 
+         * @param {ProjectsProjectIdTagsPostRequest} projectsProjectIdTagsPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdTagsPost(projectId: string, projectsProjectIdTagsPostRequest: ProjectsProjectIdTagsPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Tag>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdTagsPost(projectId, projectsProjectIdTagsPostRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TagsApi.projectsProjectIdTagsPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Удалить тег проекта
+         * @param {string} projectId 
+         * @param {string} tagId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdTagsTagIdDelete(projectId: string, tagId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdTagsTagIdDelete(projectId, tagId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TagsApi.projectsProjectIdTagsTagIdDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Обновить тег проекта
+         * @param {string} projectId 
+         * @param {string} tagId 
+         * @param {ProjectsProjectIdTagsTagIdPutRequest} projectsProjectIdTagsTagIdPutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async projectsProjectIdTagsTagIdPut(projectId: string, tagId: string, projectsProjectIdTagsTagIdPutRequest: ProjectsProjectIdTagsTagIdPutRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Tag>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.projectsProjectIdTagsTagIdPut(projectId, tagId, projectsProjectIdTagsTagIdPutRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TagsApi.projectsProjectIdTagsTagIdPut']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Добавить тег к предложению
+         * @param {string} suggestionId 
+         * @param {SuggestionsSuggestionIdTagsPostRequest} suggestionsSuggestionIdTagsPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async suggestionsSuggestionIdTagsPost(suggestionId: string, suggestionsSuggestionIdTagsPostRequest: SuggestionsSuggestionIdTagsPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.suggestionsSuggestionIdTagsPost(suggestionId, suggestionsSuggestionIdTagsPostRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TagsApi.suggestionsSuggestionIdTagsPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Удалить тег у предложения
+         * @param {string} suggestionId 
+         * @param {string} tagId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async suggestionsSuggestionIdTagsTagIdDelete(suggestionId: string, tagId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.suggestionsSuggestionIdTagsTagIdDelete(suggestionId, tagId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['TagsApi.suggestionsSuggestionIdTagsTagIdDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * TagsApi - factory interface
+ */
+export const TagsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = TagsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Получить список тегов проекта
+         * @param {string} projectId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsGet(projectId: string, options?: RawAxiosRequestConfig): AxiosPromise<ProjectsProjectIdTagsGet200Response> {
+            return localVarFp.projectsProjectIdTagsGet(projectId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Создать новый тег
+         * @param {string} projectId 
+         * @param {ProjectsProjectIdTagsPostRequest} projectsProjectIdTagsPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsPost(projectId: string, projectsProjectIdTagsPostRequest: ProjectsProjectIdTagsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<Tag> {
+            return localVarFp.projectsProjectIdTagsPost(projectId, projectsProjectIdTagsPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Удалить тег проекта
+         * @param {string} projectId 
+         * @param {string} tagId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsTagIdDelete(projectId: string, tagId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.projectsProjectIdTagsTagIdDelete(projectId, tagId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Обновить тег проекта
+         * @param {string} projectId 
+         * @param {string} tagId 
+         * @param {ProjectsProjectIdTagsTagIdPutRequest} projectsProjectIdTagsTagIdPutRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        projectsProjectIdTagsTagIdPut(projectId: string, tagId: string, projectsProjectIdTagsTagIdPutRequest: ProjectsProjectIdTagsTagIdPutRequest, options?: RawAxiosRequestConfig): AxiosPromise<Tag> {
+            return localVarFp.projectsProjectIdTagsTagIdPut(projectId, tagId, projectsProjectIdTagsTagIdPutRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Добавить тег к предложению
+         * @param {string} suggestionId 
+         * @param {SuggestionsSuggestionIdTagsPostRequest} suggestionsSuggestionIdTagsPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        suggestionsSuggestionIdTagsPost(suggestionId: string, suggestionsSuggestionIdTagsPostRequest: SuggestionsSuggestionIdTagsPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.suggestionsSuggestionIdTagsPost(suggestionId, suggestionsSuggestionIdTagsPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Удалить тег у предложения
+         * @param {string} suggestionId 
+         * @param {string} tagId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        suggestionsSuggestionIdTagsTagIdDelete(suggestionId: string, tagId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.suggestionsSuggestionIdTagsTagIdDelete(suggestionId, tagId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * TagsApi - object-oriented interface
+ */
+export class TagsApi extends BaseAPI {
+    /**
+     * 
+     * @summary Получить список тегов проекта
+     * @param {string} projectId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdTagsGet(projectId: string, options?: RawAxiosRequestConfig) {
+        return TagsApiFp(this.configuration).projectsProjectIdTagsGet(projectId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Создать новый тег
+     * @param {string} projectId 
+     * @param {ProjectsProjectIdTagsPostRequest} projectsProjectIdTagsPostRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdTagsPost(projectId: string, projectsProjectIdTagsPostRequest: ProjectsProjectIdTagsPostRequest, options?: RawAxiosRequestConfig) {
+        return TagsApiFp(this.configuration).projectsProjectIdTagsPost(projectId, projectsProjectIdTagsPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Удалить тег проекта
+     * @param {string} projectId 
+     * @param {string} tagId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdTagsTagIdDelete(projectId: string, tagId: string, options?: RawAxiosRequestConfig) {
+        return TagsApiFp(this.configuration).projectsProjectIdTagsTagIdDelete(projectId, tagId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Обновить тег проекта
+     * @param {string} projectId 
+     * @param {string} tagId 
+     * @param {ProjectsProjectIdTagsTagIdPutRequest} projectsProjectIdTagsTagIdPutRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public projectsProjectIdTagsTagIdPut(projectId: string, tagId: string, projectsProjectIdTagsTagIdPutRequest: ProjectsProjectIdTagsTagIdPutRequest, options?: RawAxiosRequestConfig) {
+        return TagsApiFp(this.configuration).projectsProjectIdTagsTagIdPut(projectId, tagId, projectsProjectIdTagsTagIdPutRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Добавить тег к предложению
+     * @param {string} suggestionId 
+     * @param {SuggestionsSuggestionIdTagsPostRequest} suggestionsSuggestionIdTagsPostRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public suggestionsSuggestionIdTagsPost(suggestionId: string, suggestionsSuggestionIdTagsPostRequest: SuggestionsSuggestionIdTagsPostRequest, options?: RawAxiosRequestConfig) {
+        return TagsApiFp(this.configuration).suggestionsSuggestionIdTagsPost(suggestionId, suggestionsSuggestionIdTagsPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Удалить тег у предложения
+     * @param {string} suggestionId 
+     * @param {string} tagId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public suggestionsSuggestionIdTagsTagIdDelete(suggestionId: string, tagId: string, options?: RawAxiosRequestConfig) {
+        return TagsApiFp(this.configuration).suggestionsSuggestionIdTagsTagIdDelete(suggestionId, tagId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
 
 

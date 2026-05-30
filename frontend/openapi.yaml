@@ -308,6 +308,7 @@ paths:
         Если status="new" и заполнены все поля, создаётся опубликованное предложение.
       parameters:
         - $ref: '#/components/parameters/projectId'
+  
       requestBody:
         required: true
         content:
@@ -320,6 +321,14 @@ paths:
                     status:
                       type: string
                       enum: [draft, discussion, accepted, rejected]
+  
+                    tag_ids:
+                      type: array
+                      description: Список тегов, привязанных к предложению
+                      items:
+                        type: string
+                        format: uuid
+  
       responses:
         '201':
           description: Предложение или черновик создано
@@ -327,6 +336,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Suggestion'
+  
+        '400':
+          description: Некорректные данные или один из тегов не существует
+  
+        '401':
+          description: Не авторизован
+  
+        '403':
+          description: Нет доступа к проекту
+  
+        '404':
+          description: Проект не найден
 
     get:
       tags:
@@ -344,6 +365,17 @@ paths:
           schema:
             type: string
             enum: [draft, discussion, accepted, rejected]
+        - name: tags
+          in: query
+          required: false
+          description: Фильтр по тегам
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          style: form
+          explode: false
       responses:
         '200':
           description: Список предложений
@@ -400,6 +432,12 @@ paths:
                 status:
                   type: string
                   enum: [draft, discussion, accepted, rejected]
+                tag_ids:
+                  type: array
+                  description: Список тегов, привязанных к предложению
+                  items:
+                    type: string
+                    format: uuid
       responses:
         '200':
           description: Предложение обновлено
@@ -423,6 +461,230 @@ paths:
           description: Предложение или черновик успешно удалено
         '404':
           description: Предложение не найдено
+  
+  /projects/{project_id}/tags:
+    get:
+      summary: Получить список тегов проекта
+      tags:
+        - Tags
+      security:
+        - BearerAuth: []
+
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+
+      responses:
+        '200':
+          description: Список тегов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+
+        '401':
+          description: Не авторизован
+
+        '403':
+          description: Нет доступа к проекту
+
+        '404':
+          description: Проект не найден
+
+    post:
+      summary: Создать новый тег
+      tags:
+        - Tags
+      security:
+        - BearerAuth: []
+
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+
+              properties:
+                name:
+                  type: string
+                  example: "Frontend"
+
+                color:
+                  type: string
+                  example: "#FF5733"
+
+      responses:
+        '201':
+          description: Тег успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+
+        '400':
+          description: Некорректные данные или тег уже существует
+
+        '401':
+          description: Не авторизован
+
+        '403':
+          description: Недостаточно прав
+
+        '404':
+          description: Проект не найден
+
+  /suggestions/{suggestion_id}/tags:
+    post:
+      summary: Добавить тег к предложению
+      tags:
+        - Tags
+      security:
+        - BearerAuth: []
+  
+      parameters:
+        - $ref: '#/components/parameters/suggestionId'
+  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tag_id
+              properties:
+                tag_id:
+                  type: string
+                  format: uuid
+  
+      responses:
+        '200':
+          description: Тег успешно добавлен
+        '401':
+          description: Не авторизован
+
+
+  /suggestions/{suggestion_id}/tags/{tag_id}:
+    delete:
+      summary: Удалить тег у предложения
+      tags:
+        - Tags
+      security:
+        - BearerAuth: []
+  
+      parameters:
+        - $ref: '#/components/parameters/suggestionId'
+        - name: tag_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+  
+      responses:
+        '204':
+          description: Тег удалён
+        '401':
+          description: Не авторизован
+          
+  /projects/{project_id}/tags/{tag_id}:
+  
+    put:
+      summary: Обновить тег проекта
+      tags:
+        - Tags
+      security:
+        - BearerAuth: []
+  
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+  
+        - name: tag_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Backend"
+  
+                color:
+                  type: string
+                  example: "#00AAFF"
+  
+              minProperties: 1
+  
+      responses:
+        '200':
+          description: Тег успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+  
+        '400':
+          description: Некорректные данные или тег с таким именем уже существует
+  
+        '401':
+          description: Не авторизован
+  
+        '403':
+          description: Недостаточно прав
+  
+        '404':
+          description: Проект или тег не найдены
+  
+    delete:
+      summary: Удалить тег проекта
+      tags:
+        - Tags
+      security:
+        - BearerAuth: []
+  
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+  
+        - name: tag_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+  
+      responses:
+        '204':
+          description: Тег успешно удалён
+  
+        '401':
+          description: Не авторизован
+  
+        '403':
+          description: Недостаточно прав
+  
+        '404':
+          description: Проект или тег не найдены
+  
+        '409':
+          description: Тег нельзя удалить, пока он используется в предложениях
 
   /auth:
     get:
@@ -1126,6 +1388,10 @@ components:
         status:
           type: string
           enum: [draft, discussion, accepted, rejected]
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
       required: [suggestion_id, user_id, project_id, name, status, description]
 
     CreateSuggestionRequest:
@@ -1237,7 +1503,25 @@ components:
         - sender_nickname
         - receiver_nickname
       additionalProperties: false
-
+    
+    Tag:
+      type: object
+      properties:
+        tag_id:
+          type: string
+          format: uuid
+    
+        name:
+          type: string
+          example: "UI"
+    
+        color:
+          type: string
+          example: "#FF0000"
+    
+      required:
+        - tag_id
+        - name
 
 
 

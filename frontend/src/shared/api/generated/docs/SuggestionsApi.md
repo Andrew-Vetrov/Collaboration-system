@@ -30,10 +30,12 @@ const apiInstance = new SuggestionsApi(configuration);
 
 let projectId: string; // (default to undefined)
 let status: 'draft' | 'discussion' | 'accepted' | 'rejected'; // (optional) (default to undefined)
+let tags: Array<string>; //Фильтр по тегам (optional) (default to undefined)
 
 const { status, data } = await apiInstance.projectProjectIdSuggestionsGet(
     projectId,
-    status
+    status,
+    tags
 );
 ```
 
@@ -43,6 +45,7 @@ const { status, data } = await apiInstance.projectProjectIdSuggestionsGet(
 |------------- | ------------- | ------------- | -------------|
 | **projectId** | [**string**] |  | defaults to undefined|
 | **status** | [**&#39;draft&#39; | &#39;discussion&#39; | &#39;accepted&#39; | &#39;rejected&#39;**]**Array<&#39;draft&#39; &#124; &#39;discussion&#39; &#124; &#39;accepted&#39; &#124; &#39;rejected&#39;>** |  | (optional) defaults to undefined|
+| **tags** | **Array&lt;string&gt;** | Фильтр по тегам | (optional) defaults to undefined|
 
 
 ### Return type
@@ -118,6 +121,10 @@ const { status, data } = await apiInstance.projectProjectIdSuggestionsPost(
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 |**201** | Предложение или черновик создано |  -  |
+|**400** | Некорректные данные или один из тегов не существует |  -  |
+|**401** | Не авторизован |  -  |
+|**403** | Нет доступа к проекту |  -  |
+|**404** | Проект не найден |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

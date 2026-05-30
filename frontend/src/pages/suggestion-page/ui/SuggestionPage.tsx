@@ -17,6 +17,7 @@ import { useSuggestionDelete } from '@/features/suggestion-delete/api/useSuggest
 import { routes } from '@/shared/route';
 import { useProjects } from '@/entities/project';
 import type { ProjectUser } from '@/shared/api/generated';
+import { SuggestionTagsManager } from '@/features/tags-menagement';
 
 const SuggestionPage = () => {
   const { projectId, suggestionId } = useParams<{
@@ -129,7 +130,12 @@ const SuggestionPage = () => {
                 </p>
               </CardContent>
             </Card>
-
+            <SuggestionTagsManager
+              projectId={projectId}
+              suggestionId={suggestionId}
+              selectedTags={suggestion.tags ?? []}
+              canEdit={Boolean(canEdit)}
+            />
             <LikesSection
               suggestion={suggestion}
               className="flex md:hidden md:mt-0 mt-3"
@@ -153,7 +159,8 @@ const SuggestionPage = () => {
             <div className="order-1 md:order-2 mt-4 w-full flex flex-col gap-4">
               <CommentForm
                 suggestionId={suggestionId}
-                formOptions={formOption}justify-self-center
+                formOptions={formOption}
+                justify-self-center
               />
               <CommentsList
                 userList={userList?.users}
