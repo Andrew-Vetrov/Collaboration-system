@@ -70,7 +70,10 @@ export const TagCreationDialog = ({
                 placeholder="Имя тега"
                 {...register('tagName', {
                   minLength: 1,
-                  maxLength: 20,
+                  maxLength: {
+                      value: 20,
+                      message: 'Максимум 20 символов',
+                  },
                   required: 'Необходимо ввести имя',
                   pattern: {
                     value: /^[a-zA-Zа-яА-ЯёЁ0-9]+$/,

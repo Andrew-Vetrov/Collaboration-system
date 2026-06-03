@@ -34,14 +34,15 @@ public class SuggestionsController {
     @GetMapping("/project/{projectId}/suggestions")
     public GetProjectSuggestionsResponse getProjectSuggestions(
             @PathVariable("projectId") UUID projectId,
-            @RequestParam(required = false) String status) throws AuthException {
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false, name = "tags") List<UUID> tagIds) throws AuthException {
 
         UUID userUuid = jwtService.getCurrentUserId();
 
-        List<SuggestionDetailDto> suggestions = suggestionService.getSuggestionDetails(projectId, userUuid, status);
+        List<SuggestionDetailDto> suggestions = suggestionService.getSuggestionDetails(projectId, userUuid, status, tagIds);
 
-        log.info("User {} retrieved {} suggestions for project {} (status filter: {})",
-                userUuid, suggestions.size(), projectId, status != null ? status : "all");
+        log.info("User {} retrieved {} suggestions for project {} (status filter: {}, tags filter: {})",
+                userUuid, suggestions.size(), projectId, status != null ? status : "all", tagIds != null ? tagIds : "none");
 
         return new GetProjectSuggestionsResponse(suggestions);
     }

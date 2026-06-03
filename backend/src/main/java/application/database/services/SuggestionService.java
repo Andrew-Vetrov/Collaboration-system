@@ -2,11 +2,13 @@ package application.database.services;
 
 import application.database.entities.Like;
 import application.database.entities.Project;
-import application.database.entities.ProjectRights;
 import application.database.entities.Suggestion;
+import application.database.entities.SuggestionTag;
 import application.database.repositories.LikeRepository;
 import application.database.repositories.SuggestionRepository;
+import application.database.repositories.SuggestionTagRepository;
 import application.dtos.SuggestionDetailDto;
+import application.dtos.TagDto;
 import application.dtos.requests.CreateAndUpdateSuggestionRequest;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,12 +29,20 @@ public class SuggestionService {
     private final LikeRepository likeRepository;
     private final ProjectService projectService;
     private final ProjectAccessService projectAccessService;
+    private final SuggestionTagRepository suggestionTagRepository;
 
-    public List<SuggestionDetailDto> getSuggestionDetails(UUID projectId, UUID currentUserId, String statusStr) {
+    public List<SuggestionDetailDto> getSuggestionDetails(
+            UUID projectId,
+            UUID currentUserId,
+            String statusStr,
+            List<UUID> tagIds
+    ) {
         projectService.getProjectById(projectId); // Проверка существования проекта
         projectAccessService.getUserProjectRights(currentUserId, projectId) // Проверка прав
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to project " + projectId));
+
         List<Suggestion> suggestions;
+
         if (statusStr == null || statusStr.isBlank()) {
             List<Suggestion> tempSuggestions = suggestionRepository.findAllByProjectId(projectId);
             suggestions = new ArrayList<>();
@@ -46,17 +56,31 @@ public class SuggestionService {
             Suggestion.SuggestionStatus status = Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase());
             if(status != Suggestion.SuggestionStatus.DRAFT) {
                 suggestions = suggestionRepository
-                        .findAllByProjectIdAndStatus(projectId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
+                        .findAllByProjectIdAndStatus(projectId, status);
             }
             else{
                 suggestions = suggestionRepository
-                        .findAllByProjectIdAndUserIdAndStatus(projectId, currentUserId, Suggestion.SuggestionStatus.valueOf(statusStr.toUpperCase()));
+                        .findAllByProjectIdAndUserIdAndStatus(projectId, currentUserId, status);
             }
+        }
+
+        if (tagIds != null && !tagIds.isEmpty()) {
+            suggestions = suggestions.stream()
+                    .filter(suggestion -> {
+                        List<UUID> suggestionTagIds = suggestionTagRepository.findTagIdsBySuggestionId(suggestion.getId());
+                        return new HashSet<>(suggestionTagIds).containsAll(tagIds);
+                    })
+                    .toList();
         }
 
         List<SuggestionDetailDto> dtos = new ArrayList<>();
         for(Suggestion suggestion : suggestions){
-            dtos.add(makeSuggestionDetailDto(suggestion, currentUserId));
+            List<TagDto> tagDtos = suggestionTagRepository.findAllTagsBySuggestionId(suggestion.getId())
+                    .stream()
+                    .map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getColor()))
+                    .toList();
+
+            dtos.add(makeSuggestionDetailDto(suggestion, currentUserId, tagDtos));
         }
 
         return dtos;
@@ -66,16 +90,20 @@ public class SuggestionService {
         Suggestion suggestion = suggestionRepository.findById(suggestionId)
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
 
-        // Проверка доступа: пользователь должен быть в проекте предложения
         projectAccessService.getUserProjectRights(currentUserId, suggestion.getProjectId())
                 .orElseThrow(() -> new AccessDeniedException("User " + currentUserId + " has no rights to suggestion " + suggestionId));
-        //А также, если это черновик, то быть его создателем
-        if(suggestion.getStatus() == Suggestion.SuggestionStatus.DRAFT
-                && !suggestion.getUserId().equals(currentUserId)){
+
+        if (suggestion.getStatus() == Suggestion.SuggestionStatus.DRAFT
+                && !suggestion.getUserId().equals(currentUserId)) {
             throw new AccessDeniedException("Suggestion " + currentUserId + " is another user's draft");
         }
 
-        return makeSuggestionDetailDto(suggestion, currentUserId);
+        List<TagDto> tagDtos = suggestionTagRepository.findAllTagsBySuggestionId(suggestionId)
+                .stream()
+                .map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getColor()))
+                .toList();
+
+        return makeSuggestionDetailDto(suggestion, currentUserId, tagDtos);
     }
 
     @Transactional
@@ -104,13 +132,11 @@ public class SuggestionService {
 
         ZonedDateTime currentPeriodStart = project.getVotePeriodStart();
 
-        // Ищем все лайки этого пользователя на это предложение
         List<Like> userLikes = likeRepository.findByUserIdAndSuggestionId(userId, suggestionId);
         if (userLikes.isEmpty()) {
             throw new EntityNotFoundException("No like found for user " + userId + " on suggestion " + suggestionId);
         }
 
-        // Фильтруем только лайки из текущего периода
         List<Like> removableLikes = userLikes.stream()
                 .filter(like -> !like.getPlacedAt().isBefore(currentPeriodStart))
                 .toList();
@@ -152,7 +178,19 @@ public class SuggestionService {
 
         Suggestion saved = suggestionRepository.save(suggestion);
 
-        return makeSuggestionDetailDto(saved, currentUserId);
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            List<SuggestionTag> mappings = request.getTagIds().stream()
+                    .map(tagId -> new SuggestionTag(new SuggestionTag.SuggestionTagId(saved.getId(), tagId)))
+                    .toList();
+            suggestionTagRepository.saveAll(mappings);
+        }
+
+        List<TagDto> tagDtos = suggestionTagRepository.findAllTagsBySuggestionId(saved.getId())
+                .stream()
+                .map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getColor()))
+                .toList();
+
+        return makeSuggestionDetailDto(saved, currentUserId, tagDtos);
     }
 
     @Transactional
@@ -160,7 +198,7 @@ public class SuggestionService {
         Suggestion suggestion = suggestionRepository.findById(suggestionId)
                 .orElseThrow(() -> new EntityNotFoundException("Suggestion not found: " + suggestionId));
 
-        var userRights = projectService.validateAndGetUserProjectAccess(currentUserId, suggestion.getProjectId());
+        var userRights = projectAccessService.validateAndGetUserProjectAccess(currentUserId, suggestion.getProjectId());
 
         if (!suggestion.getUserId().equals(currentUserId) && !userRights.getIsAdmin()) {
             throw new AccessDeniedException("Only the author can update the suggestion");
@@ -191,7 +229,21 @@ public class SuggestionService {
         suggestion.setLastEdit(now);
         suggestionRepository.save(suggestion);
 
-        return makeSuggestionDetailDto(suggestion, currentUserId);
+        if (request.getTagIds() != null) {
+            suggestionTagRepository.deleteAllByIdSuggestionId(suggestionId);
+
+            List<SuggestionTag> newMappings = request.getTagIds().stream()
+                    .map(tagId -> new SuggestionTag(new SuggestionTag.SuggestionTagId(suggestionId, tagId)))
+                    .toList();
+            suggestionTagRepository.saveAll(newMappings);
+        }
+
+        List<TagDto> tagDtos = suggestionTagRepository.findAllTagsBySuggestionId(suggestionId)
+                .stream()
+                .map(tag -> new TagDto(tag.getId(), tag.getName(), tag.getColor()))
+                .toList();
+
+        return makeSuggestionDetailDto(suggestion, currentUserId, tagDtos);
     }
 
     @Transactional
@@ -203,10 +255,8 @@ public class SuggestionService {
             throw new AccessDeniedException("Only project admins can delete suggestions");
         }
 
-        //Возвращаем пользователям поставленные лайки за текущий период на это предложение
         Project project = projectService.getProjectById(suggestion.getProjectId());
         List<Like> suggestionLikes = likeRepository.findBySuggestionId(suggestionId);
-        // Фильтруем только лайки из текущего периода
         List<Like> removableLikes = suggestionLikes.stream()
                 .filter(like -> !like.getPlacedAt().isBefore(project.getVotePeriodStart()))
                 .toList();
@@ -218,9 +268,14 @@ public class SuggestionService {
         suggestionRepository.delete(suggestion);
     }
 
-    private SuggestionDetailDto makeSuggestionDetailDto(Suggestion suggestion, UUID userId){
+    private SuggestionDetailDto makeSuggestionDetailDto(
+            Suggestion suggestion,
+            UUID userId,
+            List<TagDto> tags
+    ) {
         long likesAmount = likeRepository.countBySuggestionId(suggestion.getId());
         long userLikesAmount = likeRepository.countByUserIdAndSuggestionId(userId, suggestion.getId());
+
         return new SuggestionDetailDto(
                 suggestion.getId(),
                 suggestion.getUserId(),
@@ -231,7 +286,8 @@ public class SuggestionService {
                 userLikesAmount,
                 suggestion.getName(),
                 suggestion.getDescription(),
-                suggestion.getStatus().toString().toLowerCase()
+                suggestion.getStatus().toString().toLowerCase(),
+                tags
         );
     }
 }

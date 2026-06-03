@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -29,4 +30,6 @@ public class SuggestionDetailDto {
     private final String name;
     private final String description;
     private final String status;
+    @JsonProperty("tags")
+    private final List<TagDto> tags;
 }

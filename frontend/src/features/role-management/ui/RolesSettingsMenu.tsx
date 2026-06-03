@@ -78,57 +78,73 @@ export const RolesSettingsMenu = ({
         <DialogTitle>Настройки ролей</DialogTitle>
 
         <div className="flex flex-col gap-6 max-h-[80vh] overflow-y-scroll">
-          {roles.map(role => (
-            <div
-              key={role.role_id}
-              className="flex flex-col gap-3 border rounded-lg p-3"
-            >
-              <Label className="font-bold">{role.name}</Label>
+          {roles.map(role => {
+            const currentName = roleSettings[role.role_id]?.name ?? '';
+            const isNameTooLong = currentName.length > 20;
+            const isNameEmpty = currentName.trim() === '';
 
-              <div className="flex flex-col gap-2">
-                <Label className="text-sm">Название роли</Label>
-
-                <Input
-                  value={roleSettings[role.role_id]?.name ?? ''}
-                  onChange={e =>
-                    handleChange(role.role_id, 'name', e.target.value)
-                  }
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label className="text-sm">Цвет роли</Label>
-
-                <Input
-                  type="color"
-                  className="h-10 w-20 p-1"
-                  value={roleSettings[role.role_id]?.color ?? '#000000'}
-                  onChange={e =>
-                    handleChange(role.role_id, 'color', e.target.value)
-                  }
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label className="text-sm">Количество голосов у роли</Label>
-
-                <Input
-                  type="number"
-                  value={roleSettings[role.role_id]?.likesAmount ?? 0}
-                  onChange={e =>
-                    handleChange(role.role_id, 'likesAmount', e.target.value)
-                  }
-                />
-              </div>
-
-              <Button
-                onClick={() => handleSave(role.role_id)}
-                disabled={isPending}
+            return (
+              <div
+                key={role.role_id}
+                className="flex flex-col gap-3 border rounded-lg p-3"
               >
-                Сохранить
-              </Button>
-            </div>
-          ))}
+                <Label className="font-bold">{role.name}</Label>
+
+                <div className="flex flex-col gap-2">
+                  <Label className="text-sm">Название роли</Label>
+
+                  <Input
+                    value={currentName}
+                    onChange={e =>
+                      handleChange(role.role_id, 'name', e.target.value)
+                    }
+                  />
+                  {isNameTooLong && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Максимум 20 символов
+                    </p>
+                  )}
+                  {isNameEmpty && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Необходимо ввести имя
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label className="text-sm">Цвет роли</Label>
+
+                  <Input
+                    type="color"
+                    className="h-10 w-20 p-1"
+                    value={roleSettings[role.role_id]?.color ?? '#000000'}
+                    onChange={e =>
+                      handleChange(role.role_id, 'color', e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label className="text-sm">Количество голосов у роли</Label>
+
+                  <Input
+                    type="number"
+                    value={roleSettings[role.role_id]?.likesAmount ?? 0}
+                    onChange={e =>
+                      handleChange(role.role_id, 'likesAmount', e.target.value)
+                    }
+                  />
+                </div>
+
+                <Button
+                  onClick={() => handleSave(role.role_id)}
+                  disabled={isPending || isNameTooLong || isNameEmpty}
+                >
+                  Сохранить
+                </Button>
+              </div>
+            );
+          })}
         </div>
       </DialogContent>
     </Dialog>
